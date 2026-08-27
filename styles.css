@@ -438,20 +438,21 @@ em { color:var(--lime); font-style:normal; }
     line-height:1.29;
     text-align:center;
   }
-  .showcase-marquee { position:absolute; top:539px; right:18px; left:18px; height:213px; margin:0; padding:0; overflow:hidden; }
-  .marquee-rail { width:100%; animation:none; }
-  .marquee-group { width:100%; gap:0; padding:0; }
-  .marquee-group[aria-hidden="true"] { display:none; }
-  .work-card { width:100%; height:213px; max-height:none; }
-  .work-card-makeitpay { order:-1; }
-  .work-card:not(.work-card-makeitpay) { display:none; }
+  .showcase-marquee { position:absolute; top:558px; right:clamp(12px, 4.6vw, 18px); left:clamp(12px, 4.6vw, 18px); aspect-ratio:16 / 9; height:auto; margin:0; padding:0; overflow:hidden; }
+  .marquee-rail { width:max-content; animation:marquee-left 24s linear infinite; }
+  .marquee-group { display:flex; width:max-content; gap:16px; padding-right:16px; }
+  .marquee-group[aria-hidden="true"] { display:flex; }
+  .work-card { display:block !important; width:calc(100vw - 36px); height:100%; max-height:none; aspect-ratio:16 / 9; }
+  .work-card-robot { order:1; }
+  .work-card-makeitpay { order:0; }
+  .work-card-oasis { order:2; }
   .work-card-makeitpay > img { object-position:center; }
   .hero-hint { display:none; }
   .mobile-project-meta {
     position:absolute;
-    top:782px;
-    right:18px;
-    left:18px;
+    top:calc(562px + 56.25vw);
+    right:clamp(12px, 4.6vw, 18px);
+    left:clamp(12px, 4.6vw, 18px);
     display:flex;
     align-items:start;
     justify-content:space-between;
@@ -472,9 +473,9 @@ em { color:var(--lime); font-style:normal; }
   .mobile-proof-avatars { padding-left:6px; }
   .mobile-proof-avatars img { width:22px; height:22px; margin-left:-6px; }
   .intro-stage .hero h1 { font-size:clamp(27px, 8.1vw, 30px); }
-  .showcase-marquee { top:calc(100svh - 276px); height:190px; }
-  .work-card { height:190px; }
-  .mobile-project-meta { top:calc(100svh - 62px); }
+  .showcase-marquee { top:calc(100svh - 276px); aspect-ratio:16 / 9; height:auto; }
+  .work-card { height:100%; }
+  .mobile-project-meta { top:calc(100svh - 69px); }
 }
 
 @media (max-width:600px) and (max-height:760px) {
@@ -484,9 +485,9 @@ em { color:var(--lime); font-style:normal; }
   .intro-stage .hero { padding-top:75px; }
   .hero-cta { margin-top:12px; }
   .hero-gallery-note.caption { top:330px; }
-  .showcase-marquee { top:445px; height:170px; }
-  .work-card { height:170px; }
-  .mobile-project-meta { top:627px; }
+  .showcase-marquee { top:445px; aspect-ratio:16 / 9; height:auto; }
+  .work-card { height:100%; }
+  .mobile-project-meta { top:calc(450px + 56.25vw); }
 }
 
 /* One restrained interaction language for every actionable button. */
