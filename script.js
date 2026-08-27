@@ -248,3 +248,11 @@ const source = new URLSearchParams(window.location.search).get('source');
 const note = document.querySelector('[data-source-note]');
 if (source === 'reels') note.textContent = 'Ты пришла из Reels: здесь не «волшебный промпт», а полный путь от мысли до живого сайта.';
 if (source === 'ads') note.textContent = 'Ты пришла из рекламы: начни с программы и проверь, совпадает ли твоя исходная точка с маршрутом.';
+
+document.querySelectorAll('.programme-trigger').forEach((trigger) => {
+  trigger.addEventListener('click', () => {
+    const module = trigger.closest('.programme-module');
+    const isOpen = module.classList.toggle('is-open');
+    trigger.setAttribute('aria-expanded', String(isOpen));
+  });
+});
