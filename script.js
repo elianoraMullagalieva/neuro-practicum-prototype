@@ -94,16 +94,17 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
   };
 
   const buildMotionTimeline = () => {
+    const posterAngles = window.innerWidth <= 900 ? [-19.5, 15] : [3, -3];
     window.anime.remove([motionCurtain, motionChrome, motionTunnel, motionWordsField, motionFlash, motionResult, tunnelCamera, ...motionWords, ...motionPosters]);
     window.anime.set(motionCurtain, transitionVariant === 'fade'
       ? { translateY: '0%', opacity: 0 }
       : { translateY: '100%', opacity: 1 });
     window.anime.set(motionChrome, { opacity: 0 });
     window.anime.set(motionTunnel, { opacity: 0 });
-    window.anime.set(motionWords, { opacity: 0, translateX: 0, translateY: 0, scale: 1, letterSpacing: '-.04em' });
+    window.anime.set(motionWords, { opacity: 0, filter: 'blur(10px)', translateX: 0, translateY: 0, scale: 1, letterSpacing: '-.04em' });
     window.anime.set(motionFlash, { opacity: 0, scale: .08 });
-    window.anime.set(motionPosters[0], { opacity: 0, translateX: '-150%', translateY: '8%', scale: 0.94, rotate: 3 });
-    window.anime.set(motionPosters[1], { opacity: 0, translateX: '150%', translateY: '-8%', scale: 0.94, rotate: -3 });
+    window.anime.set(motionPosters[0], { opacity: 0, translateX: '-150%', translateY: '8%', scale: 0.94, rotate: posterAngles[0] });
+    window.anime.set(motionPosters[1], { opacity: 0, translateX: '150%', translateY: '-8%', scale: 0.94, rotate: posterAngles[1] });
     Object.assign(tunnelCamera, { x: 0, y: 0, width: 1400, height: 814 });
     renderTunnelCamera();
     const tunnelTarget = getTunnelTarget();
@@ -143,8 +144,9 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
       .add({
         targets: motionWords,
         opacity: [0, 1],
-        delay: window.anime.stagger(75),
-        duration: 460,
+        filter: ['blur(10px)', 'blur(0px)'],
+        delay: window.anime.stagger(50),
+        duration: 480,
       }, 3220)
       .add({
         targets: motionPosters,
@@ -152,7 +154,7 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
         translateX: 0,
         translateY: 0,
         scale: [.9, 1],
-        rotate: (element, index) => index ? -3 : 3,
+        rotate: (element, index) => posterAngles[index],
         delay: window.anime.stagger(110),
         duration: 360,
       }, 3260)
