@@ -419,8 +419,10 @@ if (workTunnel && workTunnelImages.length && window.THREE) {
   Promise.all(workTunnelImages.map(loadTexture)).then((loadedTextures) => {
     const textures = loadedTextures.filter(Boolean);
     if (!textures.length) return;
-    const landscapeWorks = textures.filter((item) => item.orientation === 'landscape');
-    const portraitWorks = textures.filter((item) => item.orientation === 'portrait');
+    // The composition stays editable through the folder alone: portrait files
+    // become the banner rails, while wider projects become the website rails.
+    const siteWorks = textures.filter((item) => item.ratio >= 1.05);
+    const bannerWorks = textures.filter((item) => item.ratio < 1.05);
     const segments = [];
     let population = 0;
     let running = true;
@@ -439,8 +441,9 @@ if (workTunnel && workTunnelImages.length && window.THREE) {
       const z = -segmentDepth / 2;
       for (let column = 0; column < columns; column += 1) {
         const x = -halfWidth + column * cellWidth + cellWidth / 2;
-        list.push({ face:'floor', width:cellWidth, height:segmentDepth, position:new THREE.Vector3(x, -halfHeight, z), rotation:new THREE.Euler(-Math.PI / 2, 0, 0) });
-        list.push({ face:'ceiling', width:cellWidth, height:segmentDepth, position:new THREE.Vector3(x, halfHeight, z), rotation:new THREE.Euler(Math.PI / 2, 0, 0) });
+        const rail = column === 0 || column === columns - 1 ? 'banner' : 'site';
+        list.push({ face:'floor', rail, column, width:cellWidth, height:segmentDepth, position:new THREE.Vector3(x, -halfHeight, z), rotation:new THREE.Euler(-Math.PI / 2, 0, 0) });
+        list.push({ face:'ceiling', rail, column, width:cellWidth, height:segmentDepth, position:new THREE.Vector3(x, halfHeight, z), rotation:new THREE.Euler(Math.PI / 2, 0, 0) });
       }
       for (let row = 0; row < rows; row += 1) {
         const y = -halfHeight + row * cellHeight + cellHeight / 2;
@@ -458,18 +461,32 @@ if (workTunnel && workTunnelImages.length && window.THREE) {
       const seed = population;
       population += 1;
       slots().forEach((slot, index) => {
-        // Most cells stay black. Works lead the composition; coloured fields are
-        // only occasional structural accents, never a checkerboard of red tiles.
+        const isBannerRail = slot.rail === 'banner';
+        // Banner rails alternate as a chessboard: one lower edge is occupied
+        // while the opposite edge stays empty; the next depth row reverses it.
+        // The ceiling mirrors the rhythm, so the frame never becomes a stripe.
+        if (isBannerRail) {
+          const isOccupied = (seed + slot.column + (slot.face === 'ceiling' ? 1 : 0)) % 2 === 0;
+          if (!isOccupied) return;
+          const source = bannerWorks.length ? bannerWorks : textures;
+          const work = source[(seed + (slot.face === 'ceiling' ? 1 : 0)) % source.length];
+          const material = new THREE.MeshBasicMaterial({ map:work.texture, side:THREE.DoubleSide });
+          const before = group.children.length;
+          addSlab(group, slot, material, work.ratio);
+          group.children[before].userData.isSlab = true;
+          group.children[before].userData.disposeMaterial = true;
+          return;
+        }
+
+        // Most remaining cells stay black. Works lead the composition; coloured
+        // fields are only occasional structural accents, never a checkerboard.
         const value = (seed * 19 + index * 11) % 41;
         if (value > 15) return;
         // One quiet coloured plane at most every third depth segment. The grid
         // should read as a gallery first; colour is just the tunnel's rhythm.
         const isAccent = value === 0 && seed % 3 === 0;
         if (!isAccent) {
-          const preferredWorks = slot.face === 'floor' || slot.face === 'ceiling'
-            ? portraitWorks
-            : landscapeWorks;
-          const source = preferredWorks.length ? preferredWorks : textures;
+          const source = siteWorks.length ? siteWorks : textures;
           const work = source[(seed * 3 + index * 5) % source.length];
           const material = new THREE.MeshBasicMaterial({ map:work.texture, side:THREE.DoubleSide });
           const before = group.children.length;
