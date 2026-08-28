@@ -327,3 +327,43 @@ if (statCounters.length && !window.matchMedia('(prefers-reduced-motion: reduce)'
   }, { threshold: .55 });
   statsObserver.observe(statCounters[0].closest('.programme-stats'));
 }
+
+const workTunnel = document.querySelector('[data-work-tunnel]');
+const workTunnelImages = Array.isArray(window.TUNNEL_GALLERY_IMAGES) ? window.TUNNEL_GALLERY_IMAGES : [];
+
+if (workTunnel && workTunnelImages.length) {
+  const world = workTunnel.querySelector('.work-tunnel-world');
+  const segmentDepth = 240;
+  const bufferSegments = 9;
+  const tones = ['red', 'gray', 'white', 'black'];
+  const directions = ['left', 'right', 'top', 'bottom'];
+  const cycleDepth = workTunnelImages.length * segmentDepth;
+  const cycleDuration = Math.max(22, workTunnelImages.length * 2.7);
+
+  workTunnel.style.setProperty('--tunnel-cycle-depth', `${cycleDepth}px`);
+  workTunnel.style.setProperty('--tunnel-duration', `${cycleDuration}s`);
+
+  for (let segmentIndex = 0; segmentIndex < workTunnelImages.length + bufferSegments; segmentIndex += 1) {
+    const segment = document.createElement('div');
+    segment.className = 'work-tunnel-segment';
+    segment.style.setProperty('--tunnel-z', String((segmentIndex + 1) * segmentDepth));
+
+    const frame = document.createElement('div');
+    frame.className = 'work-tunnel-frame';
+    segment.append(frame);
+
+    directions.forEach((direction, boardIndex) => {
+      const board = document.createElement('figure');
+      const image = document.createElement('img');
+      const imageIndex = (segmentIndex + boardIndex * 3) % workTunnelImages.length;
+      board.className = `work-tunnel-board work-tunnel-board--${direction} work-tunnel-board--${tones[(segmentIndex + boardIndex) % tones.length]}`;
+      image.src = workTunnelImages[imageIndex];
+      image.alt = '';
+      image.decoding = 'async';
+      board.append(image);
+      segment.append(board);
+    });
+
+    world.append(segment);
+  }
+}
