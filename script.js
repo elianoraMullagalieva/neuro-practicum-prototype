@@ -212,6 +212,10 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
     introStage?.classList.toggle('is-complete', scroll >= start + distance && (!isMobile || isComplete));
     motionStage.classList.toggle('is-pinned', isActive);
     motionStage.classList.toggle('is-ended', scroll >= start + distance && (!isMobile || isComplete));
+    // The last micro-scroll is a white hand-off, not an empty black frame:
+    // the next white section can begin inside the light.
+    const audienceLight = Math.max(0, Math.min(1, (progress - .978) / .022));
+    motionStage.style.setProperty('--audience-light', audienceLight.toFixed(3));
     // Use the designed duration rather than Anime's internal stagger bookkeeping:
     // this keeps every scroll position tied to the intended choreography.
     motionTimeline.seek(8000 * progress);
@@ -274,6 +278,45 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
   });
 }
 
+const audienceSection = document.querySelector('.audience-section');
+if (audienceSection && window.anime && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const audienceTitle = audienceSection.querySelector('.audience-intro h2');
+  const audienceAuthor = audienceSection.querySelector('.audience-author');
+  const audienceCards = [...audienceSection.querySelectorAll('.audience-card')];
+  let audiencePlayed = false;
+
+  window.anime.set([audienceTitle, audienceAuthor].filter(Boolean), {
+    opacity: 0,
+    translateY: 20,
+    filter: 'blur(9px)',
+  });
+  window.anime.set(audienceCards, {
+    opacity: 0,
+    translateY: '10%',
+    scaleY: .05,
+    transformOrigin: '50% 100%',
+  });
+
+  const audienceObserver = new IntersectionObserver(([entry], observer) => {
+    if (!entry.isIntersecting || audiencePlayed) return;
+    audiencePlayed = true;
+    observer.disconnect();
+    const timeline = window.anime.timeline({ easing:'cubicBezier(.22, 1, .36, 1)' });
+    timeline
+      .add({ targets:audienceTitle, opacity:[0, 1], translateY:[20, 0], filter:['blur(9px)', 'blur(0px)'], duration:620 }, 0)
+      .add({ targets:audienceAuthor, opacity:[0, 1], translateY:[16, 0], filter:['blur(8px)', 'blur(0px)'], duration:520 }, 110)
+      .add({
+        targets:audienceCards,
+        opacity:[0, 1],
+        translateY:['10%', '0%'],
+        scaleY:[.05, 1],
+        delay:window.anime.stagger(92),
+        duration:900,
+      }, 230);
+  }, { threshold:.18 });
+  audienceObserver.observe(audienceSection);
+}
+
 window.addEventListener('pointermove', (event) => {
   const dot = document.querySelector('.cursor-dot');
   dot.style.left = `${event.clientX}px`;
@@ -331,39 +374,220 @@ if (statCounters.length && !window.matchMedia('(prefers-reduced-motion: reduce)'
 const workTunnel = document.querySelector('[data-work-tunnel]');
 const workTunnelImages = Array.isArray(window.TUNNEL_GALLERY_IMAGES) ? window.TUNNEL_GALLERY_IMAGES : [];
 
-if (workTunnel && workTunnelImages.length) {
-  const world = workTunnel.querySelector('.work-tunnel-world');
-  const segmentDepth = 240;
-  const bufferSegments = 9;
-  const tones = ['red', 'gray', 'white', 'black'];
-  const directions = ['left', 'right', 'top', 'bottom'];
-  const cycleDepth = workTunnelImages.length * segmentDepth;
-  const cycleDuration = Math.max(22, workTunnelImages.length * 2.7);
+if (workTunnel && workTunnelImages.length && window.THREE) {
+  const canvas = workTunnel.querySelector('.work-tunnel-canvas');
+  const section = workTunnel.closest('.work-tunnel-section');
+  const THREE = window.THREE;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(55, 1, .1, 1000);
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, powerPreference:'high-performance' });
+  const tunnelWidth = 12;
+  const tunnelHeight = 7.2;
+  const segmentDepth = 4.2;
+  const segmentCount = 17;
+  const columns = 4;
+  const rows = 4;
+  const halfWidth = tunnelWidth / 2;
+  const halfHeight = tunnelHeight / 2;
+  const cellWidth = tunnelWidth / columns;
+  const cellHeight = tunnelHeight / rows;
+  const lineMaterial = new THREE.LineBasicMaterial({ color:'#b0b0b0', transparent:true, opacity:.2 });
+  const palette = ['#bd2924', '#b0b0b0', '#f2eeee'];
+  const colourMaterials = palette.map((colour) => new THREE.MeshBasicMaterial({ color:colour, side:THREE.DoubleSide }));
+  const loader = new THREE.TextureLoader();
+  const makeLine = (group, from, to) => {
+    const geometry = new THREE.BufferGeometry().setFromPoints([from, to]);
+    group.add(new THREE.Line(geometry, lineMaterial));
+  };
+  const fit = (width, height, ratio) => {
+    const fittedWidth = Math.min(width, height * ratio);
+    return { width:fittedWidth, height:fittedWidth / ratio };
+  };
+  const loadTexture = (src) => new Promise((resolve) => {
+    loader.load(src, (texture) => {
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.minFilter = THREE.LinearFilter;
+      texture.generateMipmaps = false;
+      resolve({
+        texture,
+        ratio: texture.image.width / texture.image.height,
+        orientation: texture.image.width >= texture.image.height ? 'landscape' : 'portrait',
+      });
+    }, undefined, () => resolve(null));
+  });
 
-  workTunnel.style.setProperty('--tunnel-cycle-depth', `${cycleDepth}px`);
-  workTunnel.style.setProperty('--tunnel-duration', `${cycleDuration}s`);
+  Promise.all(workTunnelImages.map(loadTexture)).then((loadedTextures) => {
+    const textures = loadedTextures.filter(Boolean);
+    if (!textures.length) return;
+    const landscapeWorks = textures.filter((item) => item.orientation === 'landscape');
+    const portraitWorks = textures.filter((item) => item.orientation === 'portrait');
+    const segments = [];
+    let population = 0;
+    let running = true;
+    let previous = 0;
+    let raf = 0;
 
-  for (let segmentIndex = 0; segmentIndex < workTunnelImages.length + bufferSegments; segmentIndex += 1) {
-    const segment = document.createElement('div');
-    segment.className = 'work-tunnel-segment';
-    segment.style.setProperty('--tunnel-z', String((segmentIndex + 1) * segmentDepth));
+    const addSlab = (group, slot, material, ratio = null) => {
+      const size = ratio ? fit(slot.width, slot.height, ratio) : { width:slot.width, height:slot.height };
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(size.width, size.height), material);
+      mesh.position.copy(slot.position);
+      mesh.rotation.copy(slot.rotation);
+      group.add(mesh);
+    };
+    const slots = () => {
+      const list = [];
+      const z = -segmentDepth / 2;
+      for (let column = 0; column < columns; column += 1) {
+        const x = -halfWidth + column * cellWidth + cellWidth / 2;
+        list.push({ face:'floor', width:cellWidth, height:segmentDepth, position:new THREE.Vector3(x, -halfHeight, z), rotation:new THREE.Euler(-Math.PI / 2, 0, 0) });
+        list.push({ face:'ceiling', width:cellWidth, height:segmentDepth, position:new THREE.Vector3(x, halfHeight, z), rotation:new THREE.Euler(Math.PI / 2, 0, 0) });
+      }
+      for (let row = 0; row < rows; row += 1) {
+        const y = -halfHeight + row * cellHeight + cellHeight / 2;
+        list.push({ face:'left-wall', width:segmentDepth, height:cellHeight, position:new THREE.Vector3(-halfWidth, y, z), rotation:new THREE.Euler(0, Math.PI / 2, 0) });
+        list.push({ face:'right-wall', width:segmentDepth, height:cellHeight, position:new THREE.Vector3(halfWidth, y, z), rotation:new THREE.Euler(0, -Math.PI / 2, 0) });
+      }
+      return list;
+    };
+    const fillSegment = (group) => {
+      group.children.filter((child) => child.userData.isSlab).forEach((child) => {
+        child.geometry.dispose();
+        if (child.userData.disposeMaterial) child.material.dispose();
+        group.remove(child);
+      });
+      const seed = population;
+      population += 1;
+      slots().forEach((slot, index) => {
+        // Most cells stay black. Works lead the composition; coloured fields are
+        // only occasional structural accents, never a checkerboard of red tiles.
+        const value = (seed * 19 + index * 11) % 41;
+        if (value > 15) return;
+        // One quiet coloured plane at most every third depth segment. The grid
+        // should read as a gallery first; colour is just the tunnel's rhythm.
+        const isAccent = value === 0 && seed % 3 === 0;
+        if (!isAccent) {
+          const preferredWorks = slot.face === 'floor' || slot.face === 'ceiling'
+            ? portraitWorks
+            : landscapeWorks;
+          const source = preferredWorks.length ? preferredWorks : textures;
+          const work = source[(seed * 3 + index * 5) % source.length];
+          const material = new THREE.MeshBasicMaterial({ map:work.texture, side:THREE.DoubleSide });
+          const before = group.children.length;
+          addSlab(group, slot, material, work.ratio);
+          group.children[before].userData.isSlab = true;
+          group.children[before].userData.disposeMaterial = true;
+        } else {
+          const before = group.children.length;
+          addSlab(group, slot, colourMaterials[(seed + index) % colourMaterials.length]);
+          group.children[before].userData.isSlab = true;
+        }
+      });
+    };
+    const makeSegment = (z) => {
+      const group = new THREE.Group();
+      group.position.z = z;
+      for (let column = 0; column <= columns; column += 1) {
+        const x = -halfWidth + column * cellWidth;
+        makeLine(group, new THREE.Vector3(x, -halfHeight, 0), new THREE.Vector3(x, -halfHeight, -segmentDepth));
+        makeLine(group, new THREE.Vector3(x, halfHeight, 0), new THREE.Vector3(x, halfHeight, -segmentDepth));
+      }
+      for (let row = 0; row <= rows; row += 1) {
+        const y = -halfHeight + row * cellHeight;
+        makeLine(group, new THREE.Vector3(-halfWidth, y, 0), new THREE.Vector3(-halfWidth, y, -segmentDepth));
+        makeLine(group, new THREE.Vector3(halfWidth, y, 0), new THREE.Vector3(halfWidth, y, -segmentDepth));
+      }
+      for (let column = 0; column <= columns; column += 1) {
+        const x = -halfWidth + column * cellWidth;
+        makeLine(group, new THREE.Vector3(x, -halfHeight, -segmentDepth), new THREE.Vector3(x, halfHeight, -segmentDepth));
+      }
+      for (let row = 0; row <= rows; row += 1) {
+        const y = -halfHeight + row * cellHeight;
+        makeLine(group, new THREE.Vector3(-halfWidth, y, -segmentDepth), new THREE.Vector3(halfWidth, y, -segmentDepth));
+      }
+      fillSegment(group);
+      return group;
+    };
+    for (let index = 0; index < segmentCount; index += 1) {
+      const segment = makeSegment(-index * segmentDepth);
+      scene.add(segment);
+      segments.push(segment);
+    }
+    const resize = () => {
+      const width = Math.max(1, workTunnel.clientWidth);
+      const height = Math.max(1, workTunnel.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    };
+    const observer = new ResizeObserver(resize);
+    observer.observe(workTunnel);
+    const visibilityObserver = new IntersectionObserver(([entry]) => { running = entry.isIntersecting; }, { threshold:.02 });
+    visibilityObserver.observe(section);
+    camera.position.set(0, 0, 0);
+    resize();
+    const animate = (now) => {
+      raf = window.requestAnimationFrame(animate);
+      if (!running) return;
+      const delta = previous ? Math.min((now - previous) / 1000, 1 / 30) : 1 / 60;
+      previous = now;
+      camera.position.z -= delta * .54;
+      const cameraZ = camera.position.z;
+      segments.forEach((segment) => {
+        if (segment.position.z > cameraZ + segmentDepth) {
+          const tail = Math.min(...segments.map((item) => item.position.z));
+          segment.position.z = tail - segmentDepth;
+          fillSegment(segment);
+        }
+      });
+      renderer.render(scene, camera);
+    };
+    raf = window.requestAnimationFrame(animate);
+    window.addEventListener('beforeunload', () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+      visibilityObserver.disconnect();
+      renderer.dispose();
+    }, { once:true });
+  });
+}
 
-    const frame = document.createElement('div');
-    frame.className = 'work-tunnel-frame';
-    segment.append(frame);
+const programmeSection = document.querySelector('.programme-section');
+const tunnelSection = document.querySelector('.work-tunnel-section');
+if (programmeSection && tunnelSection && workTunnel && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  let transitionQueued = false;
+  const renderProgrammeTunnelHandoff = () => {
+    transitionQueued = false;
+    const start = tunnelSection.offsetTop;
+    const distance = Math.max(440, window.innerHeight * .72);
+    const progress = Math.max(0, Math.min(1, (window.scrollY - start) / distance));
+    const inHandoff = progress > 0;
+    tunnelSection.classList.toggle('is-visible', inHandoff);
 
-    directions.forEach((direction, boardIndex) => {
-      const board = document.createElement('figure');
-      const image = document.createElement('img');
-      const imageIndex = (segmentIndex + boardIndex * 3) % workTunnelImages.length;
-      board.className = `work-tunnel-board work-tunnel-board--${direction} work-tunnel-board--${tones[(segmentIndex + boardIndex) % tones.length]}`;
-      image.src = workTunnelImages[imageIndex];
-      image.alt = '';
-      image.decoding = 'async';
-      board.append(image);
-      segment.append(board);
-    });
+    workTunnel.style.opacity = progress.toFixed(3);
 
-    world.append(segment);
-  }
+    if (!inHandoff) {
+      workTunnel.style.transform = 'scale(1.016)';
+      programmeSection.style.transform = '';
+      programmeSection.style.filter = '';
+      programmeSection.style.opacity = '';
+      return;
+    }
+
+    // The last programme viewport stays in place while it loses definition;
+    // the tunnel has time to take the whole screen instead of simply scrolling in.
+    const hold = Math.min(window.scrollY - start, distance);
+    workTunnel.style.transform = `translateY(${hold.toFixed(1)}px) scale(${(1.016 - progress * .016).toFixed(4)})`;
+    programmeSection.style.transform = `translateY(${hold.toFixed(1)}px) scale(${(1 - progress * .012).toFixed(4)})`;
+    programmeSection.style.filter = `blur(${(progress * 12).toFixed(2)}px) brightness(${(1 - progress * .42).toFixed(3)})`;
+    programmeSection.style.opacity = (1 - progress * .52).toFixed(3);
+  };
+  const requestProgrammeTunnelHandoff = () => {
+    if (transitionQueued) return;
+    transitionQueued = true;
+    window.requestAnimationFrame(renderProgrammeTunnelHandoff);
+  };
+  renderProgrammeTunnelHandoff();
+  window.addEventListener('scroll', requestProgrammeTunnelHandoff, { passive:true });
+  window.addEventListener('resize', requestProgrammeTunnelHandoff);
 }
