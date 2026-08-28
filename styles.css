@@ -374,16 +374,23 @@ em { color:var(--lime); font-style:normal; }
 
 /* Mobile hero — Figma node 166:8964. Its proportions flex with the viewport,
    while the reading order stays fixed: header, proof, offer, project. */
-@media (max-width:600px) {
+@media (max-width:600px), (hover:none) and (pointer:coarse) and (max-width:1200px) {
   .container { width:calc(100vw - 32px); }
   .intro-shell, .intro-stage { height:100dvh; min-height:0; }
   .intro-stage { overflow:hidden; --hero-breath:clamp(12px, 3dvh, 28px); }
+  .header-duration, .intro-stage nav { display:none; }
   .intro-stage .site-header {
+    position:relative;
+    z-index:5;
+    inset:auto;
+    width:calc(100vw - 32px);
+    margin:0 auto;
     min-height:0;
     height:76px;
     padding:20px 0 0;
     align-items:start;
   }
+  .header-side { position:static; justify-self:end; }
   .intro-stage .brand { flex-direction:row; align-items:center; gap:8px; font-size:12px; line-height:.97; letter-spacing:-.04em; }
   .intro-stage .brand img { width:44px; }
   .intro-stage .brand > span, .intro-stage .mobile-brand-break { color:#6c6c6c; }
@@ -414,13 +421,13 @@ em { color:var(--lime); font-style:normal; }
   .mobile-works-proof p { display:grid; gap:2px; min-width:0; margin:0; font-size:11px; line-height:1.05; letter-spacing:-.035em; white-space:nowrap; }
   .mobile-works-proof strong { font-weight:500; }
   .mobile-works-proof span { color:#6c6c6c; }
-  .intro-stage .hero { display:block; min-height:0; padding:95px 0 0; }
-  .intro-stage .hero-copy { width:100%; max-width:none; }
+  .intro-stage .hero { position:relative; inset:auto; display:block; width:calc(100vw - 32px); min-height:0; margin:0 auto; padding:95px 0 0; }
+  .intro-stage .hero-copy { position:relative; top:auto; left:auto; width:100%; max-width:none; transform:none; }
   .hero-kicker { display:inline-flex; margin:0 0 16px; padding:8px 18px; border:1px solid #e5e5ea; border-radius:999px; font-size:13px; line-height:1; }
-  .intro-stage .hero h1 { font-size:clamp(28px, 7.7vw, 34px); line-height:1.1; letter-spacing:-.055em; }
+  .intro-stage .hero h1 { width:auto; max-width:none; font-size:clamp(28px, 7.7vw, 34px); line-height:1.1; letter-spacing:-.055em; }
   .intro-stage .hero h1 b { display:inline; font-weight:400; }
   .mobile-only { display:block; }
-  .hero-cta { --action-height:40px; --action-label-width:164px; --action-icon-width:50px; width:auto; margin-top:16px; padding:0; }
+  .hero-cta { position:relative; top:auto; left:auto; transform:none; --action-height:40px; --action-label-width:164px; --action-icon-width:50px; width:auto; margin-top:16px; padding:0; }
   .intro-stage .hero .hero-cta .hero-cta-label { display:grid; flex:none; width:var(--action-label-width); height:var(--action-height); min-height:0; padding:0; place-items:center; font-size:12px; }
   .intro-stage .hero .hero-cta .hero-cta-icon { width:var(--action-icon-width) !important; height:var(--action-height) !important; }
   .intro-stage .hero .hero-cta .hero-cta-icon .action-pair__icon-image { width:12px; height:12px; }
@@ -667,6 +674,23 @@ em { color:var(--lime); font-style:normal; }
 .audience-card--freelancers .audience-card-copy { top:78px; }
 .audience-card--newcomers .audience-card-copy { top:160px; }
 
+/* Figma node 212:9761 — contrast between template and authored work. */
+.difference-section { position:relative; z-index:2; background:#000; color:#fff; }
+.difference-content { padding-top:63px; padding-bottom:79px; }
+.difference-title { display:grid; justify-items:center; margin:0; font-size:80px; font-weight:400; line-height:.95; letter-spacing:-.075em; }
+.difference-title span { transform:translateX(-42px); }
+.difference-title i { color:#6c6c6c; font-style:normal; transform:translateX(85px); }
+.difference-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); width:min(1142px,100%); margin:0 auto; }
+.difference-card { display:grid; gap:41px; padding:55px 52px; }
+.difference-card figure { aspect-ratio:467 / 276; margin:0; overflow:hidden; background:#141414; }
+.difference-card figure img { display:block; width:100%; height:100%; object-fit:cover; }
+.difference-card:first-child figure img { width:101.14%; height:110.43%; margin-top:-8.53%; object-position:left top; }
+.difference-card:last-child figure img { object-position:center 38%; }
+.difference-copy { display:grid; gap:9px; }
+.difference-copy h3 { margin:0; font-size:24px; font-weight:600; line-height:22.42px; letter-spacing:-.055em; }
+.difference-card:last-child .difference-copy h3 { font-size:21px; }
+.difference-copy p { margin:0; font-size:14px; line-height:19px; letter-spacing:-.04em; }
+
 /* Figma node 112:8566 — programme list. */
 .programme-section { position:relative; z-index:2; background:#000; color:#fff; }
 .block-chrome--dark { padding-bottom:0; }
@@ -690,11 +714,28 @@ em { color:var(--lime); font-style:normal; }
 .programme-plus { display:grid; width:39px; height:39px; place-items:center; border:1px solid rgba(255,255,255,.58); border-radius:50%; font-size:24px; font-weight:300; line-height:1; transition:transform .28s cubic-bezier(.22,1,.36,1), background .2s ease; }
 .programme-trigger:hover .programme-plus { background:#fff; color:#080808; }
 .programme-module.is-open .programme-plus { transform:rotate(45deg); }
-.programme-panel { display:grid; grid-template-rows:0fr; padding:0 max(40px, calc((100vw - 1440px) / 2 + 40px)); transition:grid-template-rows .32s cubic-bezier(.22,1,.36,1); }
-.programme-panel > div { display:grid; grid-template-columns:repeat(2,minmax(0,180px)); gap:10px 30px; min-height:0; overflow:hidden; margin-left:67px; }
+.programme-panel { display:grid; grid-template-rows:0fr; padding:0 max(40px, calc((100vw - 1440px) / 2 + 40px)); transition:grid-template-rows .52s cubic-bezier(.22,1,.36,1); }
+.programme-panel > div { display:grid; grid-template-columns:repeat(2,minmax(0,180px)); gap:10px 30px; min-height:0; overflow:hidden; margin-left:67px; opacity:0; transform:translateY(-7px); transition:opacity .24s ease, transform .4s cubic-bezier(.22,1,.36,1); }
 .programme-panel p { margin:0; color:#b7b7b7; font-size:15px; line-height:1.25; letter-spacing:-.04em; }
 .programme-module.is-open .programme-panel { grid-template-rows:1fr; }
 .programme-module.is-open .programme-panel > div { padding:0 0 28px; }
+.programme-module.is-open .programme-panel > div { opacity:1; transform:translateY(0); transition-delay:.08s; }
+
+/* Figma node 215:9790 — the final questions block. */
+.questions-section { position:relative; z-index:2; background:#fff; color:#080808; }
+.questions-head { display:grid; grid-template-columns:minmax(0,1fr) minmax(295px,.31fr); gap:40px; align-items:center; min-height:359px; padding-top:71px; padding-bottom:47px; }
+.questions-head h2 { margin:0; font-size:69px; font-weight:500; line-height:.85; letter-spacing:-.075em; }
+.questions-head h2 span { color:#999; font-weight:400; }
+.questions-author { justify-self:end; width:293px; padding-top:0; }
+.questions-portrait { position:relative; display:block; width:91px; height:91px; flex:none; overflow:hidden; border-radius:50%; }
+.questions-portrait img { position:absolute; top:-65px; left:-51px; display:block; width:258px; height:344px; max-width:none; border-radius:0; object-fit:cover; }
+.questions-author p { max-width:190px; }
+.questions-author b { font-size:18px; }
+.questions-list { border-top:1px solid rgba(8,8,8,.35); }
+.questions-item { min-height:109px; padding:0 max(58px, calc((100vw - 1283px) / 2)); display:grid; grid-template-columns:39px minmax(0,1fr) 37px; align-items:center; gap:27px; border-bottom:1px solid rgba(8,8,8,.3); }
+.questions-number { display:grid; width:39px; height:25px; place-items:center; border:1px solid #080808; border-radius:999px; font-size:12px; font-weight:500; line-height:.85; }
+.questions-item h3 { margin:0; font-size:23px; font-weight:500; line-height:1.1; letter-spacing:-.055em; }
+.questions-plus { display:grid; width:37px; height:37px; place-items:center; border:1px solid rgba(8,8,8,.55); border-radius:50%; font-size:23px; font-weight:400; line-height:1; }
 
 @media (max-width:900px) {
   .block-chrome { display:none; }
@@ -716,6 +757,17 @@ em { color:var(--lime); font-style:normal; }
   .audience-card--designers .audience-card-copy, .audience-card--business .audience-card-copy { bottom:24px; }
   .audience-card--freelancers .audience-card-copy { top:37px; }
   .audience-card--newcomers .audience-card-copy { top:84px; }
+  .difference-content { padding-top:79px; padding-bottom:74px; }
+  .difference-title { font-size:clamp(46px,13vw,64px); line-height:.94; }
+  .difference-title span { transform:translateX(-15px); }
+  .difference-title i { transform:translateX(28px); }
+  .difference-grid { grid-template-columns:1fr; gap:62px; }
+  .difference-card { gap:21px; padding:0; }
+  .difference-card figure { aspect-ratio:467 / 276; }
+  .difference-copy { gap:7px; }
+  .difference-copy h3, .difference-card:last-child .difference-copy h3 { font-size:20px; line-height:1.02; }
+  .difference-copy p { font-size:13px; line-height:1.33; }
+  .difference-copy p br { display:none; }
   .programme-head { display:block; padding-top:74px; padding-bottom:44px; }
   .programme-head h2 { font-size:clamp(48px,13vw,58px); }
   .programme-stats { grid-template-columns:repeat(2,1fr); gap:25px 18px; margin-top:46px; }
@@ -729,6 +781,16 @@ em { color:var(--lime); font-style:normal; }
   .programme-panel > div { grid-template-columns:1fr 1fr; gap:8px; margin-left:47px; }
   .programme-panel p { font-size:13px; }
   .programme-module.is-open .programme-panel > div { padding-bottom:22px; }
+  .questions-head { display:block; min-height:0; padding-top:80px; padding-bottom:53px; }
+  .questions-head h2 { font-size:clamp(47px,13vw,58px); line-height:.86; }
+  .questions-author { width:auto; margin-top:31px; }
+  .questions-portrait { width:70px; height:70px; }
+  .questions-portrait img { top:-50px; left:-40px; width:199px; height:266px; }
+  .questions-author p { max-width:250px; }
+  .questions-item { min-height:82px; padding:0 18px; grid-template-columns:33px minmax(0,1fr) 32px; gap:13px; }
+  .questions-number { width:33px; height:22px; font-size:9px; }
+  .questions-item h3 { font-size:clamp(16px,4.6vw,19px); line-height:1.07; }
+  .questions-plus { width:32px; height:32px; font-size:20px; }
 }
 
 @media (prefers-reduced-motion:reduce) {

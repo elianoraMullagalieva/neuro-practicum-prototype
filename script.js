@@ -64,6 +64,10 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
   const motionResult = motionSequence.querySelector('.motion-result');
   let motionTimeline;
   let motionTicking = false;
+  let requestedMotionProgress = 0;
+  let displayedMotionProgress = 0;
+  let mobileProgressFrame = 0;
+  let previousProgressFrameTime = 0;
 
   const tunnelCamera = { x: 0, y: 0, width: 1400, height: 814 };
   const renderTunnelCamera = () => {
@@ -194,13 +198,10 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
       .add({ targets: motionFlash, opacity: [0, .22, .78, 1, .7, .25, 0], scale: [.08, .52, .95, 1.4, 1.82, 2.1, 2.24], duration: 1280, easing: 'easeOutCubic' }, 6100);
   };
 
-  const scrubMotionSequence = () => {
-    motionTicking = false;
-    const scroll = window.scrollY;
-    const start = 0;
-    const distance = motionSequence.offsetHeight - window.innerHeight;
-    const progress = Math.max(0, Math.min(1, (scroll - start) / distance));
-    const isActive = scroll > start && scroll < start + distance;
+  const renderMotionProgress = (progress, scroll, start, distance) => {
+    const isMobile = window.innerWidth <= 900;
+    const isComplete = progress >= .999;
+    const isActive = scroll > start && (scroll < start + distance || (isMobile && !isComplete));
     motionSequence.classList.toggle('is-active', isActive);
     motionSequence.classList.toggle('is-words-visible', progress >= .39 && progress < .856);
     motionSequence.classList.toggle('is-hand-off', progress >= .856);
@@ -208,12 +209,46 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
     motionSequence.classList.toggle('is-result-visible', progress >= .838);
     motionSequence.classList.toggle('is-result-line-one', progress >= .842);
     motionSequence.classList.toggle('is-result-line-two', progress >= .848);
-    introStage?.classList.toggle('is-complete', scroll >= start + distance);
+    introStage?.classList.toggle('is-complete', scroll >= start + distance && (!isMobile || isComplete));
     motionStage.classList.toggle('is-pinned', isActive);
-    motionStage.classList.toggle('is-ended', scroll >= start + distance);
+    motionStage.classList.toggle('is-ended', scroll >= start + distance && (!isMobile || isComplete));
     // Use the designed duration rather than Anime's internal stagger bookkeeping:
     // this keeps every scroll position tied to the intended choreography.
     motionTimeline.seek(8000 * progress);
+  };
+
+  const advanceMobileProgress = (now) => {
+    const elapsed = previousProgressFrameTime ? Math.min(48, now - previousProgressFrameTime) : 16;
+    previousProgressFrameTime = now;
+    // A flick cannot compress the final fold and flash into one instant:
+    // the visible timeline advances at a deliberate, tactile pace.
+    const velocity = displayedMotionProgress < .72 ? .45 : .1;
+    const step = elapsed / 1000 * velocity;
+    const delta = requestedMotionProgress - displayedMotionProgress;
+    displayedMotionProgress += Math.sign(delta) * Math.min(Math.abs(delta), step);
+    const distance = motionSequence.offsetHeight - window.innerHeight;
+    renderMotionProgress(displayedMotionProgress, window.scrollY, 0, distance);
+    if (Math.abs(requestedMotionProgress - displayedMotionProgress) > .0001) {
+      mobileProgressFrame = window.requestAnimationFrame(advanceMobileProgress);
+    } else {
+      mobileProgressFrame = 0;
+      previousProgressFrameTime = 0;
+    }
+  };
+
+  const scrubMotionSequence = () => {
+    motionTicking = false;
+    const scroll = window.scrollY;
+    const start = 0;
+    const distance = motionSequence.offsetHeight - window.innerHeight;
+    const progress = Math.max(0, Math.min(1, (scroll - start) / distance));
+    if (window.innerWidth <= 900) {
+      requestedMotionProgress = progress;
+      if (!mobileProgressFrame) mobileProgressFrame = window.requestAnimationFrame(advanceMobileProgress);
+      return;
+    }
+    displayedMotionProgress = progress;
+    renderMotionProgress(progress, scroll, start, distance);
   };
 
   const requestMotionScrub = () => {
@@ -234,6 +269,7 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
   window.addEventListener('scroll', requestMotionScrub, { passive: true });
   window.addEventListener('resize', () => {
     buildMotionTimeline();
+    displayedMotionProgress = requestedMotionProgress = Math.max(0, Math.min(1, (window.scrollY) / (motionSequence.offsetHeight - window.innerHeight)));
     requestMotionScrub();
   });
 }
@@ -252,7 +288,42 @@ if (source === 'ads') note.textContent = 'Ты пришла из рекламы:
 document.querySelectorAll('.programme-trigger').forEach((trigger) => {
   trigger.addEventListener('click', () => {
     const module = trigger.closest('.programme-module');
-    const isOpen = module.classList.toggle('is-open');
-    trigger.setAttribute('aria-expanded', String(isOpen));
+    const isOpen = module.classList.contains('is-open');
+    document.querySelectorAll('.programme-module').forEach((item) => {
+      const itemTrigger = item.querySelector('.programme-trigger');
+      item.classList.remove('is-open');
+      itemTrigger?.setAttribute('aria-expanded', 'false');
+    });
+    if (!isOpen) {
+      module.classList.add('is-open');
+      trigger.setAttribute('aria-expanded', 'true');
+    }
   });
 });
+
+const statCounters = [...document.querySelectorAll('.programme-stats dt[data-count]')];
+if (statCounters.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const formatStat = (counter, value) => `${value}${counter.dataset.suffix || ''}`;
+  const countStats = () => {
+    statCounters.forEach((counter) => {
+      const target = Number(counter.dataset.count);
+      const startedAt = performance.now();
+      const duration = target > 1000 ? 1040 : 780;
+      const tick = (now) => {
+        const progress = Math.min(1, (now - startedAt) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        counter.textContent = formatStat(counter, Math.max(1, Math.round(1 + (target - 1) * eased)));
+        if (progress < 1) window.requestAnimationFrame(tick);
+      };
+      counter.textContent = formatStat(counter, 1);
+      window.requestAnimationFrame(tick);
+    });
+  };
+  const statsObserver = new IntersectionObserver((entries, observer) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
+      countStats();
+      observer.disconnect();
+    }
+  }, { threshold: .55 });
+  statsObserver.observe(statCounters[0].closest('.programme-stats'));
+}
