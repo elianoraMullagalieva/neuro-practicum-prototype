@@ -62,6 +62,7 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
   const motionPosters = [...motionSequence.querySelectorAll('.motion-poster')];
   const motionFlash = motionSequence.querySelector('.motion-flash span');
   const motionResult = motionSequence.querySelector('.motion-result');
+  const motionAudienceSection = document.querySelector('.audience-section');
   let motionTimeline;
   let motionTicking = false;
   let requestedMotionProgress = 0;
@@ -212,10 +213,12 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
     introStage?.classList.toggle('is-complete', scroll >= start + distance && (!isMobile || isComplete));
     motionStage.classList.toggle('is-pinned', isActive);
     motionStage.classList.toggle('is-ended', scroll >= start + distance && (!isMobile || isComplete));
-    // The last micro-scroll is a white hand-off, not an empty black frame:
-    // the next white section can begin inside the light.
-    const audienceLight = Math.max(0, Math.min(1, (progress - .978) / .022));
+    // Keep the completed «Твои навыки» statement on screen; only the next
+    // micro-scroll turns its glow into the audience block's white background.
+    const audienceLight = Math.max(0, Math.min(1, (progress - .94) / .06));
     motionStage.style.setProperty('--audience-light', audienceLight.toFixed(3));
+    motionAudienceSection?.style.setProperty('--audience-reveal', audienceLight.toFixed(3));
+    motionResult.style.filter = `blur(${(audienceLight * 7).toFixed(2)}px) brightness(${(1 + audienceLight * .38).toFixed(2)})`;
     // Use the designed duration rather than Anime's internal stagger bookkeeping:
     // this keeps every scroll position tied to the intended choreography.
     motionTimeline.seek(8000 * progress);
@@ -278,23 +281,94 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
   });
 }
 
+const persistentChrome = document.querySelector('.persistent-chrome');
+const persistentAudience = document.querySelector('.audience-section');
+if (persistentChrome && persistentAudience) {
+  const persistentAudienceStage = persistentAudience.querySelector('.audience-stage');
+  const darkChromeSections = [
+    document.querySelector('.motion-sequence'),
+    document.querySelector('.difference-section'),
+    document.querySelector('.programme-section'),
+    document.querySelector('.work-tunnel-section'),
+  ].filter(Boolean);
+  let chromeTicking = false;
+  const updatePersistentChrome = () => {
+    chromeTicking = false;
+    const viewportMarker = Math.min(105, window.innerHeight * .14);
+    const audienceRect = persistentAudience.getBoundingClientRect();
+    const audienceActive = audienceRect.top <= viewportMarker && audienceRect.bottom > viewportMarker;
+    const audienceProgress = Math.max(0, Math.min(1, -audienceRect.top / Math.max(1, audienceRect.height - window.innerHeight)));
+    const audienceExit = Math.max(0, Math.min(1, (audienceProgress - .82) / .18));
+    persistentAudience.style.setProperty('--audience-exit', audienceExit.toFixed(3));
+    const audiencePinned = audienceRect.top <= 0 && audienceRect.bottom > window.innerHeight;
+    persistentAudienceStage?.classList.toggle('is-pinned', audiencePinned);
+    persistentAudienceStage?.classList.toggle('is-ended', audienceRect.bottom <= window.innerHeight);
+    const isDark = audienceExit > .45 || (!audienceActive && darkChromeSections.some((section) => {
+      const rect = section.getBoundingClientRect();
+      return rect.top <= viewportMarker && rect.bottom > viewportMarker;
+    }));
+    persistentChrome.classList.add('is-visible');
+    persistentChrome.classList.toggle('is-dark', isDark);
+  };
+  const requestPersistentChromeUpdate = () => {
+    if (!chromeTicking) {
+      chromeTicking = true;
+      window.requestAnimationFrame(updatePersistentChrome);
+    }
+  };
+  updatePersistentChrome();
+  window.addEventListener('scroll', requestPersistentChromeUpdate, { passive:true });
+  window.addEventListener('resize', requestPersistentChromeUpdate);
+}
+
 const audienceSection = document.querySelector('.audience-section');
 if (audienceSection && window.anime && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const audienceTitle = audienceSection.querySelector('.audience-intro h2');
+  const audienceTitleChars = audienceTitle ? [...audienceTitle.querySelectorAll('.audience-title-effect')].flatMap((part) => {
+    const text = part.textContent;
+    part.setAttribute('aria-label', text.trim());
+    part.textContent = '';
+    return [...text].map((character) => {
+      const letter = document.createElement('span');
+      letter.className = 'audience-title-char';
+      letter.setAttribute('aria-hidden', 'true');
+      letter.textContent = character === ' ' ? '\u00a0' : character;
+      part.append(letter);
+      return letter;
+    });
+  }) : [];
   const audienceAuthor = audienceSection.querySelector('.audience-author');
   const audienceCards = [...audienceSection.querySelectorAll('.audience-card')];
+  const audienceCardImages = audienceCards.map((card) => card.querySelector('img')).filter(Boolean);
+  const audienceCardOverlays = audienceCards.flatMap((card) => [
+    card.querySelector('.audience-card-tags'),
+    card.querySelector('.audience-card-copy'),
+  ]).filter(Boolean);
   let audiencePlayed = false;
 
-  window.anime.set([audienceTitle, audienceAuthor].filter(Boolean), {
+  window.anime.set([audienceAuthor].filter(Boolean), {
     opacity: 0,
     translateY: 20,
     filter: 'blur(9px)',
   });
+  window.anime.set(audienceTitleChars, {
+    opacity: 0,
+    translateY: 10,
+    filter: 'blur(7px)',
+  });
   window.anime.set(audienceCards, {
     opacity: 0,
-    translateY: '10%',
-    scaleY: .05,
-    transformOrigin: '50% 100%',
+    translateY: '3.5%',
+    scale: 1.015,
+  });
+  window.anime.set(audienceCardImages, {
+    filter: 'blur(22px) saturate(.72)',
+    scale: 1.08,
+  });
+  window.anime.set(audienceCardOverlays, {
+    opacity: 0,
+    translateY: 10,
+    filter: 'blur(8px)',
   });
 
   const audienceObserver = new IntersectionObserver(([entry], observer) => {
@@ -303,16 +377,33 @@ if (audienceSection && window.anime && !window.matchMedia('(prefers-reduced-moti
     observer.disconnect();
     const timeline = window.anime.timeline({ easing:'cubicBezier(.22, 1, .36, 1)' });
     timeline
-      .add({ targets:audienceTitle, opacity:[0, 1], translateY:[20, 0], filter:['blur(9px)', 'blur(0px)'], duration:620 }, 0)
+      .add({ targets:audienceTitleChars, opacity:[0, 1], translateY:[10, 0], filter:['blur(7px)', 'blur(0px)'], delay:window.anime.stagger(18), duration:420 }, 0)
       .add({ targets:audienceAuthor, opacity:[0, 1], translateY:[16, 0], filter:['blur(8px)', 'blur(0px)'], duration:520 }, 110)
       .add({
         targets:audienceCards,
         opacity:[0, 1],
-        translateY:['10%', '0%'],
-        scaleY:[.05, 1],
-        delay:window.anime.stagger(92),
-        duration:900,
+        translateY:['3.5%', '0%'],
+        scale:[1.015, 1],
+        delay:window.anime.stagger(580),
+        duration:640,
+      }, 230)
+      .add({
+        targets:audienceCardImages,
+        filter:['blur(22px) saturate(.72)', 'blur(0px) saturate(1)'],
+        scale:[1.08, 1],
+        delay:window.anime.stagger(580),
+        duration:860,
+        easing:'cubicBezier(.16, 1, .3, 1)',
+      }, 230)
+      .add({
+        targets:audienceCardOverlays,
+        opacity:[0, 1],
+        translateY:[10, 0],
+        filter:['blur(8px)', 'blur(0px)'],
+        delay:(element, index) => Math.floor(index / 2) * 580 + 520,
+        duration:460,
       }, 230);
+
   }, { threshold:.18 });
   audienceObserver.observe(audienceSection);
 }
@@ -569,6 +660,61 @@ if (workTunnel && workTunnelImages.length && window.THREE) {
   });
 }
 
+const participantGallery = document.querySelector('[data-participant-gallery]');
+if (participantGallery && workTunnelImages.length) {
+  const track = participantGallery.querySelector('[data-gallery-track]');
+  const previousButton = participantGallery.querySelector('[data-gallery-prev]');
+  const nextButton = participantGallery.querySelector('[data-gallery-next]');
+  const count = document.querySelector('[data-gallery-count]');
+  const cards = workTunnelImages.map((src, index) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'participant-gallery-card';
+    card.setAttribute('aria-label', `Показать работу ${index + 1}`);
+    card.innerHTML = `<img src="${src}" alt="Работа участника ${index + 1}" draggable="false" />`;
+    card.addEventListener('click', () => setActive(index));
+    track.append(card);
+    return card;
+  });
+
+  let activeIndex = 0;
+  const relativePosition = (index) => {
+    let distance = index - activeIndex;
+    const half = cards.length / 2;
+    if (distance > half) distance -= cards.length;
+    if (distance < -half) distance += cards.length;
+    return distance;
+  };
+  const renderGallery = () => {
+    cards.forEach((card, index) => {
+      const relative = relativePosition(index);
+      const distance = Math.abs(relative);
+      const visible = distance <= 2;
+      const offset = relative * 46;
+      const depth = distance ? -distance * 185 : 85;
+      const scale = Math.max(.63, 1 - distance * .16);
+      card.style.transform = `translate3d(${offset}%, 0, ${depth}px) rotateY(${(-relative * 36).toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+      card.style.opacity = visible ? String(Math.max(.16, 1 - distance * .36)) : '0';
+      card.style.filter = distance ? `brightness(${(1 - distance * .16).toFixed(2)})` : 'none';
+      card.style.zIndex = String(10 - distance);
+      card.style.pointerEvents = visible ? 'auto' : 'none';
+      card.setAttribute('aria-hidden', String(!visible));
+    });
+    if (count) count.textContent = `${String(activeIndex + 1).padStart(2, '0')} / ${String(cards.length).padStart(2, '0')}`;
+  };
+  const setActive = (index) => {
+    activeIndex = (index + cards.length) % cards.length;
+    renderGallery();
+  };
+  previousButton?.addEventListener('click', () => setActive(activeIndex - 1));
+  nextButton?.addEventListener('click', () => setActive(activeIndex + 1));
+  participantGallery.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') { event.preventDefault(); setActive(activeIndex - 1); }
+    if (event.key === 'ArrowRight') { event.preventDefault(); setActive(activeIndex + 1); }
+  });
+  renderGallery();
+}
+
 const programmeSection = document.querySelector('.programme-section');
 const tunnelSection = document.querySelector('.work-tunnel-section');
 if (programmeSection && tunnelSection && workTunnel && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -581,7 +727,9 @@ if (programmeSection && tunnelSection && workTunnel && !window.matchMedia('(pref
     const inHandoff = progress > 0;
     tunnelSection.classList.toggle('is-visible', inHandoff);
 
-    workTunnel.style.opacity = progress.toFixed(3);
+    const tunnelPresence = Math.min(1, progress / .58);
+    const programmePresence = Math.max(0, 1 - progress / .72);
+    workTunnel.style.opacity = tunnelPresence.toFixed(3);
 
     if (!inHandoff) {
       workTunnel.style.transform = 'scale(1.016)';
@@ -594,10 +742,10 @@ if (programmeSection && tunnelSection && workTunnel && !window.matchMedia('(pref
     // The last programme viewport stays in place while it loses definition;
     // the tunnel has time to take the whole screen instead of simply scrolling in.
     const hold = Math.min(window.scrollY - start, distance);
-    workTunnel.style.transform = `translateY(${hold.toFixed(1)}px) scale(${(1.016 - progress * .016).toFixed(4)})`;
+    workTunnel.style.transform = `translateY(${hold.toFixed(1)}px) scale(${(1.016 - tunnelPresence * .016).toFixed(4)})`;
     programmeSection.style.transform = `translateY(${hold.toFixed(1)}px) scale(${(1 - progress * .012).toFixed(4)})`;
-    programmeSection.style.filter = `blur(${(progress * 12).toFixed(2)}px) brightness(${(1 - progress * .42).toFixed(3)})`;
-    programmeSection.style.opacity = (1 - progress * .52).toFixed(3);
+    programmeSection.style.filter = `blur(${(progress * 14).toFixed(2)}px) brightness(${(1 - progress * .55).toFixed(3)})`;
+    programmeSection.style.opacity = programmePresence.toFixed(3);
   };
   const requestProgrammeTunnelHandoff = () => {
     if (transitionQueued) return;

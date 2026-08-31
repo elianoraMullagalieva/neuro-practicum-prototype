@@ -13,6 +13,11 @@
   </head>
   <body>
     <div class="cursor-dot" aria-hidden="true"></div>
+    <header class="persistent-chrome" aria-label="Навигация по практикуму">
+      <a class="persistent-brand" href="#top" aria-label="Дерзай в дизайн, наверх"><img src="assets/hero/dd-logo.svg" alt="" /><span>школа AI</span></a>
+      <p class="persistent-duration"><span>Длительность:</span><b>20+ уроков</b></p>
+      <a class="persistent-cta" href="#programme">Записаться</a>
+    </header>
     <main id="top">
       <div class="intro-shell">
         <div class="intro-stage">
@@ -154,15 +159,10 @@
       </section>
 
       <section class="audience-section" id="audience" aria-labelledby="audience-title">
-        <div class="block-chrome block-chrome--light container" aria-hidden="true">
-          <div class="block-brand"><img src="assets/hero/dd-logo.svg" alt="" /><span>школа AI</span></div>
-          <div class="block-duration"><span>Длительность:</span><b>20+ уроков</b></div>
-          <a href="#programme">Записаться</a>
-        </div>
-
+        <div class="audience-stage">
         <div class="audience-content container">
           <div class="audience-intro">
-            <h2 id="audience-title">Для кого <span>я разработала<br />этот практикум</span></h2>
+            <h2 id="audience-title"><span class="audience-title-effect">Для кого </span><span class="audience-title-effect audience-title-replace">я разработала этот практикум</span></h2>
             <div class="audience-author">
               <img src="assets/audience/elianora.png" alt="Элианора Муллагалиева" />
               <p><b>Элианора Муллагалиева</b><span>Дизайнер-маркетолог с 10 летним стажем. Сотрудничала с МТС, English Tochka, и крупнейшими застройщиками в РФ и на Бали</span></p>
@@ -171,36 +171,35 @@
 
           <div class="audience-grid">
             <article class="audience-card audience-card--designers">
-              <img src="assets/audience/audience-designer.jpg" alt="Портрет дизайнера за стеклом" />
-              <div class="audience-card-tags"><span>01</span><span>дизайнеры</span></div>
-              <div class="audience-card-copy"><h3>Дизайнеры,<br />которым страшно, что</h3><p>ИИ их заменит. А клиенты уйдут к тем, у кого более интересное портфолио и раскрученные профили</p></div>
+              <div class="audience-card-inner">
+                <div class="audience-card-face audience-card-front"><img src="assets/audience/audience-designer.jpg" alt="Портрет дизайнера за стеклом" /><div class="audience-card-tags"><span>01</span><span>дизайнеры</span></div><div class="audience-card-copy"><h3>Дизайнеры,<br />которым страшно, что</h3><p>ИИ их заменит. А клиенты уйдут к тем, у кого более интересное портфолио и раскрученные профили</p></div></div>
+                <div class="audience-card-face audience-card-back"><img src="assets/audience/audience-designer.jpg" alt="" aria-hidden="true" /><div class="audience-card-tags"><span>01</span><span>дизайнеры</span></div><div class="audience-card-copy"><h3>Соберёте 5–7 проектов<br />нового поколения</h3><p>Не картинки, а сайты с идеей, визуалом, кодом и motion — проекты, которые приводят клиентов и собирают охваты.</p></div></div>
+              </div>
             </article>
             <article class="audience-card audience-card--freelancers">
-              <img src="assets/audience/audience-freelancer.jpg" alt="Фрилансер на красном фоне за стеклом" />
-              <div class="audience-card-tags"><span>02</span><span>фрилансеры</span></div>
-              <div class="audience-card-copy"><h3>Фрилансеры, которые<br />строят свое агентство</h3><p>Но не знают, как делать сайты, дизайн, монтаж, анимацию на достойном уровне, чтобы клиенты возвращались</p></div>
+              <div class="audience-card-inner">
+                <div class="audience-card-face audience-card-front"><img src="assets/audience/audience-freelancer.jpg" alt="Фрилансер на красном фоне за стеклом" /><div class="audience-card-tags"><span>02</span><span>фрилансеры</span></div><div class="audience-card-copy"><h3>Фрилансеры, которые<br />строят свое агентство</h3><p>Но не знают, как делать сайты, дизайн, монтаж, анимацию на достойном уровне, чтобы клиенты возвращались</p></div></div>
+                <div class="audience-card-face audience-card-back"><img src="assets/audience/audience-freelancer.jpg" alt="" aria-hidden="true" /><div class="audience-card-tags"><span>02</span><span>фрилансеры</span></div><div class="audience-card-copy"><h3>Сможете брать проекты,<br />за которыми идут в<br />крутые агентства</h3><p>Научитесь собирать сайт под ключ: от стратегии до дизайна и motion. Сможете повышать чек и расширять команду.</p></div></div>
+              </div>
             </article>
             <article class="audience-card audience-card--newcomers">
-              <img src="assets/audience/audience-newcomer.jpg" alt="Новичок с ноутбуком за стеклом" />
-              <div class="audience-card-tags"><span>03</span><span>новички</span></div>
-              <div class="audience-card-copy"><h3>Новички, которые хотят<br />работать на удалёнке</h3><p>Но уже обжигались, покупая дорогие курсы, которые не дали практического результата</p></div>
+              <div class="audience-card-inner">
+                <div class="audience-card-face audience-card-front"><img src="assets/audience/audience-newcomer.jpg" alt="Новичок с ноутбуком за стеклом" /><div class="audience-card-tags"><span>03</span><span>новички</span></div><div class="audience-card-copy"><h3>Новички, которые хотят<br />работать на удалёнке</h3><p>Но уже обжигались, покупая дорогие курсы, которые не дали практического результата</p></div></div>
+                <div class="audience-card-face audience-card-back"><img src="assets/audience/audience-newcomer.jpg" alt="" aria-hidden="true" /><div class="audience-card-tags"><span>03</span><span>новички</span></div><div class="audience-card-copy"><h3>Когда спросят «А кейсы<br />есть?» — будет,<br />чем убедить</h3><p>Не один учебный экран, а 5–7 полноценных проектов с логикой, визуалом и живой реализацией.</p></div></div>
+              </div>
             </article>
             <article class="audience-card audience-card--business">
-              <img src="assets/audience/audience-business.jpg" alt="Предпринимательница за стеклом" />
-              <div class="audience-card-tags"><span>04</span><span>бизнес</span></div>
-              <div class="audience-card-copy"><h3>Предприниматели,<br />которые хотят упаковаться</h3><p>Пробовали делать сайты с Claude Code, но получили однотипный и поверхностный результат.</p></div>
+              <div class="audience-card-inner">
+                <div class="audience-card-face audience-card-front"><img src="assets/audience/audience-business.jpg" alt="Предпринимательница за стеклом" /><div class="audience-card-tags"><span>04</span><span>бизнес</span></div><div class="audience-card-copy"><h3>Предприниматели,<br />которые хотят упаковаться</h3><p>Пробовали делать сайты с Claude Code, но получили однотипный и поверхностный результат.</p></div></div>
+                <div class="audience-card-face audience-card-back"><img src="assets/audience/audience-business.jpg" alt="" aria-hidden="true" /><div class="audience-card-tags"><span>04</span><span>бизнес</span></div><div class="audience-card-copy"><h3>Станете креативным<br />директором своего<br />имени и бизнеса</h3><p>Вместо однотипного сайта — узнаваемая система, которую можно развивать вместе с командой.</p></div></div>
+              </div>
             </article>
           </div>
+        </div>
         </div>
       </section>
 
       <section class="difference-section" id="difference" aria-labelledby="difference-title">
-        <div class="block-chrome block-chrome--dark container" aria-hidden="true">
-          <div class="block-brand"><img src="assets/hero/dd-logo.svg" alt="" /><span>школа AI</span></div>
-          <div class="block-duration"><span>Длительность:</span><b>20+ уроков</b></div>
-          <a href="#programme">Записаться</a>
-        </div>
-
         <div class="difference-content container">
           <h2 class="difference-title" id="difference-title"><span>Чувствуешь</span><i>разницу?</i></h2>
           <div class="difference-grid">
@@ -223,12 +222,6 @@
       </section>
 
       <section class="programme-section" id="programme" aria-labelledby="programme-title">
-        <div class="block-chrome block-chrome--dark container" aria-hidden="true">
-          <div class="block-brand"><img src="assets/hero/dd-logo.svg" alt="" /><span>школа AI</span></div>
-          <div class="block-duration"><span>Длительность:</span><b>20+ уроков</b></div>
-          <a href="#top">Записаться</a>
-        </div>
-
         <div class="programme-head container">
           <h2 id="programme-title">Программа<br /><span>курса</span></h2>
           <dl class="programme-stats"><div><dt data-count="15" data-suffix="+">15+</dt><dd>часов теории</dd></div><div><dt data-count="30" data-suffix="+">30+</dt><dd>часов практики</dd></div><div><dt data-count="5" data-suffix="–7">5–7</dt><dd>проектов в портфолио</dd></div><div><dt data-count="2026">2026</dt><dd>обновлено в 2026 году</dd></div></dl>
@@ -278,13 +271,71 @@
         </div>
       </section>
 
-      <section class="questions-section" id="questions" aria-labelledby="questions-title">
-        <div class="block-chrome block-chrome--light container" aria-hidden="true">
-          <div class="block-brand"><img src="assets/hero/dd-logo.svg" alt="" /><span>школа AI</span></div>
-          <div class="block-duration"><span>Длительность:</span><b>20+ уроков</b></div>
-          <a href="#top">Записаться</a>
+      <section class="participant-gallery" id="participant-gallery" aria-labelledby="participant-gallery-title">
+        <div class="participant-gallery-head container">
+          <p>Нейро-практикум / портфолио</p>
+          <h2 id="participant-gallery-title">Работы<br /><span>участников</span></h2>
+          <span class="participant-gallery-count" data-gallery-count aria-live="polite">01 / 10</span>
         </div>
+        <div class="participant-gallery-stage" data-participant-gallery tabindex="0" role="region" aria-label="Слайдер работ участников">
+          <div class="participant-gallery-track" data-gallery-track></div>
+          <div class="participant-gallery-controls" aria-label="Управление слайдером">
+            <button type="button" data-gallery-prev aria-label="Предыдущая работа">←</button>
+            <button type="button" data-gallery-next aria-label="Следующая работа">→</button>
+          </div>
+        </div>
+      </section>
 
+      <section class="pricing-section" id="pricing" aria-labelledby="pricing-title">
+        <div class="pricing-head container">
+          <p class="pricing-kicker">Нейро-практикум / 2026</p>
+          <h2 id="pricing-title">Выбери<br /><span>свой темп</span></h2>
+          <p class="pricing-note">Три формата одной практики — с тем объёмом поддержки, который тебе сейчас нужен.</p>
+        </div>
+        <div class="pricing-grid container">
+          <article class="pricing-card" data-tariff="self">
+            <div class="pricing-card-top"><span>01</span><p>Самостоятельный</p></div>
+            <p class="pricing-price">4 200 ₽</p>
+            <p class="pricing-lead">Для тех, кто готов делать проекты в своём темпе.</p>
+            <ul>
+              <li>9 уроков — доступ сразу</li>
+              <li>Доступ на 1 месяц</li>
+              <li>3 проекта + методички</li>
+            </ul>
+            <button class="pricing-button" type="button" data-choice="Самостоятельный">Начать самостоятельно <span>↗</span></button>
+          </article>
+          <article class="pricing-card" data-tariff="colleagues">
+            <div class="pricing-card-top"><span>02</span><p>С коллегами</p></div>
+            <p class="pricing-price">4 900 ₽</p>
+            <p class="pricing-lead">Для тех, кто готов реализовать качественные проекты в сильном окружении.</p>
+            <ul>
+              <li>15 уроков — доступ сразу</li>
+              <li>Доступ на 1 месяц</li>
+              <li>5 проектов + методички</li>
+              <li>Промпты, шаблоны, компоненты</li>
+              <li>300 000 AI-кредитов</li>
+              <li>Закрытый чат с поддержкой</li>
+            </ul>
+            <button class="pricing-button" type="button" data-choice="С коллегами">Выбрать формат <span>↗</span></button>
+          </article>
+          <article class="pricing-card pricing-card--focus" data-tariff="support">
+            <div class="pricing-card-top"><span>03</span><p>С поддержкой Эли</p></div>
+            <p class="pricing-price">35 000 ₽</p>
+            <p class="pricing-lead">Для тех, кто хочет довести портфолио до сильного результата.</p>
+            <ul>
+              <li>Всё из самостоятельного</li>
+              <li>Чат на время практикума</li>
+              <li>Разборы работ</li>
+              <li>Обратная связь по проектам</li>
+              <li>Портфолио и позиционирование</li>
+              <li>Лекции по продажам</li>
+            </ul>
+            <button class="pricing-button" type="button" data-choice="С поддержкой Эли">Хочу с поддержкой <span>↗</span></button>
+          </article>
+        </div>
+      </section>
+
+      <section class="questions-section" id="questions" aria-labelledby="questions-title">
         <div class="questions-head container">
           <h2 id="questions-title">Отвечаю<br /><span>на ваши вопросы</span></h2>
           <div class="questions-author audience-author">
@@ -307,6 +358,8 @@
     </main>
 
     <script src="assets/vendor/anime.min.js"></script>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <script src="assets/vendor/gsap-text-plugin.min.js"></script>
     <script src="assets/vendor/three.min.js"></script>
     <script src="assets/tunnel/gallery-manifest.js"></script>
     <script src="script.js"></script>
