@@ -465,6 +465,17 @@ if (statCounters.length && !window.matchMedia('(prefers-reduced-motion: reduce)'
 const workTunnel = document.querySelector('[data-work-tunnel]');
 const workTunnelImages = Array.isArray(window.TUNNEL_GALLERY_IMAGES) ? window.TUNNEL_GALLERY_IMAGES : [];
 
+if (workTunnel && workTunnelImages.length) {
+  const fallback = workTunnel.querySelector('.work-tunnel-fallback');
+  workTunnelImages.slice(0, 6).forEach((src, index) => {
+    const image = new Image();
+    image.src = src;
+    image.alt = '';
+    image.loading = 'eager';
+    fallback?.append(image);
+  });
+}
+
 if (workTunnel && workTunnelImages.length && window.THREE) {
   const canvas = workTunnel.querySelector('.work-tunnel-canvas');
   const section = workTunnel.closest('.work-tunnel-section');
@@ -510,6 +521,7 @@ if (workTunnel && workTunnelImages.length && window.THREE) {
   Promise.all(workTunnelImages.map(loadTexture)).then((loadedTextures) => {
     const textures = loadedTextures.filter(Boolean);
     if (!textures.length) return;
+    workTunnel.classList.add('has-webgl');
     // The composition stays editable through the folder alone: portrait files
     // become the banner rails, while wider projects become the website rails.
     const siteWorks = textures.filter((item) => item.ratio >= 1.05);
@@ -692,7 +704,7 @@ if (participantGallery && workTunnelImages.length) {
       const visible = distance <= 2;
       const offset = relative * 46;
       const depth = distance ? -distance * 185 : 85;
-      const scale = Math.max(.63, 1 - distance * .16);
+      const scale = distance ? Math.max(.64, .88 - distance * .14) : 1.08;
       card.style.transform = `translate3d(${offset}%, 0, ${depth}px) rotateY(${(-relative * 36).toFixed(1)}deg) scale(${scale.toFixed(3)})`;
       card.style.opacity = visible ? String(Math.max(.16, 1 - distance * .36)) : '0';
       card.style.filter = distance ? `brightness(${(1 - distance * .16).toFixed(2)})` : 'none';
@@ -723,7 +735,7 @@ if (programmeSection && tunnelSection && workTunnel && !window.matchMedia('(pref
     transitionQueued = false;
     const start = tunnelSection.offsetTop;
     const distance = Math.max(440, window.innerHeight * .72);
-    const progress = Math.max(0, Math.min(1, (window.scrollY - start) / distance));
+    const progress = Math.max(0, Math.min(1, (window.scrollY - start + window.innerHeight * .4) / distance));
     const inHandoff = progress > 0;
     tunnelSection.classList.toggle('is-visible', inHandoff);
 
