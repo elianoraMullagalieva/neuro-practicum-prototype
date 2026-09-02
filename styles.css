@@ -1135,3 +1135,8 @@ em { color:var(--lime); font-style:normal; }
   .audience-author img { width:62px; height:62px; }
   .audience-author p span { font-size:12px; }
 }
+
+/* Кнопка тарифа — всегда у нижнего края карточки (карточки разной высоты). */
+.pricing-card { justify-content:flex-start; }
+.pricing-card .pricing-renew { margin-top:auto; }
+a.pricing-button { text-decoration:none; }
