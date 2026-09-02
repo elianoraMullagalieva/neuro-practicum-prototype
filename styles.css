@@ -1087,3 +1087,51 @@ em { color:var(--lime); font-style:normal; }
   .participant-gallery-stage { margin-top:0; }
   .participant-gallery-count { top:74px; right:16px; }
 }
+
+/* ===== АДАПТАЦИЯ ПОД ВЫСОТУ ЭКРАНА =====
+   Первый экран был свёрстан только по ширине (top в vw), поэтому на низких
+   ноутбуках (640–780px) кнопка наезжала на ленту работ, а шапка — на заголовок.
+   Ниже контент пропорционально ужимается по высоте вместо наслаивания. */
+
+/* Ноутбуки ~700–800px высоты */
+@media (min-width:901px) and (max-height:800px) {
+  .intro-stage .hero-copy { top:clamp(128px, 18vh, 158px); width:clamp(700px, 60vw, 980px); }
+  .intro-stage .hero h1 { width:clamp(700px, 60vw, 980px); font-size:clamp(40px, 5.4vh, 60px); }
+  .hero-kicker { min-height:clamp(28px, 3.6vh, 36px); margin-bottom:clamp(14px, 1.9vh, 20px); font-size:clamp(12px, 1.7vh, 14px); }
+  .hero-cta { top:clamp(216px, 30vh, 278px); }
+  .showcase-marquee { padding-bottom:clamp(20px, 3vh, 36px); }
+}
+
+/* Низкие ноутбуки ~600–700px (случай ученицы: 1280x640) */
+@media (min-width:901px) and (max-height:700px) {
+  .intro-stage .site-header { min-height:76px; padding:14px 0 12px; }
+  .intro-stage .hero-copy { top:clamp(132px, 20vh, 148px); width:clamp(640px, 56vw, 900px); }
+  .intro-stage .hero h1 { width:clamp(640px, 56vw, 900px); font-size:clamp(34px, 5.2vh, 48px); line-height:.98; }
+  .hero-kicker { min-height:26px; margin-bottom:12px; font-size:12px; }
+  .hero-cta { top:clamp(210px, 31vh, 242px); }
+  .hero-hint, .hero-gallery-note { font-size:12px; }
+  .showcase-marquee { padding-bottom:16px; }
+  .work-card { max-height:38vh; }
+}
+
+/* Очень низкие экраны (<620px) — минимальная компоновка */
+@media (min-width:901px) and (max-height:620px) {
+  .intro-stage .hero-copy { top:104px; }
+  .intro-stage .hero h1 { font-size:clamp(30px, 5vh, 40px); }
+  .hero-cta { top:180px; }
+  .hero-hint { display:none; }
+}
+
+/* Блок «Для кого»: заголовок не должен наезжать на шапку при низком экране */
+@media (min-width:901px) and (max-height:800px) {
+  .audience-content.container { justify-content:flex-start; padding-top:110px; }
+  .audience-intro h2 { font-size:clamp(32px, 4.4vh, 44px); }
+  .audience-author img { width:72px; height:72px; }
+  .audience-grid { margin-top:clamp(24px, 3.4vh, 40px); }
+}
+@media (min-width:901px) and (max-height:700px) {
+  .audience-content.container { justify-content:flex-start; padding-top:100px; }
+  .audience-intro h2 { font-size:clamp(28px, 4.2vh, 38px); }
+  .audience-author img { width:62px; height:62px; }
+  .audience-author p span { font-size:12px; }
+}
