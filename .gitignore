@@ -1,0 +1,10 @@
+node_modules/
+.playwright-cli/
+output/
+*.bak
+*.bak2
+*.bak3
+*.bak4
+_*.mjs
+.DS_Store
+package-lock.json
