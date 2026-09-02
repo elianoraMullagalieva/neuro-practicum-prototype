@@ -43,15 +43,19 @@ if (introStage && window.anime && !window.matchMedia('(prefers-reduced-motion: r
   const level1 = [...q('.site-header .brand'), ...q('.site-header .header-duration'),
                   ...q('.site-header nav'), ...q('.site-header .header-side'),
                   ...q('.mobile-hero-proof')];
-  const level2 = [...q('.hero-kicker'), ...q('#hero-title'), ...q('.hero-cta')];
+  const level2 = [...q('.hero-kicker'), ...q('#hero-title')];
+  // Кнопка центрируется через transform:translateX(-50%) — анимируем её
+  // отдельно, БЕЗ translateY, иначе anime.js затрёт центрирование.
+  const level2cta = q('.hero-cta');
   const level3 = [...q('.hero-proof'), ...q('.hero-hint'), ...q('.hero-gallery-note'),
                   ...q('.mobile-project-meta'), ...q('.showcase-marquee')];
-  const all = [...level1, ...level2, ...level3];
+  const all = [...level1, ...level2, ...level2cta, ...level3];
 
   if (all.length) {
     // Стартовое состояние: мягкий блюр + лёгкий подъём снизу.
     window.anime.set(level1, { opacity: 0, translateY: -12, filter: 'blur(8px)' });
     window.anime.set(level2, { opacity: 0, translateY: 22, filter: 'blur(14px)' });
+    window.anime.set(level2cta, { opacity: 0, filter: 'blur(14px)' });
     window.anime.set(level3, { opacity: 0, translateY: 26, filter: 'blur(12px)' });
 
     const playIntro = () => {
@@ -63,6 +67,8 @@ if (introStage && window.anime && !window.matchMedia('(prefers-reduced-motion: r
         .add({ targets: level2, opacity: [0, 1], translateY: [22, 0],
                filter: ['blur(14px)', 'blur(0px)'],
                delay: window.anime.stagger(110), duration: 820 }, 340)
+        .add({ targets: level2cta, opacity: [0, 1],
+               filter: ['blur(14px)', 'blur(0px)'], duration: 820 }, 450)
         .add({ targets: level3, opacity: [0, 1], translateY: [26, 0],
                filter: ['blur(12px)', 'blur(0px)'],
                delay: window.anime.stagger(90), duration: 760 }, 700);
@@ -607,13 +613,16 @@ if (statCounters.length && !window.matchMedia('(prefers-reduced-motion: reduce)'
 const workTunnel = document.querySelector('[data-work-tunnel]');
 const workTunnelImages = Array.isArray(window.TUNNEL_GALLERY_IMAGES) ? window.TUNNEL_GALLERY_IMAGES : [];
 
-if (workTunnel && workTunnelImages.length) {
+// Fallback-картинки туннеля грузим ТОЛЬКО если WebGL недоступен.
+// Раньше они грузились всегда (eager) параллельно с WebGL-текстурами —
+// те же файлы качались по 2-3 раза, +4 МБ трафика впустую.
+if (workTunnel && workTunnelImages.length && !window.THREE) {
   const fallback = workTunnel.querySelector('.work-tunnel-fallback');
-  workTunnelImages.slice(0, 6).forEach((src, index) => {
+  workTunnelImages.slice(0, 6).forEach((src) => {
     const image = new Image();
     image.src = src;
     image.alt = '';
-    image.loading = 'eager';
+    image.loading = 'lazy';
     fallback?.append(image);
   });
 }
@@ -870,7 +879,7 @@ if (participantGallery && (caseImages.length || workTunnelImages.length)) {
     card.type = 'button';
     card.className = 'participant-gallery-card';
     card.setAttribute('aria-label', `Показать работу ${index + 1}`);
-    card.innerHTML = `<img src="${src}" alt="Работа участника ${index + 1}" draggable="false" />`;
+    card.innerHTML = `<img src="${src}" alt="Работа участника ${index + 1}" loading="lazy" decoding="async" draggable="false" />`;
     card.addEventListener('click', () => setActive(index));
     track.append(card);
     return card;
