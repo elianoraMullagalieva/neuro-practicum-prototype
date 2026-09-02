@@ -702,7 +702,7 @@ em { color:var(--lime); font-style:normal; }
 }
 
 /* Figma node 212:9761 — contrast between template and authored work. */
-.difference-section { position:relative; z-index:2; height:200vh; margin-top:-100svh; background:#000; color:#fff; }
+.difference-section { position:relative; z-index:2; height:150vh; margin-top:-100svh; background:#000; color:#fff; }
 .difference-sticky { position:sticky; top:0; height:100vh; overflow:hidden; display:flex; }
 .difference-content { display:flex; width:100%; min-height:100vh; box-sizing:border-box; flex-direction:column; justify-content:center; padding-top:clamp(60px,9vh,110px); padding-bottom:clamp(60px,9vh,110px); }
 .difference-title { display:grid; justify-items:center; margin:0; font-size:clamp(48px,5.7vw,80px); font-weight:400; line-height:.92; letter-spacing:-.04em; }
@@ -740,9 +740,9 @@ em { color:var(--lime); font-style:normal; }
 .programme-panel > div { min-height:0; overflow:hidden; margin-left:67px; opacity:0; transform:translateY(-7px); transition:opacity .24s ease, transform .4s cubic-bezier(.22,1,.36,1); }
 .programme-lessons { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:26px 48px; }
 .programme-lesson { display:grid; gap:7px; align-content:start; }
-.programme-lesson-title { margin:0; color:#fff; font-size:16px; font-weight:500; line-height:1.28; letter-spacing:-.01em; }
+.programme-lesson-title { margin:0; max-width:46ch; color:#fff; font-size:17px; font-weight:500; line-height:1.3; letter-spacing:-.01em; }
 .programme-lesson-num { display:block; margin-bottom:5px; color:#8a8a8a; font-size:11px; font-weight:600; letter-spacing:.02em; text-transform:uppercase; }
-.programme-lesson-desc { margin:0; color:#9c9c9c; font-size:13.5px; line-height:1.42; letter-spacing:0; }
+.programme-lesson-desc { margin:0; max-width:46ch; color:#9c9c9c; font-size:15px; line-height:1.5; letter-spacing:0; }
 .programme-module.is-open .programme-panel { grid-template-rows:1fr; }
 .programme-module.is-open .programme-panel > div { padding:0 0 28px; }
 .programme-module.is-open .programme-panel > div { opacity:1; transform:translateY(0); transition-delay:.08s; }

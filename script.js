@@ -959,7 +959,8 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
     const travel = easeInOut(map(p, .06, .60));
     if (workTunnel._setTravel) workTunnel._setTravel(travel);
     // Туннель гаснет в мрак после окончания пролёта (не во время).
-    workTunnel.style.opacity = (1 - map(p, .60, .74) * .92).toFixed(3);
+    // Туннель гаснет ПОЛНОСТЬЮ до появления работ — без полупрозрачного призрака.
+    workTunnel.style.opacity = (1 - map(p, .58, .72)).toFixed(3);
 
     // Заголовок: растёт ПО ЦЕНТРУ равномерно с пролётом (grow), и ТОЛЬКО потом,
     // когда пролёт кончился и туннель погас, поднимается на место (lift).
@@ -969,7 +970,8 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
       worksTitle.classList.toggle('works-title-big', grow > .35);
       // lift=0 -> центр экрана; lift=1 -> верхнее место заголовка.
       const y = -lift * (window.innerHeight * .28);
-      const scale = 0.27 + grow * 0.73;
+      // -25% и на старте, и в финале: слово не упирается в края туннеля
+      const scale = 0.2 + grow * 0.55;
       worksTitle.style.transform = `translate(-50%, calc(-50% + ${y.toFixed(1)}px)) scale(${scale.toFixed(3)})`;
       worksTitle.style.opacity = Math.max(0.7, 0.75 + grow * 0.25).toFixed(3);
     }
