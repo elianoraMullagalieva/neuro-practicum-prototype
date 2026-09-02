@@ -1140,3 +1140,42 @@ em { color:var(--lime); font-style:normal; }
 .pricing-card { justify-content:flex-start; }
 .pricing-card .pricing-renew { margin-top:auto; }
 a.pricing-button { text-decoration:none; }
+
+/* ═══ ФИКСЫ ПО ФИНАЛЬНОМУ АУДИТУ ═══ */
+
+/* 1. КРИТИЧНО (мобилка): заголовок «Чувствуешь разницу?» наезжал на шапку.
+      difference-content центрировался по вертикали, при нехватке высоты
+      первая строка уходила под фиксированную шапку. */
+@media (max-width:900px) {
+  .difference-content { justify-content:flex-start; padding-top:124px; }
+}
+
+/* 2. КРИТИЧНО (низкие ноутбуки): карточки тарифов обрезались на ~91px,
+      кнопки покупки не были видны без доп. скролла. */
+@media (min-width:901px) and (max-height:820px) {
+  .pricing-section { padding-top:40px; padding-bottom:40px; }
+  .pricing-head { margin-bottom:22px; }
+  .pricing-head h2 { font-size:clamp(38px,5vh,52px); }
+  .pricing-card { min-height:0; padding:20px 20px 18px; }
+  .pricing-price { margin:20px 0 10px; font-size:clamp(28px,3.6vh,38px); }
+  .pricing-lead { min-height:0; margin-bottom:4px; }
+  .pricing-card ul { gap:6px; margin:14px 0 12px; }
+  .pricing-card li { font-size:12.5px; line-height:1.28; }
+  .pricing-renew { margin-top:10px; padding-top:10px; }
+  .pricing-button { min-height:44px; }
+}
+
+/* 3. Секция «Для кого» выпадала из общей сетки (на 1920 — почти 200px).
+      Приводим к тем же полям, что у остальных секций. */
+@media (min-width:901px) {
+  .audience-content.container {
+    padding-left:max(32px, calc((100vw - 1440px) / 2));
+    padding-right:max(32px, calc((100vw - 1440px) / 2));
+  }
+}
+
+/* 4. Мобилка: аккордеон «Вопросы» стоял на 34px вместо 16px —
+      18px паддинга на обёртке .questions-item суммировались с 16px триггера. */
+@media (max-width:900px) {
+  .questions-item { padding-left:0; padding-right:0; }
+}
