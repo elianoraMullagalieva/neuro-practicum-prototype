@@ -1003,7 +1003,7 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
     if (workTunnel._setTravel) workTunnel._setTravel(travel);
     // Туннель гаснет в мрак после окончания пролёта (не во время).
     // Туннель гаснет ПОЛНОСТЬЮ до появления работ — без полупрозрачного призрака.
-    workTunnel.style.opacity = (1 - map(p, .58, .72)).toFixed(3);
+    workTunnel.style.opacity = (1 - map(p, .62, .78)).toFixed(3);
 
     // Заголовок: растёт ПО ЦЕНТРУ равномерно с пролётом (grow), и ТОЛЬКО потом,
     // когда пролёт кончился и туннель погас, поднимается на место (lift).
@@ -1014,7 +1014,9 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
       // lift=0 -> центр экрана; lift=1 -> верхнее место заголовка.
       const y = -lift * (window.innerHeight * .28);
       // -25% и на старте, и в финале: слово не упирается в края туннеля
-      const scale = 0.2 + grow * 0.55;
+      // Минимальный размер 0.42 — заголовок читается и не теряется среди работ
+      // (0.2 давал крошечный текст, особенно заметно при обратном скролле).
+      const scale = 0.42 + grow * 0.38;
       worksTitle.style.transform = `translate(-50%, calc(-50% + ${y.toFixed(1)}px)) scale(${scale.toFixed(3)})`;
       worksTitle.style.opacity = Math.max(0.7, 0.75 + grow * 0.25).toFixed(3);
     }
@@ -1025,8 +1027,8 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
     if (worksCount) worksCount.style.opacity = meta.toFixed(3);
 
     // C: Кейсы появляются ПОСЛЕ подъёма заголовка — никакого наложения на туннель.
-    const revealScale = easeOut(map(p, .80, .96));
-    const revealFade = easeOut(map(p, .80, .98));
+    const revealScale = easeOut(map(p, .70, .92));
+    const revealFade = easeOut(map(p, .70, .90));
     if (worksStage) {
       worksStage.style.opacity = revealFade.toFixed(3);
       const s = (0.9 + revealScale * 0.1).toFixed(3);
