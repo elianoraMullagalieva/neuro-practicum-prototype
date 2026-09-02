@@ -34,6 +34,49 @@ document.querySelectorAll('.reveal').forEach((element) => revealObserver.observe
 const motionSequence = document.querySelector('.motion-sequence');
 const introStage = document.querySelector('.intro-stage');
 
+// ===== КАСКАДНОЕ ПОЯВЛЕНИЕ ПЕРВОГО ЭКРАНА =====
+// Три уровня сверху вниз: шапка → заголовок с CTA → подписи и лента работ.
+// Тот же почерк, что focus-reveal в «Для кого»: элементы выходят из мягкого
+// блюра в фокус с небольшим подъёмом. Играет один раз при загрузке.
+if (introStage && window.anime && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const q = (sel) => [...introStage.querySelectorAll(sel)].filter(Boolean);
+  const level1 = [...q('.site-header .brand'), ...q('.site-header .header-duration'),
+                  ...q('.site-header nav'), ...q('.site-header .header-side'),
+                  ...q('.mobile-hero-proof')];
+  const level2 = [...q('.hero-kicker'), ...q('#hero-title'), ...q('.hero-cta')];
+  const level3 = [...q('.hero-proof'), ...q('.hero-hint'), ...q('.hero-gallery-note'),
+                  ...q('.mobile-project-meta'), ...q('.showcase-marquee')];
+  const all = [...level1, ...level2, ...level3];
+
+  if (all.length) {
+    // Стартовое состояние: мягкий блюр + лёгкий подъём снизу.
+    window.anime.set(level1, { opacity: 0, translateY: -12, filter: 'blur(8px)' });
+    window.anime.set(level2, { opacity: 0, translateY: 22, filter: 'blur(14px)' });
+    window.anime.set(level3, { opacity: 0, translateY: 26, filter: 'blur(12px)' });
+
+    const playIntro = () => {
+      const tl = window.anime.timeline({ easing: 'cubicBezier(.22, 1, .36, 1)' });
+      tl
+        .add({ targets: level1, opacity: [0, 1], translateY: [-12, 0],
+               filter: ['blur(8px)', 'blur(0px)'],
+               delay: window.anime.stagger(70), duration: 620 }, 120)
+        .add({ targets: level2, opacity: [0, 1], translateY: [22, 0],
+               filter: ['blur(14px)', 'blur(0px)'],
+               delay: window.anime.stagger(110), duration: 820 }, 340)
+        .add({ targets: level3, opacity: [0, 1], translateY: [26, 0],
+               filter: ['blur(12px)', 'blur(0px)'],
+               delay: window.anime.stagger(90), duration: 760 }, 700);
+    };
+
+    // Ждём шрифты, чтобы текст не «прыгал» в момент проявления.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(playIntro).catch(playIntro);
+    } else {
+      window.requestAnimationFrame(playIntro);
+    }
+  }
+}
+
 if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const transitionVariant = new URLSearchParams(window.location.search).get('transition') === 'fade'
     ? 'fade'
