@@ -1,42 +1,30 @@
-const toast = document.querySelector('.toast');
-const menuToggle = document.querySelector('.menu-toggle');
-const primaryNav = document.querySelector('#primary-nav');
-
-if (menuToggle && primaryNav) {
-  menuToggle.addEventListener('click', () => {
-    const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
-    menuToggle.setAttribute('aria-expanded', String(!isOpen));
-    menuToggle.setAttribute('aria-label', isOpen ? 'Открыть навигацию' : 'Закрыть навигацию');
-    primaryNav.classList.toggle('is-open', !isOpen);
-  });
-
-  primaryNav.querySelectorAll('a').forEach((link) => {
-    link.addEventListener('click', () => {
-      menuToggle.setAttribute('aria-expanded', 'false');
-      menuToggle.setAttribute('aria-label', 'Открыть навигацию');
-      primaryNav.classList.remove('is-open');
-    });
-  });
-}
-
-const showToast = (message) => {
-  toast.textContent = message;
-  toast.classList.add('is-visible');
-  window.clearTimeout(showToast.timeout);
-  showToast.timeout = window.setTimeout(() => toast.classList.remove('is-visible'), 4200);
+// ===== ЕДИНЫЙ SCROLL-ДИСПЕТЧЕР =====
+// Было: 5 отдельных scroll-слушателей, каждый со своим requestAnimationFrame —
+// на мобилке они конкурировали за кадр и давали рывки при скролле.
+// Стало: один слушатель + один rAF на кадр, подписчики вызываются по очереди.
+const scrollSubscribers = [];
+let scrollFrameQueued = false;
+const runScrollSubscribers = () => {
+  scrollFrameQueued = false;
+  for (let i = 0; i < scrollSubscribers.length; i += 1) {
+    try { scrollSubscribers[i](); } catch (_) { /* один сбойный подписчик не роняет остальные */ }
+  }
 };
-
-document.querySelectorAll('.tariff-button, .final-button').forEach((button) => {
-  button.addEventListener('click', () => {
-    const choice = button.dataset.choice;
-    document.querySelectorAll('.tariff').forEach((tariff) => tariff.classList.remove('is-selected'));
-    const selected = document.querySelector(`[data-tariff="${choice === 'Самостоятельно' ? 'self' : 'support'}"]`);
-    if (selected) selected.classList.add('is-selected');
-    showToast(choice === 'Программа'
-      ? 'Это локальный прототип. Следующий шаг - утвердить программу, условия и способ заявки.'
-      : `Вы выбрали «${choice}». В прототипе оплата не подключена: сначала нужно утвердить условия и форму поддержки.`);
-  });
-});
+const onScrollFrame = (fn) => {
+  scrollSubscribers.push(fn);
+  return () => {
+    if (scrollFrameQueued) return;
+    scrollFrameQueued = true;
+    window.requestAnimationFrame(runScrollSubscribers);
+  };
+};
+const requestScrollFrame = () => {
+  if (scrollFrameQueued) return;
+  scrollFrameQueued = true;
+  window.requestAnimationFrame(runScrollSubscribers);
+};
+window.addEventListener('scroll', requestScrollFrame, { passive: true });
+window.addEventListener('resize', requestScrollFrame);
 
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => { if (entry.isIntersecting) entry.target.classList.add('is-visible'); });
@@ -202,8 +190,12 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
 
   const renderMotionProgress = (progress, scroll, start, distance) => {
     const isMobile = window.innerWidth <= 900;
-    const isComplete = progress >= .999;
-    const isActive = scroll > start && (scroll < start + distance || (isMobile && !isComplete));
+    // Страховка: если секция физически ушла за верх экрана, сцена ОБЯЗАНА
+    // завершиться — иначе на мобилке (инерция скролла, dvh) прогресс не доходит
+    // до .999, motion-stage остаётся position:fixed и перекрывает весь сайт.
+    const sectionGone = motionSequence.getBoundingClientRect().bottom <= 0;
+    const isComplete = progress >= .999 || sectionGone;
+    const isActive = !sectionGone && scroll > start && (scroll < start + distance || (isMobile && !isComplete));
     motionSequence.classList.toggle('is-active', isActive);
     motionSequence.classList.toggle('is-words-visible', progress >= .39 && progress < .856);
     motionSequence.classList.toggle('is-hand-off', progress >= .856);
@@ -211,11 +203,11 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
     motionSequence.classList.toggle('is-result-visible', progress >= .838);
     motionSequence.classList.toggle('is-result-line-one', progress >= .842);
     motionSequence.classList.toggle('is-result-line-two', progress >= .848);
-    const introComplete = scroll >= start + distance && (!isMobile || isComplete);
+    const introComplete = sectionGone || (scroll >= start + distance && (!isMobile || isComplete));
     introStage?.classList.toggle('is-complete', introComplete);
     if (introComplete) window.dispatchEvent(new Event('persistent-chrome-update'));
     motionStage.classList.toggle('is-pinned', isActive);
-    motionStage.classList.toggle('is-ended', scroll >= start + distance && (!isMobile || isComplete));
+    motionStage.classList.toggle('is-ended', sectionGone || (scroll >= start + distance && (!isMobile || isComplete)));
     // The completed statement gets a short reading hold.  Its exit is a neutral
     // defocus; the white audience scene only becomes readable after this title
     // is already gone, so the two texts can never compete on one frame.
@@ -280,7 +272,7 @@ if (motionSequence && window.anime && !window.matchMedia('(prefers-reduced-motio
       requestMotionScrub();
     });
   }
-  window.addEventListener('scroll', requestMotionScrub, { passive: true });
+  scrollSubscribers.push(scrubMotionSequence);
   window.addEventListener('resize', () => {
     buildMotionTimeline();
     displayedMotionProgress = requestedMotionProgress = Math.max(0, Math.min(1, (window.scrollY) / (motionSequence.offsetHeight - window.innerHeight)));
@@ -396,7 +388,7 @@ if (persistentChrome && persistentAudience) {
     }
   };
   updatePersistentChrome();
-  window.addEventListener('scroll', requestPersistentChromeUpdate, { passive:true });
+  scrollSubscribers.push(updatePersistentChrome);
   window.addEventListener('resize', requestPersistentChromeUpdate);
   window.addEventListener('persistent-chrome-update', requestPersistentChromeUpdate);
 }
@@ -658,7 +650,7 @@ if (workTunnel && workTunnelImages.length && window.THREE) {
       // Only downward scrolling accelerates the flight forward.
       if (dy > 0) speed = Math.min(maxSpeed, speed + dy * .09);
     };
-    window.addEventListener('scroll', onTunnelScroll, { passive:true });
+    scrollSubscribers.push(onTunnelScroll);
 
     const addSlab = (group, slot, material, ratio = null) => {
       const size = ratio ? fit(slot.width, slot.height, ratio) : { width:slot.width, height:slot.height };
@@ -840,70 +832,6 @@ if (participantGallery && (caseImages.length || workTunnelImages.length)) {
     track.append(card);
     return card;
   });
-  // Фильтр по факту загрузки: если у работы ratio > 1.3 (горизонтальная) —
-  // убираем её из карусели, чтобы остались только «стоячие» скрины сайтов.
-  const pruneHorizontal = () => {
-    let removed = false;
-    for (let i = cards.length - 1; i >= 0 && cards.length > 3; i -= 1) {
-      const img = cards[i].querySelector('img');
-      if (img && img.naturalWidth && img.naturalHeight && img.naturalWidth / img.naturalHeight > 1.3) {
-        cards[i].remove();
-        cards.splice(i, 1);
-        removed = true;
-      }
-    }
-    if (removed) {
-      if (activeIndex >= cards.length) activeIndex = 0;
-      fitCardsToMedia();
-      renderGallery();
-    }
-  };
-
-  // Some exports contain a thin, uniform white artboard around the actual work.
-  // Detect it per image, never by applying one crop to the whole gallery.
-  const getVisibleCrop = (image) => {
-    if (!image.naturalWidth || !image.naturalHeight) return { left: 0, right: 0, top: 0, bottom: 0 };
-    try {
-      const sampleScale = Math.min(1, 260 / Math.max(image.naturalWidth, image.naturalHeight));
-      const width = Math.max(1, Math.round(image.naturalWidth * sampleScale));
-      const height = Math.max(1, Math.round(image.naturalHeight * sampleScale));
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const context = canvas.getContext('2d', { willReadFrequently: true });
-      context.drawImage(image, 0, 0, width, height);
-      const pixels = context.getImageData(0, 0, width, height).data;
-      const isWhite = (x, y) => {
-        const offset = (y * width + x) * 4;
-        return pixels[offset] > 242 && pixels[offset + 1] > 242 && pixels[offset + 2] > 242 && pixels[offset + 3] > 240;
-      };
-      const edgeBand = (axis, reverse = false) => {
-        const length = axis === 'row' ? height : width;
-        const cross = axis === 'row' ? width : height;
-        const limit = Math.max(2, Math.floor(length * .12));
-        let band = 0;
-        for (; band < limit; band += 1) {
-          const position = reverse ? length - 1 - band : band;
-          let whitePixels = 0;
-          for (let point = 0; point < cross; point += 1) {
-            if (isWhite(axis === 'row' ? point : position, axis === 'row' ? position : point)) whitePixels += 1;
-          }
-          if (whitePixels / cross < .96) break;
-        }
-        // An all-white project must remain whole: only remove a band with a visible inner edge.
-        return band < limit ? band : 0;
-      };
-      const scaleBack = 1 / sampleScale;
-      return {
-        left: Math.round(edgeBand('column') * scaleBack),
-        right: Math.round(edgeBand('column', true) * scaleBack),
-        top: Math.round(edgeBand('row') * scaleBack),
-        bottom: Math.round(edgeBand('row', true) * scaleBack),
-      };
-    } catch (_) {
-      return { left: 0, right: 0, top: 0, bottom: 0 };
-    }
-  };
 
   const prepareMedia = (card) => {
     const image = card.querySelector('img');
@@ -1065,7 +993,7 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
   };
   const request = () => { if (queued) return; queued = true; window.requestAnimationFrame(render); };
   render();
-  window.addEventListener('scroll', request, { passive:true });
+  scrollSubscribers.push(render);
   window.addEventListener('resize', request);
 
   // СНАП-ДОВОДЧИК ВХОДА: когда сцена показалась снизу хотя бы на ~треть и человек
@@ -1106,5 +1034,5 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
     // Перевзвести, когда ушли выше сцены (для повторного входа сверху).
     if (rect.top > window.innerHeight * .9) snapArmed = true;
   };
-  window.addEventListener('scroll', maybeSnapIn, { passive:true });
+  scrollSubscribers.push(maybeSnapIn);
 }
