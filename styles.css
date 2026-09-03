@@ -1,12 +1,12 @@
-:root { --ink:#070707; --paper:#f4f2eb; --lime:#c6f33a; --line:rgba(255,255,255,.3); --muted:#b9b9b4; --dark:#111; --font-display:"Anton", Impact, sans-serif; --font-body:"Manrope", sans-serif; }
+:root { --shell:1440px; --up:1; --ink:#070707; --paper:#f4f2eb; --lime:#c6f33a; --line:rgba(255,255,255,.3); --muted:#b9b9b4; --dark:#111; --font-display:"Anton", Impact, sans-serif; --font-body:"Manrope", sans-serif; }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; background:var(--ink); overflow-x:hidden; }
 body { margin:0; background:var(--ink); color:#fff; font-family:var(--font-body); }
-body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.19; z-index:10; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E"); mix-blend-mode:screen; }
+body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.19; z-index:10; background-image:url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.28'/%3E%3C/svg%3E"); background-repeat:repeat; background-size:160px 160px; mix-blend-mode:screen; }
 a { color:inherit; text-decoration:none; }
 button { font:inherit; cursor:pointer; }
 .icon { display:block; width:1em; height:1em; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
-.container { width:min(1440px, calc(100vw - 64px)); margin-inline:auto; }
+.container { width:min(var(--shell), calc(100vw - 64px)); margin-inline:auto; }
 .site-header { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:26px 0; border-bottom:1px solid var(--line); position:relative; z-index:2; }
 .brand { font:800 18px/.87 var(--font-body); letter-spacing:-.08em; text-transform:uppercase; width:max-content; }
 .brand span { color:var(--lime); margin-left:4px; }
@@ -25,7 +25,7 @@ em { color:var(--lime); font-style:normal; }
 .button-primary { background:var(--lime); color:#070707; } .button-outline{background:transparent;border-color:#fff;color:#fff}.text-link{font-size:13px;font-weight:800;border-bottom:1px solid currentColor;padding-bottom:4px}.text-link span{color:var(--lime);font-size:18px}
 .source-note { max-width:370px; margin:20px 0 0; color:#999; font-size:11px; line-height:1.55; }
 @media (min-width:900px){.cursor-dot{display:block}}
-@media (max-width:820px){.container{width:min(calc(100vw - 36px),1440px)}.site-header{grid-template-columns:1fr auto;padding:18px 0}.site-header nav{display:none}.header-cta{font-size:10px}.hero{min-height:auto;grid-template-columns:1fr;padding-top:65px;gap:40px}.hero h1{font-size:clamp(60px,16vw,86px);line-height:.9}}
+@media (max-width:820px){.container{width:min(calc(100vw - 36px),var(--shell))}.site-header{grid-template-columns:1fr auto;padding:18px 0}.site-header nav{display:none}.header-cta{font-size:10px}.hero{min-height:auto;grid-template-columns:1fr;padding-top:65px;gap:40px}.hero h1{font-size:clamp(60px,16vw,86px);line-height:.9}}
 @media (max-width:440px){.button{width:100%}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}}
 
@@ -77,7 +77,7 @@ em { color:var(--lime); font-style:normal; }
 .proof-avatars { display:flex; padding-left:9px; }
 .proof-avatars img { width:42px; height:42px; margin-left:-9px; border:2px solid #fff; border-radius:50%; object-fit:cover; object-position:center; background:#e9e5f3; }
 .proof-avatars img:first-child { object-position:56% center; }
-.hero-hint { position:absolute; bottom:26px; left:calc((100% - min(1440px, calc(100vw - 64px))) / 2); display:flex; align-items:center; gap:10px; color:#6c6c6c; font-size:11px; }
+.hero-hint { position:absolute; bottom:26px; left:calc((100% - min(var(--shell), calc(100vw - 64px))) / 2); display:flex; align-items:center; gap:10px; color:#6c6c6c; font-size:11px; }
 .hero-hint-icon { display:grid; width:25px; height:25px; place-items:center; border-radius:50%; background:#fff; box-shadow:0 7px 17px rgba(0,0,0,.09); }
 .hero-hint-icon img { display:block; width:9px; height:11px; }
 .caption,
@@ -730,13 +730,13 @@ em { color:var(--lime); font-style:normal; }
 .programme-stats dd { margin:8px 0 0; color:#9c9c9c; font-size:11px; line-height:1.2; letter-spacing:0; white-space:nowrap; }
 .programme-list { border-top:1px solid rgba(255,255,255,.4); }
 .programme-module { border-bottom:1px solid rgba(255,255,255,.28); }
-.programme-trigger { width:100%; min-height:89px; padding:0 max(32px, calc((100vw - 1440px) / 2)); border:0; display:grid; grid-template-columns:47px minmax(0,1fr) 39px; align-items:center; gap:20px; background:transparent; color:#fff; text-align:left; }
+.programme-trigger { width:100%; min-height:89px; padding:0 max(32px, calc((100vw - var(--shell)) / 2)); border:0; display:grid; grid-template-columns:47px minmax(0,1fr) 39px; align-items:center; gap:20px; background:transparent; color:#fff; text-align:left; }
 .programme-number { display:grid; width:40px; height:25px; place-items:center; border:1px solid rgba(255,255,255,.7); border-radius:999px; font-size:11px; }
 .programme-name { font-size:23px; font-weight:500; line-height:1.12; letter-spacing:-.01em; }
 .programme-plus { display:grid; width:39px; height:39px; place-items:center; border:1px solid rgba(255,255,255,.58); border-radius:50%; font-size:24px; font-weight:300; line-height:1; transition:transform .28s cubic-bezier(.22,1,.36,1), background .2s ease; }
 .programme-trigger:hover .programme-plus { background:#fff; color:#080808; }
 .programme-module.is-open .programme-plus { transform:rotate(45deg); }
-.programme-panel { display:grid; grid-template-rows:0fr; padding:0 max(32px, calc((100vw - 1440px) / 2)); transition:grid-template-rows .52s cubic-bezier(.22,1,.36,1); }
+.programme-panel { display:grid; grid-template-rows:0fr; padding:0 max(32px, calc((100vw - var(--shell)) / 2)); transition:grid-template-rows .52s cubic-bezier(.22,1,.36,1); }
 .programme-panel > div { min-height:0; overflow:hidden; margin-left:67px; opacity:0; transform:translateY(-7px); transition:opacity .24s ease, transform .4s cubic-bezier(.22,1,.36,1); }
 .programme-lessons { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:26px 48px; }
 .programme-lesson { display:grid; gap:7px; align-content:start; }
@@ -769,7 +769,7 @@ em { color:var(--lime); font-style:normal; }
 .work-tunnel-fallback img:nth-child(6) { bottom:9%; left:43%; width:min(15vw,210px); transform:rotateX(-54deg); }
 
 /* Контент поверх туннеля: слово-заголовок + слайдер. Центрирован, с воздухом. */
-.works-content { position:absolute; inset:0; z-index:3; display:grid; grid-template-rows:22vh 1fr; align-content:stretch; justify-items:center; width:min(1440px, calc(100vw - 64px)); margin:0 auto; padding:0; box-sizing:border-box; text-align:center; pointer-events:none; }
+.works-content { position:absolute; inset:0; z-index:3; display:grid; grid-template-rows:22vh 1fr; align-content:stretch; justify-items:center; width:min(var(--shell), calc(100vw - 64px)); margin:0 auto; padding:0; box-sizing:border-box; text-align:center; pointer-events:none; }
 .works-head { align-self:start; padding-top:5vh; }
 .works-head { display:grid; justify-items:center; gap:14px; }
 .works-kicker { margin:0; color:rgba(255,255,255,.5); font-size:12px; letter-spacing:.04em; text-transform:uppercase; opacity:0; will-change:opacity,transform; }
@@ -804,13 +804,13 @@ em { color:var(--lime); font-style:normal; }
 .questions-author b { font-size:19px; }
 .questions-list { border-top:1px solid rgba(8,8,8,.35); }
 .questions-item { border-bottom:1px solid rgba(8,8,8,.3); }
-.questions-trigger { width:100%; min-height:109px; padding:0 max(32px, calc((100vw - 1440px) / 2)); display:grid; grid-template-columns:39px minmax(0,1fr) 37px; align-items:center; gap:27px; border:0; background:transparent; color:#080808; text-align:left; cursor:pointer; }
+.questions-trigger { width:100%; min-height:109px; padding:0 max(32px, calc((100vw - var(--shell)) / 2)); display:grid; grid-template-columns:39px minmax(0,1fr) 37px; align-items:center; gap:27px; border:0; background:transparent; color:#080808; text-align:left; cursor:pointer; }
 .questions-number { display:grid; width:39px; height:25px; place-items:center; border:1px solid #080808; border-radius:999px; font-size:12px; font-weight:500; line-height:.85; }
 .questions-item h3 { margin:0; font-size:23px; font-weight:500; line-height:1.1; letter-spacing:-.01em; }
 .questions-plus { display:grid; width:37px; height:37px; place-items:center; border:1px solid rgba(8,8,8,.55); border-radius:50%; font-size:23px; font-weight:400; line-height:1; transition:transform .28s cubic-bezier(.22,1,.36,1), background .2s ease; }
 .questions-trigger:hover .questions-plus { background:#080808; color:#fff; }
 .questions-item.is-open .questions-plus { transform:rotate(45deg); }
-.questions-panel { display:grid; grid-template-rows:0fr; padding:0 max(32px, calc((100vw - 1440px) / 2)); transition:grid-template-rows .5s cubic-bezier(.22,1,.36,1); }
+.questions-panel { display:grid; grid-template-rows:0fr; padding:0 max(32px, calc((100vw - var(--shell)) / 2)); transition:grid-template-rows .5s cubic-bezier(.22,1,.36,1); }
 .questions-panel > div { min-height:0; overflow:hidden; margin-left:66px; max-width:820px; opacity:0; transform:translateY(-6px); transition:opacity .24s ease, transform .4s cubic-bezier(.22,1,.36,1); }
 .questions-item.is-open .questions-panel { grid-template-rows:1fr; }
 .questions-item.is-open .questions-panel > div { padding:0 0 34px; opacity:1; transform:translateY(0); transition-delay:.08s; }
@@ -1169,8 +1169,8 @@ a.pricing-button { text-decoration:none; }
       Приводим к тем же полям, что у остальных секций. */
 @media (min-width:901px) {
   .audience-content.container {
-    padding-left:max(32px, calc((100vw - 1440px) / 2));
-    padding-right:max(32px, calc((100vw - 1440px) / 2));
+    padding-left:max(32px, calc((100vw - var(--shell)) / 2));
+    padding-right:max(32px, calc((100vw - var(--shell)) / 2));
   }
 }
 
@@ -1178,4 +1178,189 @@ a.pricing-button { text-decoration:none; }
       18px паддинга на обёртке .questions-item суммировались с 16px триггера. */
 @media (max-width:900px) {
   .questions-item { padding-left:0; padding-right:0; }
+}
+
+/* ============================================================
+   ШИРОКИЕ ЭКРАНЫ (1600px+, вплоть до 4K/5K)
+   Эталон вёрстки — 1440px. На больших мониторах сайт не должен
+   «висеть узкой колонкой в пустоте»: оболочка и типографика
+   растут ПРОПОРЦИОНАЛЬНО, сохраняя те же соотношения.
+   --shell — ширина контентной оболочки, --up — множитель размеров.
+   ============================================================ */
+@media (min-width:1600px) {
+  :root { --shell:1560px; --up:1.06; }
+}
+@media (min-width:1920px) {
+  :root { --shell:1760px; --up:1.18; }
+}
+@media (min-width:2400px) {
+  :root { --shell:2100px; --up:1.42; }
+}
+@media (min-width:3000px) {
+  :root { --shell:2500px; --up:1.7; }
+}
+@media (min-width:3600px) {
+  :root { --shell:2900px; --up:2; }
+}
+
+@media (min-width:1600px) {
+  /* --- Крупные заголовки: снимаем потолок clamp(), масштабируем --- */
+  .hero h1                { font-size:calc(116px * var(--up)); }
+  .intro-stage .hero h1   { font-size:calc(60px * var(--up)); }
+  .motion-result          { font-size:calc(80px * var(--up)); }
+  .motion-system-title    { font-size:calc(60px * var(--up)); }
+  .audience-intro h2      { max-width:calc(680px * var(--up)); font-size:calc(56px * var(--up)); }
+  .difference-title       { font-size:calc(80px * var(--up)); }
+  .programme-head h2      { font-size:calc(80px * var(--up)); }
+  .programme-stats dt     { font-size:calc(58px * var(--up)); }
+  .questions-head h2      { font-size:calc(80px * var(--up)); }
+  .pricing-head h2        { font-size:calc(80px * var(--up)); }
+  .site-footer__lead h2   { max-width:calc(890px * var(--up)); font-size:calc(80px * var(--up)); }
+  .works-title            { font-size:calc(106px * var(--up)); }
+
+  /* --- Основной текст и подписи --- */
+  body                    { font-size:calc(16px * var(--up)); }
+  .eyebrow                { font-size:calc(11px * var(--up)); margin-bottom:calc(19px * var(--up)); }
+  .source-note            { max-width:calc(370px * var(--up)); font-size:calc(11px * var(--up)); }
+  .difference-copy p      { max-width:calc(520px * var(--up)); font-size:calc(16px * var(--up)); }
+  .programme-lesson-title { max-width:46ch; font-size:calc(17px * var(--up)); }
+  .programme-lesson-desc  { max-width:46ch; font-size:calc(15px * var(--up)); }
+  .pricing-note           { max-width:calc(270px * var(--up)); font-size:calc(14px * var(--up)); }
+  .pricing-lead           { max-width:calc(260px * var(--up)); font-size:calc(13px * var(--up)); min-height:calc(57px * var(--up)); }
+  .audience-author p,
+  .questions-author p     { max-width:calc(260px * var(--up)); }
+
+  /* --- Шапка --- */
+  .brand                  { font-size:calc(18px * var(--up)); }
+  nav                     { font-size:calc(13px * var(--up)); gap:calc(28px * var(--up)); }
+  .header-cta             { font-size:calc(12px * var(--up)); }
+  .header-cta span        { font-size:calc(18px * var(--up)); }
+  .site-header            { padding:calc(26px * var(--up)) 0; }
+
+  /* --- Кнопки --- */
+  .button                 { min-height:calc(58px * var(--up)); padding:calc(14px * var(--up)) calc(19px * var(--up)); gap:calc(45px * var(--up)); font-size:calc(14px * var(--up)); }
+  .button span            { font-size:calc(23px * var(--up)); }
+  .text-link              { font-size:calc(13px * var(--up)); }
+  .text-link span         { font-size:calc(18px * var(--up)); }
+
+  /* --- Аккордеоны: строки не должны быть тонкой полоской --- */
+  .programme-trigger      { min-height:calc(89px * var(--up)); grid-template-columns:calc(47px * var(--up)) minmax(0,1fr) calc(39px * var(--up)); gap:calc(20px * var(--up)); }
+  .questions-trigger      { min-height:calc(109px * var(--up)); grid-template-columns:calc(39px * var(--up)) minmax(0,1fr) calc(37px * var(--up)); gap:calc(27px * var(--up)); }
+  .hero-hint              { font-size:calc(11px * var(--up)); bottom:calc(26px * var(--up)); }
+}
+
+/* ============================================================
+   ПЕРВЫЙ ЭКРАН НА ШИРОКИХ МОНИТОРАХ
+   Композиция первого экрана абсолютная и считается от vw, но все
+   значения упирались в потолок clamp() на 1440px. Из-за этого на 4K
+   заголовок и шапка оставались размером «как на ноутбуке», а вокруг
+   зияла пустота. Здесь потолки сняты: композиция продолжает расти
+   от ширины экрана, сохраняя те же пропорции, что и на 1440px.
+   Коэффициенты подобраны так, чтобы 4K не выглядел раздутым.
+   ============================================================ */
+@media (min-width:1600px) {
+  /* Заголовок и копия. top задан в svh: композиция опускается вместе
+     с ростом высоты экрана, поэтому дыры между кнопкой и лентой нет. */
+  /* Свободная зона = экран минус шапка (7.8vw) минус лента (26svh) минус
+     полоса подписей. Группа «кикер + заголовок + кнопка» центрируется в ней. */
+  .intro-stage { --wide-top:7.8vw; --wide-band:26svh; --wide-free:calc(100svh - var(--wide-top) - var(--wide-band)); }
+  .intro-stage .hero-copy { top:calc(var(--wide-top) + var(--wide-free) * .40); transform:translate(-50%,-50%); width:52.5vw; }
+  .intro-stage .hero h1   { width:52.5vw; font-size:3.55vw; }
+  .hero-kicker            { min-height:2.0vw; margin-bottom:1.24vw; padding:0 1.06vw; font-size:.77vw; }
+
+  /* Кнопка — привязана к той же сетке, поэтому не наезжает на заголовок */
+  /* Кнопка идёт сразу под копией — в потоке внутри неё, а не абсолютом,
+     иначе она разъезжается с заголовком при смене пропорций экрана. */
+  .intro-stage .hero-copy .hero-cta { position:static; transform:none; display:inline-flex; margin-top:2.1vw; }
+  .intro-stage .hero .hero-cta .hero-cta-label { width:10.35vw; height:2.54vw; padding:0 1.77vw; font-size:.77vw; }
+  .intro-stage .hero .hero-cta .hero-cta-icon  { width:3.25vw !important; height:2.54vw !important; }
+  .intro-stage .hero .hero-cta .hero-cta-icon .action-pair__icon-image { width:.71vw; height:.71vw; }
+
+  /* Подписи слева/справа */
+  .hero-hint { left:3.55vw; top:auto; bottom:calc(var(--wide-band) + 3.1vw); grid-template-columns:2.13vw 6.8vw; column-gap:1.24vw; font-size:.71vw; align-items:center; }
+  .hero-hint-icon { width:2.13vw; height:1.77vw; }
+  .hero-gallery-note { right:2.42vw; top:auto; bottom:calc(var(--wide-band) + 3.1vw); width:12.2vw; font-size:.71vw; }
+
+  /* Шапка первого экрана — вся сетка переводится в vw, чтобы логотип,
+     «20+ уроков», меню и кнопка держали те же интервалы, что на 1440px. */
+  .intro-stage .site-header.container { height:7.8vw; }
+  .intro-stage .brand { left:2.9vw; top:2.0vw; gap:.35vw; }
+  .intro-stage .brand img { width:3.13vw; }
+  .intro-stage .brand > span { font-size:.83vw; }
+  .header-duration { left:8.1vw; top:2.07vw; gap:.41vw; }
+  .header-duration span { font-size:.71vw; }
+  .header-duration strong { font-size:1.18vw; }
+  .intro-stage nav { left:calc(75% - 4.58vw); top:1.77vw; gap:.06vw; font-size:.71vw; }
+  .header-side { right:2.36vw; top:1.95vw; }
+  .intro-stage .header-cta { min-height:2.42vw; padding:0 1.77vw; font-size:.71vw; }
+
+  /* Плашка соцдоказательства сверху */
+  .hero-proof { top:1.77vw; }
+  .hero-proof p { font-size:.71vw; }
+  .proof-avatars img { width:2.36vw; height:2.36vw; margin-left:-.47vw; }
+
+  /* Лента снизу масштабируется своей grid-раскладкой — трогаем только высоту,
+     чтобы на низком 4K (16:9) она не съедала композицию. */
+  .showcase-marquee { height:min(17.571vw, 26svh); }
+}
+
+/* ============================================================
+   БЛОК СЛОВ-НАВЫКОВ И ЛЕТЯЩИХ ОБЛОЖЕК НА ШИРОКИХ ЭКРАНАХ
+   Слова и постеры были прибиты к пикселям (36px / 151px), поэтому
+   на 4K превращались в мелкие крошки посреди пустоты. Позиции
+   заданы в процентах, так что достаточно масштабировать размеры.
+   ============================================================ */
+@media (min-width:1600px) {
+  .motion-words        { font-size:calc(36px * var(--up)); }
+  .motion-destinations { font-size:calc(60px * var(--up)); }
+  .motion-poster-blue  { width:calc(151px * var(--up)); height:calc(190px * var(--up)); }
+  .motion-poster-red   { width:calc(206px * var(--up)); height:calc(295px * var(--up)); }
+}
+
+/* Остальные блоки, где ширина или размеры были прибиты к пикселям. */
+@media (min-width:1600px) {
+  .difference-grid          { width:min(calc(1320px * var(--up)), 100%); }
+  .difference-copy h3       { font-size:calc(28px * var(--up)); }
+  .difference-card:last-child .difference-copy h3 { font-size:calc(21px * var(--up)); }
+  .programme-head           { grid-template-columns:minmax(calc(320px * var(--up)), .8fr) 1.2fr; padding-top:calc(150px * var(--up)); padding-bottom:calc(67px * var(--up)); }
+  .programme-stats dd       { font-size:calc(13px * var(--up)); }
+}
+
+/* Слайдер работ, тарифы, вопросы и футер на широких экранах. */
+@media (min-width:1600px) {
+  .participant-gallery-track { width:min(55vw, calc(720px * var(--up))); height:min(38vw, calc(440px * var(--up))); }
+  .pricing-head, .pricing-grid { width:min(calc(100% - 64px), calc(1240px * var(--up))); }
+  .pricing-head { grid-template-columns:minmax(0,1fr) minmax(calc(230px * var(--up)), .42fr); gap:calc(23px * var(--up)) calc(64px * var(--up)); margin-bottom:calc(34px * var(--up)); }
+  .pricing-card  { min-height:calc(530px * var(--up)); padding:calc(26px * var(--up)) calc(24px * var(--up)) calc(23px * var(--up)); border-radius:calc(21px * var(--up)); }
+  .pricing-price { margin:calc(38px * var(--up)) 0 calc(14px * var(--up)); font-size:calc(48px * var(--up)); }
+  .pricing-grid  { gap:calc(8px * var(--up)); }
+  .questions-portrait img { width:calc(258px * var(--up)); height:calc(344px * var(--up)); top:calc(-65px * var(--up)); left:calc(-51px * var(--up)); }
+  .questions-panel > div  { margin-left:calc(66px * var(--up)); max-width:calc(820px * var(--up)); }
+}
+
+/* Внутренности карточек тарифов и мелкие подписи — тоже были в пикселях. */
+@media (min-width:1600px) {
+  .pricing-kicker  { font-size:calc(11px * var(--up)); }
+  .pricing-card ul { gap:calc(9px * var(--up)); margin:calc(28px * var(--up)) 0 calc(25px * var(--up)); }
+  .pricing-card li { grid-template-columns:calc(6px * var(--up)) minmax(0,1fr); gap:calc(11px * var(--up)); font-size:calc(13px * var(--up)); }
+  .pricing-card li::before { width:calc(6px * var(--up)); height:calc(6px * var(--up)); margin-top:calc(5px * var(--up)); }
+  .pricing-renew   { margin-top:calc(16px * var(--up)); padding-top:calc(15px * var(--up)); font-size:calc(12px * var(--up)); }
+  .pricing-button  { min-height:calc(50px * var(--up)); padding:0 calc(18px * var(--up)); gap:calc(14px * var(--up)); border-radius:calc(11px * var(--up)); font-size:calc(12.5px * var(--up)); }
+  .pricing-button span { font-size:calc(19px * var(--up)); }
+}
+
+/* Аккордеоны, блок автора и подписи тарифов — последние пиксельные размеры. */
+@media (min-width:1600px) {
+  .programme-number  { width:calc(40px * var(--up)); height:calc(25px * var(--up)); font-size:calc(11px * var(--up)); }
+  .programme-name    { font-size:calc(23px * var(--up)); }
+  .programme-plus    { width:calc(39px * var(--up)); height:calc(39px * var(--up)); font-size:calc(24px * var(--up)); }
+  .programme-panel > div { margin-left:calc(67px * var(--up)); }
+  .programme-lessons { gap:calc(26px * var(--up)) calc(48px * var(--up)); }
+  .programme-lesson  { gap:calc(7px * var(--up)); }
+  .questions-number  { width:calc(39px * var(--up)); height:calc(25px * var(--up)); font-size:calc(12px * var(--up)); }
+  .questions-item h3 { font-size:calc(23px * var(--up)); }
+  .questions-plus    { width:calc(37px * var(--up)); height:calc(37px * var(--up)); font-size:calc(23px * var(--up)); }
+  .questions-author  { width:calc(300px * var(--up)); }
+  .questions-portrait { width:calc(91px * var(--up)); height:calc(91px * var(--up)); }
+  .questions-author b { font-size:calc(19px * var(--up)); }
 }
