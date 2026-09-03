@@ -617,7 +617,7 @@ em { color:var(--lime); font-style:normal; }
 }
 
 /* Figma nodes 111:8092 / 178:9224 — audience section. */
-.audience-section { position:relative; z-index:9; height:175svh; min-height:0; margin-top:-100svh; overflow:visible; background:transparent; color:#080808; --audience-exit:0; }
+.audience-section { position:relative; z-index:9; height:260svh; min-height:0; margin-top:-100svh; overflow:visible; background:transparent; color:#080808; --audience-exit:0; }
 .audience-stage { position:absolute; z-index:1; inset:0 0 auto; height:100svh; }
 .audience-stage.is-pinned { position:fixed; z-index:9; top:0; right:0; bottom:auto; left:0; width:100%; }
 .audience-stage.is-ended { position:absolute; top:auto; right:0; bottom:0; left:0; width:100%; }
@@ -1363,4 +1363,14 @@ a.pricing-button { text-decoration:none; }
   .questions-author  { width:calc(300px * var(--up)); }
   .questions-portrait { width:calc(91px * var(--up)); height:calc(91px * var(--up)); }
   .questions-author b { font-size:calc(19px * var(--up)); }
+}
+
+/* Кнопка первого экрана на широких экранах стоит в потоке (не абсолютом),
+   поэтому hover'у не нужен translateX(-50%) — из-за него кнопка «убегала»
+   вбок на пол-своей ширины. И размер держим не меньше эталонного 1440px. */
+@media (min-width:1600px) {
+  .intro-stage .hero .hero-cta:hover { transform:translateY(-2px); }
+  .intro-stage .hero .hero-cta .hero-cta-label { width:max(214px, 10.35vw); height:max(53px, 2.54vw); padding:0 max(37px, 1.77vw); font-size:max(16px, .77vw); }
+  .intro-stage .hero .hero-cta .hero-cta-icon  { width:max(67px, 3.25vw) !important; height:max(53px, 2.54vw) !important; }
+  .intro-stage .hero .hero-cta .hero-cta-icon .action-pair__icon-image { width:max(15px, .71vw); height:max(15px, .71vw); }
 }

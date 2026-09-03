@@ -400,7 +400,11 @@ if (persistentChrome && persistentAudience) {
       return;
     }
     const audienceProgress = Math.max(0, Math.min(1, -audienceRect.top / Math.max(1, audienceRect.height - window.innerHeight)));
-    const audienceExit = Math.max(0, Math.min(1, (audienceProgress - .72) / .28));
+    // Блок «Для кого» держится дольше, чем занимает один экран прокрутки:
+    // 1-й скролл — блок встал и читается; 2-й — карточки и текст растворяются;
+    // 3-й — уходим к следующей секции. Раньше выход начинался на .72 и
+    // проскакивал за пару кадров, поэтому блок было легко упустить.
+    const audienceExit = Math.max(0, Math.min(1, (audienceProgress - .46) / .34));
     persistentAudience.style.setProperty('--audience-exit', audienceExit.toFixed(3));
     if (!differenceSceneReady && audienceExit >= .96 && persistentDifferenceSection) {
       differenceSceneReady = true;
@@ -1015,27 +1019,27 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
     // B. Пролёт кончился, туннель во мраке -> заголовок поднимается на место.
     // C. Только теперь появляются работы (слайдер).
 
-    // A: РЕАЛЬНЫЙ ПРОЛЁТ вглубь — синхронно с ростом заголовка, равномерно.
-    const travel = easeInOut(map(p, .06, .60));
+    // A: РЕАЛЬНЫЙ ПРОЛЁТ вглубь. Туннель гаснет ПОЛНОСТЬЮ и раньше слайдера —
+    // две сцены не перекрываются, туннель не просвечивает под работами.
+    const travel = easeInOut(map(p, .06, .58));
     if (workTunnel._setTravel) workTunnel._setTravel(travel);
-    // Туннель гаснет в мрак после окончания пролёта (не во время).
-    // Туннель гаснет ПОЛНОСТЬЮ до появления работ — без полупрозрачного призрака.
-    workTunnel.style.opacity = (1 - map(p, .62, .78)).toFixed(3);
+    const tunnelFade = map(p, .58, .70);
+    workTunnel.style.opacity = (1 - tunnelFade).toFixed(3);
+    // Полностью выключаем слой туннеля, когда он погас: никакого призрака
+    // и никакого WebGL-кадра под слайдером.
+    workTunnel.style.visibility = tunnelFade >= 1 ? 'hidden' : 'visible';
 
-    // Заголовок: растёт ПО ЦЕНТРУ равномерно с пролётом (grow), и ТОЛЬКО потом,
-    // когда пролёт кончился и туннель погас, поднимается на место (lift).
-    const grow = easeInOut(map(p, .06, .80));   // рост медленный, дорастает на последнем кадре (туннель уже пропал)
-    const lift = easeInOut(map(p, .60, .84));   // подъём — растянут, плавный
+    // Заголовок живёт в ДВУХ фазах:
+    //  1) внутри туннеля он МАЛЕНЬКИЙ и растёт очень медленно (crawl),
+    //     оставаясь в тёмной сердцевине и не нарезаясь на работы;
+    //  2) когда экран стал полностью чёрным (туннель погас) — только тогда
+    //     он вырастает в полноразмерный заголовок и поднимается на место.
+    const crawl = map(p, .06, .58);          // медленный рост внутри туннеля
+    const bloom = easeInOut(map(p, .70, .86)); // рост на чёрном экране
+    const lift  = easeInOut(map(p, .72, .88)); // подъём на своё место
     if (worksTitle) {
-      worksTitle.classList.toggle('works-title-big', grow > .35);
-      // lift=0 -> центр экрана; lift=1 -> верхнее место заголовка.
+      worksTitle.classList.toggle('works-title-big', bloom > .25);
       const y = -lift * (window.innerHeight * .28);
-      // -25% и на старте, и в финале: слово не упирается в края туннеля
-      // Минимальный размер 0.42 — заголовок читается и не теряется среди работ
-      // (0.2 давал крошечный текст, особенно заметно при обратном скролле).
-      // Заголовок должен ЖИТЬ ВНУТРИ сердцевины коридора с воздухом вокруг,
-      // а не упираться в летящие работы. Сердцевина по мере пролёта
-      // расширяется, поэтому и потолок масштаба растёт вместе с ней.
       // Ширина слова при scale=1 (замеряем один раз, до трансформаций).
       if (!worksTitle._baseWidth) {
         const prev = worksTitle.style.transform;
@@ -1043,22 +1047,27 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
         worksTitle._baseWidth = worksTitle.offsetWidth || 1;
         worksTitle.style.transform = prev;
       }
-      // Сердцевина: ~26% ширины экрана в начале, ~62% в конце пролёта.
-      const core = window.innerWidth * (0.18 + travel * 0.28);
-      const maxScale = core / worksTitle._baseWidth;
-      const scale = Math.min(0.26 + grow * 0.24, maxScale);
+      // Фаза 1: слово ограничено шириной тёмной сердцевины — оно маленькое
+      // и не задевает летящие работы.
+      const core = window.innerWidth * (0.17 + travel * 0.20);
+      const smallCap = core / worksTitle._baseWidth;
+      const small = Math.min(0.22 + crawl * 0.10, smallCap);
+      // Фаза 2: на чёрном экране потолок снимается — слово дорастает до 1.
+      const scale = small + (1 - small) * bloom;
       worksTitle.style.transform = `translate(-50%, calc(-50% + ${y.toFixed(1)}px)) scale(${scale.toFixed(3)})`;
-      worksTitle.style.opacity = Math.max(0.7, 0.75 + grow * 0.25).toFixed(3);
+      worksTitle.style.opacity = Math.max(0.72, 0.72 + bloom * 0.28).toFixed(3);
     }
 
     // Кикер и счётчик — после того как заголовок встал на место.
-    const meta = map(p, .78, .90);
+    const meta = map(p, .86, .96);
     if (worksKicker) { worksKicker.style.opacity = meta.toFixed(3); worksKicker.style.transform = `translateY(${((1 - meta) * 14).toFixed(1)}px)`; }
     if (worksCount) worksCount.style.opacity = meta.toFixed(3);
 
     // C: Кейсы появляются ПОСЛЕ подъёма заголовка — никакого наложения на туннель.
-    const revealScale = easeOut(map(p, .70, .92));
-    const revealFade = easeOut(map(p, .70, .90));
+    // Слайдер выходит ПОСЛЕ того, как заголовок вырос на чёрном экране,
+    // а туннель уже полностью выключен — сцены не накладываются.
+    const revealScale = easeOut(map(p, .84, .97));
+    const revealFade = easeOut(map(p, .84, .95));
     if (worksStage) {
       worksStage.style.opacity = revealFade.toFixed(3);
       const s = (0.9 + revealScale * 0.1).toFixed(3);
@@ -1066,7 +1075,7 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
     }
     // Шапка появляется только когда кейсы зафиксировались (после полёта туннеля),
     // чтобы не мешать погружению и не перекрываться летящими работами.
-    worksScene.dataset.chrome = p > .74 ? 'dark' : 'none';
+    worksScene.dataset.chrome = p > .70 ? 'dark' : 'none';
   };
   const request = () => { if (queued) return; queued = true; window.requestAnimationFrame(render); };
   render();
