@@ -838,15 +838,23 @@ if (workTunnel && workTunnelImages.length && window.THREE) {
       // сегмент возвращается в хвост с новыми работами. Но КАК ТОЛЬКО начинается
       // погружение (travelProgress), переставление ОСТАНАВЛИВАЕТСЯ: новые работы
       // больше не подставляются, мы долетаем до последних и влетаем в темноту.
-      if (travelProgress < 0.06) {
-        segments.forEach((segment) => {
-          if (segment.position.z > cameraZ + segmentDepth) {
-            const tail = Math.min(...segments.map((item) => item.position.z));
-            segment.position.z = tail - segmentDepth;
-            fillSegment(segment);
-          }
-        });
-      }
+      // Коридор бесконечный в ОБЕ стороны: улетевший за спину сегмент уходит
+      // в хвост, а при обратном скролле сегмент из дальнего хвоста возвращается
+      // вперёд — туннель всегда во весь экран, никогда не «съёживается» вдали.
+      const zs = segments.map((item) => item.position.z);
+      let tail = Math.min(...zs);
+      let head = Math.max(...zs);
+      segments.forEach((segment) => {
+        if (segment.position.z > cameraZ + segmentDepth) {
+          tail -= segmentDepth;
+          segment.position.z = tail;
+          if (travelProgress < 0.06) fillSegment(segment);
+        } else if (segment.position.z < cameraZ - segmentCount * segmentDepth) {
+          head += segmentDepth;
+          segment.position.z = head;
+          if (travelProgress < 0.06) fillSegment(segment);
+        }
+      });
       renderer.render(scene, camera);
     };
     raf = window.requestAnimationFrame(animate);
@@ -1025,7 +1033,20 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
       // -25% и на старте, и в финале: слово не упирается в края туннеля
       // Минимальный размер 0.42 — заголовок читается и не теряется среди работ
       // (0.2 давал крошечный текст, особенно заметно при обратном скролле).
-      const scale = 0.42 + grow * 0.38;
+      // Заголовок должен ЖИТЬ ВНУТРИ сердцевины коридора с воздухом вокруг,
+      // а не упираться в летящие работы. Сердцевина по мере пролёта
+      // расширяется, поэтому и потолок масштаба растёт вместе с ней.
+      // Ширина слова при scale=1 (замеряем один раз, до трансформаций).
+      if (!worksTitle._baseWidth) {
+        const prev = worksTitle.style.transform;
+        worksTitle.style.transform = 'translate(-50%,-50%) scale(1)';
+        worksTitle._baseWidth = worksTitle.offsetWidth || 1;
+        worksTitle.style.transform = prev;
+      }
+      // Сердцевина: ~26% ширины экрана в начале, ~62% в конце пролёта.
+      const core = window.innerWidth * (0.18 + travel * 0.28);
+      const maxScale = core / worksTitle._baseWidth;
+      const scale = Math.min(0.26 + grow * 0.24, maxScale);
       worksTitle.style.transform = `translate(-50%, calc(-50% + ${y.toFixed(1)}px)) scale(${scale.toFixed(3)})`;
       worksTitle.style.opacity = Math.max(0.7, 0.75 + grow * 0.25).toFixed(3);
     }
@@ -1050,7 +1071,11 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
   const request = () => { if (queued) return; queued = true; window.requestAnimationFrame(render); };
   render();
   scrollSubscribers.push(render);
-  window.addEventListener('resize', request);
+  window.addEventListener('resize', () => {
+    // Базовая ширина слова зависит от clamp() по вьюпорту — пересчитываем.
+    if (worksTitle) worksTitle._baseWidth = 0;
+    request();
+  });
 
   // СНАП-ДОВОДЧИК ВХОДА: когда сцена показалась снизу хотя бы на ~треть и человек
   // скроллит вниз — один плавный доводчик ставит туннель во весь экран (к началу
