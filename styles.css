@@ -1458,3 +1458,63 @@ a.pricing-button { text-decoration:none; }
   }
   .audience-grid { margin-top:20px; }
 }
+
+/* ============================================================
+   SAFARI: ЛЕНТА РАБОТ НА ПЕРВОМ ЭКРАНЕ
+   ------------------------------------------------------------
+   Лента и подпись под ней были прибиты к фиксированным 558/562px
+   ОТ ВЕРХА экрана. В Safari нижняя панель браузера съедает часть
+   вьюпорта, и низ ленты вместе с подписью уходил за границу —
+   работы обрезались. На iPhone Pro Max подпись вылезала на 37px,
+   на iPhone 14 стояла впритык без запаса.
+
+   Привязываем блок к НИЗУ: сначала подпись, над ней лента.
+   Тогда что бы ни делала панель браузера, низ всегда виден.
+   ============================================================ */
+@media (max-width:900px) {
+  .mobile-project-meta {
+    top:auto;
+    bottom:max(14px, env(safe-area-inset-bottom, 0px));
+  }
+  .showcase-marquee {
+    top:auto;
+    /* над подписью: её высота ~30px + отступ */
+    bottom:calc(max(14px, env(safe-area-inset-bottom, 0px)) + 46px);
+  }
+}
+
+/* Низкие экраны: существующие правила (max-height:760px) уже поджимают
+   верхнюю группу. Здесь только подстраховываем низ, чтобы лента с
+   подписью не упирались в край на совсем коротких экранах. */
+@media (max-width:900px) and (max-height:680px) {
+  .showcase-marquee   { bottom:calc(max(10px, env(safe-area-inset-bottom, 0px)) + 40px); }
+  .mobile-project-meta { bottom:max(10px, env(safe-area-inset-bottom, 0px)); font-size:11px; }
+}
+
+/* ============================================================
+   ПЕРВЫЙ ЭКРАН: БЕЗ ДВОЙНОЙ ЗАГРУЗКИ
+   ------------------------------------------------------------
+   Раньше браузер успевал отрисовать контент, и только потом
+   скрипт ставил opacity:0 и запускал анимацию — получалось
+   «показался, пропал, поехал». Прячем элементы сразу в CSS,
+   до первой отрисовки. Класс is-ready снимает маскировку,
+   когда скрипт готов; если JS не отработал — через 1.2s
+   срабатывает страховка на самой странице.
+   ============================================================ */
+.intro-stage:not(.is-ready) .site-header .brand,
+.intro-stage:not(.is-ready) .site-header .header-duration,
+.intro-stage:not(.is-ready) .site-header nav,
+.intro-stage:not(.is-ready) .site-header .header-side,
+.intro-stage:not(.is-ready) .mobile-hero-proof,
+.intro-stage:not(.is-ready) .hero-kicker,
+.intro-stage:not(.is-ready) #hero-title,
+.intro-stage:not(.is-ready) .hero-cta,
+.intro-stage:not(.is-ready) .hero-proof,
+.intro-stage:not(.is-ready) .hero-hint,
+.intro-stage:not(.is-ready) .hero-gallery-note,
+.intro-stage:not(.is-ready) .mobile-project-meta,
+.intro-stage:not(.is-ready) .showcase-marquee { opacity:0; }
+
+@media (prefers-reduced-motion:reduce) {
+  .intro-stage:not(.is-ready) * { opacity:1 !important; }
+}

@@ -52,11 +52,15 @@ if (introStage && window.anime && !window.matchMedia('(prefers-reduced-motion: r
   const all = [...level1, ...level2, ...level2cta, ...level3];
 
   if (all.length) {
+    // Снимаем CSS-маскировку: с этого момента видимостью управляет anime.js.
+    // Порядок важен — сначала выставляем opacity:0 через anime, потом
+    // убираем класс, иначе будет кадр с полностью видимым контентом.
     // Стартовое состояние: мягкий блюр + лёгкий подъём снизу.
     window.anime.set(level1, { opacity: 0, translateY: -12, filter: 'blur(8px)' });
     window.anime.set(level2, { opacity: 0, translateY: 22, filter: 'blur(14px)' });
     window.anime.set(level2cta, { opacity: 0, filter: 'blur(14px)' });
     window.anime.set(level3, { opacity: 0, translateY: 26, filter: 'blur(12px)' });
+    introStage.classList.add('is-ready');
 
     const playIntro = () => {
       const tl = window.anime.timeline({ easing: 'cubicBezier(.22, 1, .36, 1)' });
