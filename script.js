@@ -404,7 +404,13 @@ if (persistentChrome && persistentAudience) {
     // 1-й скролл — блок встал и читается; 2-й — карточки и текст растворяются;
     // 3-й — уходим к следующей секции. Раньше выход начинался на .72 и
     // проскакивал за пару кадров, поэтому блок было легко упустить.
-    const audienceExit = Math.max(0, Math.min(1, (audienceProgress - .46) / .34));
+    // На мобилке путь прокрутки длиннее (380svh против 260svh), поэтому
+    // и окно растворения шире: блок дольше стоит и дольше уходит, чтобы
+    // между «стоит» и «исчез» помещался отдельный свайп.
+    const audienceMobile = window.innerWidth <= 900;
+    const exitStart = audienceMobile ? .40 : .46;
+    const exitSpan  = audienceMobile ? .42 : .34;
+    const audienceExit = Math.max(0, Math.min(1, (audienceProgress - exitStart) / exitSpan));
     persistentAudience.style.setProperty('--audience-exit', audienceExit.toFixed(3));
     if (!differenceSceneReady && audienceExit >= .96 && persistentDifferenceSection) {
       differenceSceneReady = true;
