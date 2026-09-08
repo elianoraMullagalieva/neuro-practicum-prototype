@@ -1381,3 +1381,43 @@ a.pricing-button { text-decoration:none; }
   .intro-stage .hero .hero-cta .hero-cta-icon  { width:max(67px, 3.25vw) !important; height:max(53px, 2.54vw) !important; }
   .intro-stage .hero .hero-cta .hero-cta-icon .action-pair__icon-image { width:max(15px, .71vw); height:max(15px, .71vw); }
 }
+
+/* ============================================================
+   МОБИЛКА: ПЛОСКАЯ РАСКЛАДКА ПОСЛЕ БЛОКА «ДЛЯ КОГО»
+   ------------------------------------------------------------
+   До «Для кого» (первый экран, motion, audience) всё остаётся
+   как было — там хореография работает.
+
+   Дальше четыре секции подряд наезжали друг на друга через
+   margin-top:-100svh, и у каждой внутри был свой sticky. Телефон
+   пересчитывал эту стопку на каждом кадре — отсюда «шатание»
+   между тарифами и туннелем и дёрганье при обратном скролле.
+   Плюс svh на iOS плавает вместе с адресной строкой Safari,
+   из-за чего высоты скакали прямо во время скролла.
+
+   Здесь секции difference / programme / works / pricing идут
+   обычным потоком, друг за другом. Анимации внутри остаются.
+   ============================================================ */
+@media (max-width:900px) {
+  /* 1. «Чувствуешь разницу» — обычный блок, без наезда и sticky. */
+  .difference-section { height:auto; margin-top:0; }
+  .difference-sticky  { position:static; height:auto; display:block; }
+  .difference-content { min-height:0; padding-top:72px; padding-bottom:72px; }
+
+  /* 2. Туннель работ — один экран прокрутки вместо трёх.
+        Сцена остаётся sticky (иначе туннель схлопнется и слово
+        не вырастет), но занимает заметно меньше пути. */
+  .works-scene  { height:180vh; }
+  .works-sticky { height:100dvh; }
+
+  /* 3. Тарифы — гарантированно в потоке, ничем не перекрыты. */
+  .pricing-section { position:relative; z-index:4; margin-top:0; }
+}
+
+/* iOS Safari: svh меняется вместе с показом/скрытием адресной строки,
+   из-за чего высота секций скачет прямо во время скролла. Для секций
+   после «Для кого» фиксируем высоту в dvh — она стабильна. */
+@media (max-width:900px) {
+  .works-sticky, .participant-gallery-stage { height:100dvh; }
+  .participant-gallery-stage { height:var(--gallery-art-height, 42dvh); }
+}
