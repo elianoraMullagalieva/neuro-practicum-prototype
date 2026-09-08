@@ -1404,10 +1404,11 @@ a.pricing-button { text-decoration:none; }
   .difference-sticky  { position:static; height:auto; display:block; }
   .difference-content { min-height:0; padding-top:72px; padding-bottom:72px; }
 
-  /* 2. Туннель работ — один экран прокрутки вместо трёх.
-        Сцена остаётся sticky (иначе туннель схлопнется и слово
-        не вырастет), но занимает заметно меньше пути. */
-  .works-scene  { height:180vh; }
+  /* 2. Туннель работ. 180vh оказалось слишком мало: сцена пролетала
+        рывком, а при скролле ВВЕРХ не успевала отрабатывать кадры и
+        лагала. 260vh дают спокойный ход в обе стороны, оставаясь
+        заметно короче исходных 300vh. */
+  .works-scene  { height:260vh; }
   .works-sticky { height:100dvh; }
 
   /* 3. Тарифы — гарантированно в потоке, ничем не перекрыты. */
@@ -1434,5 +1435,26 @@ a.pricing-button { text-decoration:none; }
    свайп 2 — карточки растворяются, свайп 3 — уходим дальше.
    ============================================================ */
 @media (max-width:900px) {
-  .audience-section { height:380svh; }
+  /* «Для кого» на мобилке — обычный блок в потоке, без шторы и наезда.
+     Раньше секция была высотой 380svh с margin-top:-100svh и sticky-сценой
+     внутри: контент жил в контейнере height:100svh и не помещался
+     (переполнение 15-27px на разных айфонах, а в Safari ещё и панель
+     браузера съедала низ). Плюс после растворения оставался пустой
+     чёрный экран — «дыра» на остаток высоты секции. */
+  .audience-section { height:auto; min-height:0; margin-top:0; }
+  /* JS вешает на сцену is-pinned/is-ended — эти классы перебивали static
+     и уводили блок за экран (секция схлопывалась в высоту 0, оставалась
+     чёрная дыра). Гасим все три состояния. */
+  .audience-stage,
+  .audience-stage.is-pinned,
+  .audience-stage.is-ended {
+    position:static; inset:auto; width:auto; height:auto; z-index:auto;
+  }
+  .audience-content.container {
+    height:auto; min-height:0;
+    padding:96px 16px 72px;
+    /* Шторы больше нет: блок не растворяется, а просто уходит вверх. */
+    opacity:1; filter:none; transform:none;
+  }
+  .audience-grid { margin-top:20px; }
 }

@@ -429,8 +429,11 @@ if (persistentChrome && persistentAudience) {
     const audienceEnded = audienceRect.bottom <= window.innerHeight - EPS;
     const audiencePinned = !motionStillActive && !audienceEnded
       && audienceRect.top <= 0 && audienceRect.bottom > window.innerHeight;
-    persistentAudienceStage?.classList.toggle('is-pinned', audiencePinned);
-    persistentAudienceStage?.classList.toggle('is-ended', audienceEnded);
+    // На мобилке «Для кого» — обычный блок в потоке (см. styles.css),
+    // пиннить нечего: классы состояния только ломали раскладку.
+    const audienceFlat = window.innerWidth <= 900;
+    persistentAudienceStage?.classList.toggle('is-pinned', !audienceFlat && audiencePinned);
+    persistentAudienceStage?.classList.toggle('is-ended', !audienceFlat && audienceEnded);
     const audienceTakingOver = audienceActive && audienceExit < .08;
     // Пока audience ещё на экране (не ушёл вниз) — его выход тянет шапку в тёмный
     // режим. Но НИЖЕ по сайту это уже не влияет (иначе шапка застревала светлой).
@@ -710,7 +713,14 @@ if (workTunnel && workTunnelImages.length && window.THREE) {
       const dy = window.scrollY - lastScrollY;
       lastScrollY = window.scrollY;
       // Only downward scrolling accelerates the flight forward.
-      if (dy > 0) speed = Math.min(maxSpeed, speed + dy * .09);
+      // Палец на телефоне даёт dy в разы больше колеса мыши: с десктопным
+      // коэффициентом туннель мгновенно улетал на максимум и захлёбывался
+      // (особенно заметно при скролле вверх). На мобилке разгон мягче,
+      // а потолок скорости ниже.
+      const wide = window.innerWidth > 900;
+      const gain = wide ? .09 : .028;
+      const cap  = wide ? maxSpeed : 3.2;
+      if (dy > 0) speed = Math.min(cap, speed + dy * gain);
     };
     scrollSubscribers.push(onTunnelScroll);
 
