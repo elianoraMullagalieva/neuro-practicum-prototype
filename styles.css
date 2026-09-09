@@ -1518,3 +1518,48 @@ a.pricing-button { text-decoration:none; }
 @media (prefers-reduced-motion:reduce) {
   .intro-stage:not(.is-ready) * { opacity:1 !important; }
 }
+
+/* ============================================================
+   ДЕСКТОП: ВЫХОД ИЗ «ДЛЯ КОГО» — БЕЗ ШТОРКИ
+   ------------------------------------------------------------
+   ВХОД в блок не трогаем: наезд -100svh на motion и sticky-сцена
+   остаются как были — переход «Твои навыки» → «Для кого» работал.
+   Меняем только ВЫХОД: раньше блок держался экран, а потом
+   растворялся через blur и чёрный градиент, и на этой растяжке
+   читалась пустая «дыра». Теперь высота ровно под контент,
+   растворения нет — блок просто уходит вверх, а следующая
+   секция идёт сразу за ним.
+   ============================================================ */
+@media (min-width:901px) {
+  /* Наезд на motion сохраняем — иначе перед блоком появляется дыра.
+     Высота 135svh — золотая середина: при 100svh блок улетал с первого
+     же скролла, при 175svh требовалось три. Теперь один скролл держит
+     блок на экране, второй уводит дальше. */
+  .audience-section { height:135svh; min-height:0; }
+  .audience-content.container {
+    /* Шторки нет: без blur, затемнения и масштабирования. */
+    opacity:1; filter:none; transform:none;
+  }
+  .audience-content::after { display:none; }
+
+  /* Следующая секция идёт СРАЗУ за «Для кого». Её наезд -100svh был
+     рассчитан на растянутый выход со шторкой; без шторки он съедал
+     весь блок целиком. */
+  .difference-section { margin-top:0; }
+}
+
+/* Скидка: старая цена зачёркнута, стоит перед текущей. */
+.pricing-old {
+  display:block;
+  margin-bottom:2px;
+  color:#a3a3a0;
+  font-size:.42em;
+  font-weight:500;
+  letter-spacing:0;
+  text-decoration:line-through;
+  text-decoration-thickness:1px;
+}
+.pricing-card[data-tariff="colleagues"] .pricing-old { color:rgba(255,255,255,.45); }
+@media (min-width:1600px) {
+  .pricing-old { font-size:.42em; }
+}

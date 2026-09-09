@@ -435,6 +435,8 @@ if (persistentChrome && persistentAudience) {
       && audienceRect.top <= 0 && audienceRect.bottom > window.innerHeight;
     // На мобилке «Для кого» — обычный блок в потоке (см. styles.css),
     // пиннить нечего: классы состояния только ломали раскладку.
+    // На мобилке «Для кого» — плоский блок в потоке; на десктопе sticky-сцена
+    // сохраняется (вход в блок должен работать как раньше).
     const audienceFlat = window.innerWidth <= 900;
     persistentAudienceStage?.classList.toggle('is-pinned', !audienceFlat && audiencePinned);
     persistentAudienceStage?.classList.toggle('is-ended', !audienceFlat && audienceEnded);
@@ -443,8 +445,17 @@ if (persistentChrome && persistentAudience) {
     // режим. Но НИЖЕ по сайту это уже не влияет (иначе шапка застревала светлой).
     const audienceStillVisible = audienceRect.bottom > 0;
     // Светлая шапка (.is-dark), когда активная секция под линией — тёмная.
-    const isDark = (audienceStillVisible && audienceExit > .45)
-      || (!audienceTakingOver && !audienceActive && chromeMode === 'dark');
+    // На десктопе шторки у «Для кого» больше нет: блок остаётся БЕЛЫМ до
+    // самого ухода вверх. Раньше шапка светлела по audienceExit — он рос,
+    // пока блок растворялся в темноту. Без шторки это давало светлую шапку
+    // на белом фоне. Теперь смотрим на реальное положение секции.
+    const audienceFlatDesktop = window.innerWidth > 900;
+    const audienceOnScreen = audienceRect.top < window.innerHeight * .5
+      && audienceRect.bottom > 0;
+    const isDark = audienceFlatDesktop
+      ? (!audienceOnScreen && chromeMode === 'dark')
+      : ((audienceStillVisible && audienceExit > .45)
+         || (!audienceTakingOver && !audienceActive && chromeMode === 'dark'));
     persistentChrome.classList.toggle('is-dark', isDark);
   };
   const requestPersistentChromeUpdate = () => {
@@ -1071,7 +1082,10 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
       // и не задевает летящие работы.
       const core = window.innerWidth * (0.17 + travel * 0.20);
       const smallCap = core / worksTitle._baseWidth;
-      const small = Math.min(0.22 + crawl * 0.10, smallCap);
+      // Внутри туннеля слово на 30% меньше прежнего (было 0.22→0.32):
+      // края больше не упираются в летящие работы. Основной рост
+      // перенесён на фазу чёрного экрана, когда туннель уже погас.
+      const small = Math.min(0.154 + crawl * 0.07, smallCap);
       // Фаза 2: на чёрном экране потолок снимается — слово дорастает до 1.
       const scale = small + (1 - small) * bloom;
       worksTitle.style.transform = `translate(-50%, calc(-50% + ${y.toFixed(1)}px)) scale(${scale.toFixed(3)})`;
