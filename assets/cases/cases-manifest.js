@@ -1,11 +1,11 @@
-// Работы для слайдера кейсов (отдельно от туннеля)
-window.CASE_GALLERY_IMAGES = Object.freeze([
-  "assets/tunnel/work-01.jpg",
-  "assets/tunnel/work-10.jpg",
-  "assets/tunnel/work-06.jpg",
-  "assets/tunnel/work-03.jpg",
-  "assets/tunnel/work-09.jpg",
-  "assets/tunnel/work-08.jpg",
-  "assets/tunnel/work-07.jpg",
-  "assets/tunnel/work-02.jpg"
+// Видео-кейсы для слайдера после туннеля. Александра — первой.
+// Каждая запись: имя файла в assets/video (без расширения).
+// Рядом лежат name.mp4 (900px), name@2x.mp4 (1800px) и name.jpg (постер).
+window.CASE_GALLERY_VIDEOS = Object.freeze([
+  "alexandra",
+  "portfolio",
+  "cleanshot-b",
+  "varya",
+  "works",
+  "cleanshot-a"
 ]);

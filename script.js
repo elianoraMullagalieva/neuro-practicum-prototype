@@ -905,6 +905,8 @@ if (workTunnel && workTunnelImages.length && window.THREE) {
 
 const participantGallery = document.querySelector('[data-participant-gallery]');
 const caseImages = Array.isArray(window.CASE_GALLERY_IMAGES) ? window.CASE_GALLERY_IMAGES : [];
+// Слайдер кейсов теперь на видео: каждая карточка автопроигрывается.
+const caseVideos = Array.isArray(window.CASE_GALLERY_VIDEOS) ? window.CASE_GALLERY_VIDEOS : [];
 if (participantGallery && (caseImages.length || workTunnelImages.length)) {
   const track = participantGallery.querySelector('[data-gallery-track]');
   const previousButton = participantGallery.querySelector('[data-gallery-prev]');
@@ -916,13 +918,24 @@ if (participantGallery && (caseImages.length || workTunnelImages.length)) {
   // но в карусели они «лежат» и тянут композицию вниз — поэтому их исключаем.
   // Слайдер показывает финальные кейсы из assets/cases (отдельно от туннеля),
   // все как есть, без фильтра по ориентации.
-  const sliderSources = caseImages.length ? caseImages : workTunnelImages;
+  const useVideo = caseVideos.length > 0;
+  const sliderSources = useVideo ? caseVideos : (caseImages.length ? caseImages : workTunnelImages);
   const cards = sliderSources.map((src, index) => {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'participant-gallery-card';
     card.setAttribute('aria-label', `Показать работу ${index + 1}`);
-    card.innerHTML = `<img src="${src}" alt="Работа участника ${index + 1}" loading="lazy" decoding="async" draggable="false" />`;
+    if (useVideo) {
+      // Тяжёлую версию (@2x) отдаём только широким экранам; на мобилке —
+      // лёгкая, иначе трафик и декодирование убивают прокрутку.
+      card.innerHTML = `<video class="participant-gallery-video" muted loop playsinline `
+        + `preload="none" poster="assets/video/${src}.jpg" draggable="false">`
+        + `<source src="assets/video/${src}@2x.mp4" media="(min-width:1200px)" type="video/mp4" />`
+        + `<source src="assets/video/${src}.mp4" type="video/mp4" />`
+        + `</video>`;
+    } else {
+      card.innerHTML = `<img src="${src}" alt="Работа участника ${index + 1}" loading="lazy" decoding="async" draggable="false" />`;
+    }
     card.addEventListener('click', () => setActive(index));
     track.append(card);
     return card;
@@ -1015,6 +1028,36 @@ if (participantGallery && (caseImages.length || workTunnelImages.length)) {
     if (event.key === 'ArrowLeft') { event.preventDefault(); setActive(activeIndex - 1); }
     if (event.key === 'ArrowRight') { event.preventDefault(); setActive(activeIndex + 1); }
   });
+  // Автопроигрывание: играет ТОЛЬКО активная карточка. Шесть видео разом
+  // сажают процессор и трафик, особенно на телефоне.
+  if (useVideo) {
+    const syncVideos = () => {
+      cards.forEach((card, i) => {
+        const v = card.querySelector('video');
+        if (!v) return;
+        if (i === activeIndex) {
+          if (v.preload === 'none') v.preload = 'auto';
+          const play = v.play();
+          if (play && play.catch) play.catch(() => {});
+        } else {
+          v.pause();
+        }
+      });
+    };
+    // renderGallery объявлена через const — не переприсваиваем, а вешаем
+    // синхронизацию на смену активной карточки через сам setActive.
+    participantGallery.addEventListener('click', () => window.requestAnimationFrame(syncVideos));
+    previousButton?.addEventListener('click', () => window.requestAnimationFrame(syncVideos));
+    nextButton?.addEventListener('click', () => window.requestAnimationFrame(syncVideos));
+    participantGallery.addEventListener('keydown', () => window.requestAnimationFrame(syncVideos));
+    // Сцена длинная — запускаем видео только когда слайдер реально на экране.
+    const galleryObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) syncVideos();
+      else cards.forEach((c) => c.querySelector('video')?.pause());
+    }, { threshold: .15 });
+    galleryObserver.observe(participantGallery);
+  }
+
   fitCardsToMedia();
   renderGallery();
 }
@@ -1141,8 +1184,17 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
     };
     window.requestAnimationFrame(step);
   };
+  // Клик по меню: доводчик должен молчать, иначе он перехватывает переход
+  // и прокрутка застревает на старте туннеля («Форматы» и «Вопросы» не
+  // открывались). Глушим его на время анкорного перехода.
+  let anchorJumpUntil = 0;
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest?.('a[href^="#"]');
+    if (link) anchorJumpUntil = Date.now() + 1600;
+  }, true);
+
   const maybeSnapIn = () => {
-    if (snapping) { lastY = window.scrollY; return; }
+    if (snapping || Date.now() < anchorJumpUntil) { lastY = window.scrollY; return; }
     const rect = worksScene.getBoundingClientRect();
     const goingDown = window.scrollY > lastY;
     lastY = window.scrollY;
