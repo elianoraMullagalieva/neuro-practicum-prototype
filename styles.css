@@ -218,7 +218,9 @@ em { color:var(--lime); font-style:normal; }
     width:clamp(760px, 63.571vw, 1095px);
     max-width:none;
     margin:0;
-    font-size:clamp(48px, 4.286vw, 74px);
+    /* rem в средней части — чтобы заголовок реагировал на увеличение
+       страницы и крупный системный шрифт. На 1440px размер тот же (61.7px). */
+    font-size:clamp(3rem, 1.25rem + 2.9vw, 4.625rem);
     font-weight:500;
     line-height:.95;
     letter-spacing:-.06em;
@@ -1582,3 +1584,40 @@ a.pricing-button { text-decoration:none; }
 }
 /* Лента первого экрана: видео заполняет карточку как фото. */
 .work-card > .work-video { display:block; width:100%; height:100%; object-fit:cover; }
+
+/* ============================================================
+   ТИПОГРАФИКА НА CLAMP С REM — ПО ОПОРНЫМ ТОЧКАМ
+   ------------------------------------------------------------
+   Раньше все clamp были на чистом vw: clamp(64px, 7.4vw, 116px).
+   Такие размеры не реагируют на увеличение страницы (Cmd +) и
+   на крупный системный шрифт — это ломает доступность.
+   Теперь в средней части формулы есть rem, поэтому масштаб
+   браузера работает.
+
+   Опорные точки (375 / 1440 / максимум):
+     заголовок     34 / 60 / 85
+     подзаголовок  20 / 28 / 36
+     текст         16 / 18 / 20
+   ============================================================ */
+:root {
+  --fs-h1:  clamp(2.125rem, 1.553rem + 2.44vw,  5.3125rem);
+  --fs-h2:  clamp(1.75rem,  1.33rem  + 1.79vw,  4rem);
+  --fs-sub: clamp(1.25rem,  1.074rem + 0.751vw, 2.25rem);
+  --fs-body:clamp(1rem,     0.956rem + 0.188vw, 1.25rem);
+}
+
+/* Крупные заголовки секций */
+.difference-title,
+.programme-head h2,
+.questions-head h2,
+.pricing-head h2,
+.site-footer__lead h2 { font-size:var(--fs-h1); }
+
+/* .audience-intro h2 не трогаем: у него 7 тонко подогнанных правил
+   под разные высоты экрана (см. выше), общий размер их ломает. */
+.motion-system-title { font-size:var(--fs-h2); }
+
+/* Основной текст */
+.difference-copy p,
+.programme-lesson-desc,
+.questions-panel > div p { font-size:var(--fs-body); }

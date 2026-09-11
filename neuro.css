@@ -23,8 +23,10 @@
   --neuro-white: #ffffff;
 
   /* 1u = 1px макета. Растёт вместе с шириной, но не разваливается
-     на ультравайде и не схлопывается на ноутбуке. */
-  --u: clamp(0.62px, 0.0694vw, 1.02px);
+     на ультравайде и не схлопывается на ноутбуке. Средняя часть —
+     rem + vw (не голый vw): rem даёт чувствительность к browser
+     zoom и крупному системному шрифту — доступность, а не декор. */
+  --u: clamp(0.62px, 0.00937rem + 0.05896vw, 1.02px);
 }
 
 * {
@@ -429,7 +431,7 @@ body {
 
 @media (max-width: 1024px) {
   :root {
-    --u: clamp(0.56px, 0.098vw, 0.86px);
+    --u: clamp(0.56px, 0.00625rem + 0.08411vw, 0.86px);
   }
 
   .neuro {
@@ -818,5 +820,255 @@ body {
     bottom: 26px;
     text-align: left;
     font-size: 10px;
+  }
+}
+
+/* ============================================================
+   БЛОК 3 — «НОЧНАЯ СМЕНА»
+   Диагональная ось суток вместо колонок. Секция пинится на
+   300vh: по progress ось прочерчивается, точки загораются,
+   текстура фона греется от ночи к дню через hue-rotate.
+   ============================================================ */
+
+.shift {
+  position: relative;
+  width: 100%;
+  height: 300vh; /* пространство для скролл-пина */
+  background: #07070a;
+}
+
+.shift__pin {
+  position: relative;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: #07070a;
+  color: #eeece9;
+}
+
+/* Текстура-температура: едва заметный шум, который греется
+   hue-rotate'ом по ходу суток — не градиент поверх кадра. */
+.shift__texture {
+  position: absolute;
+  inset: -20%;
+  z-index: 0;
+  opacity: 0.5;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  filter: hue-rotate(190deg) saturate(1.4) brightness(0.9);
+  will-change: filter;
+}
+
+.shift__tag {
+  position: absolute;
+  z-index: 3;
+  left: calc(50 * var(--u));
+  top: calc(50 * var(--u));
+  margin: 0;
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(14 * var(--u));
+  letter-spacing: 0.01em;
+  color: #c11020;
+}
+
+.shift__heading {
+  position: absolute;
+  z-index: 3;
+  right: calc(50 * var(--u));
+  top: calc(50 * var(--u));
+  margin: 0;
+  text-align: right;
+  font-family: "Necosmic", "Chakra Petch", system-ui, sans-serif;
+  font-weight: 300;
+  font-size: calc(38 * var(--u));
+  line-height: 1.08;
+  text-transform: uppercase;
+}
+
+.shift__heading span {
+  display: block;
+}
+
+.shift__axis {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.shift__axis-line {
+  fill: none;
+  stroke: #4a4640;
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Часовые засечки на оси */
+.shift__tick {
+  stroke: #3a3733;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.shift__tick-label {
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: 11px;
+  fill: #55514c;
+}
+
+/* Точки-события: AI зелёные по всей оси, менеджер — серый,
+   только в середине суток (9:00–18:00). */
+.shift__dot {
+  opacity: 0;
+  transform-origin: center;
+}
+
+.shift__dot-core {
+  fill: #2fae66;
+}
+
+.shift__dot--human .shift__dot-core {
+  fill: #6b6862;
+}
+
+.shift__dot-line {
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.5;
+}
+
+.shift__dot--ai {
+  color: #2fae66;
+}
+
+.shift__dot--human {
+  color: #6b6862;
+}
+
+.shift__dot-label {
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: 10px;
+  fill: #8a877f;
+}
+
+/* Крупное событие 03:40 — позиционируется JS-ом по расчётной
+   точке на пути (getPointAtLength), поэтому left/top через CSS-переменные. */
+.shift__spike {
+  position: absolute;
+  z-index: 4;
+  left: var(--spike-x, 20%);
+  top: var(--spike-y, 60%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(6 * var(--u));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.shift__spike-dot {
+  width: calc(11 * var(--u));
+  height: calc(11 * var(--u));
+  border-radius: 50%;
+  background: #ff3b48;
+  box-shadow: 0 0 0 calc(5 * var(--u)) rgba(255, 59, 72, 0.18);
+  transform: scale(0);
+}
+
+.shift__spike-time {
+  margin: 0;
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(13 * var(--u));
+  color: #ff3b48;
+}
+
+.shift__spike-note {
+  margin: 0;
+  max-width: calc(240 * var(--u));
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(13 * var(--u));
+  line-height: 1.5;
+  color: #d8d5d0;
+}
+
+/* Итог: контраст масштабов минимум 1:8 против часовых подписей (11px) */
+.shift__tally {
+  position: absolute;
+  z-index: 3;
+  left: calc(50 * var(--u));
+  bottom: calc(60 * var(--u));
+  display: flex;
+  gap: calc(90 * var(--u));
+  opacity: 0;
+}
+
+.shift__tally-item {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--u));
+}
+
+.shift__tally-num {
+  font-family: "Necosmic", "Chakra Petch", system-ui, sans-serif;
+  font-weight: 300;
+  font-size: calc(140 * var(--u));
+  line-height: 0.9;
+  color: #eeece9;
+  font-variant-numeric: tabular-nums;
+}
+
+.shift__tally-label {
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(13 * var(--u));
+  color: #8a877f;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+@media (max-width: 720px) {
+  .shift {
+    height: 240vh;
+  }
+
+  .shift__heading {
+    left: calc(24 * var(--u));
+    right: calc(24 * var(--u));
+    top: calc(90 * var(--u));
+    text-align: left;
+    font-size: calc(30 * var(--u));
+  }
+
+  .shift__tag {
+    left: calc(24 * var(--u));
+    top: calc(28 * var(--u));
+  }
+
+  .shift__spike-note {
+    max-width: calc(200 * var(--u));
+  }
+
+  .shift__tally {
+    left: calc(24 * var(--u));
+    bottom: calc(40 * var(--u));
+    gap: calc(40 * var(--u));
+  }
+
+  .shift__tally-num {
+    font-size: calc(90 * var(--u));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shift__dot,
+  .shift__spike,
+  .shift__tally {
+    opacity: 1 !important;
+  }
+  .shift__spike-dot {
+    transform: scale(1) !important;
   }
 }

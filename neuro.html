@@ -154,9 +154,54 @@
         </div>
       </div>
     </section>
+
+    <!-- ====== Блок 3: «Ночная смена» — диагональная шкала суток ====== -->
+    <section class="shift" data-shift aria-label="Круглосуточная работа AI против 8-часового менеджера">
+      <div class="shift__pin" data-shift-pin>
+        <div class="shift__texture" data-shift-texture aria-hidden="true"></div>
+
+        <p class="shift__tag" data-scramble>NEURAL SYSTEM / 03</p>
+
+        <h2 class="shift__heading">
+          <span>ЛИДЫ НЕ СМОТРЯТ</span>
+          <span class="is-red">НА ЧАСЫ</span>
+        </h2>
+
+        <!-- Диагональная ось суток: 00:00 внизу слева → 24:00 вверху справа.
+             Не колонки — одна прочерчиваемая линия, точки висят на разном
+             вылете от неё, как заметки на полях. -->
+        <svg class="shift__axis" viewBox="0 0 1440 1024" preserveAspectRatio="none" aria-hidden="true">
+          <line class="shift__axis-line" data-shift-line x1="90" y1="944" x2="1350" y2="80" />
+          <!-- Часовые засечки — заполняются JS по длине пути -->
+          <g data-shift-ticks></g>
+          <!-- Точки-события — заполняются JS -->
+          <g data-shift-dots></g>
+        </svg>
+
+        <!-- Крупное событие: заявка в 03:40 -->
+        <div class="shift__spike" data-shift-spike>
+          <span class="shift__spike-dot"></span>
+          <p class="shift__spike-time">03:40</p>
+          <p class="shift__spike-note">Заявка на 340 000 ₽<br /><span class="is-red">ответ через 12 секунд</span></p>
+        </div>
+
+        <!-- Итог: контраст масштабов 1:8 -->
+        <div class="shift__tally" data-shift-tally>
+          <div class="shift__tally-item">
+            <span class="shift__tally-num is-red" data-tally="18">0</span>
+            <span class="shift__tally-label">лидов принял AI</span>
+          </div>
+          <div class="shift__tally-item">
+            <span class="shift__tally-num" data-tally="4">0</span>
+            <span class="shift__tally-label">лида успел менеджер</span>
+          </div>
+        </div>
+      </div>
+    </section>
     </div>
 
     <script src="assets/neuro/text-sphere.js"></script>
+    <script src="assets/vendor/MotionPathPlugin.min.js"></script>
     <script src="assets/neuro/scramble-text.js"></script>
     <script src="assets/vendor/gsap.min.js"></script>
     <script src="assets/vendor/ScrollTrigger.min.js"></script>

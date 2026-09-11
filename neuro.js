@@ -618,3 +618,294 @@
     });
   }
 })();
+
+/* ============================================================
+   БЛОК 3 — «НОЧНАЯ СМЕНА»
+
+   Диагональная ось суток (00:00→24:00) вместо сетки из карточек.
+   Точки развешаны вдоль SVG-пути с разным вылетом — как заметки
+   на полях, не в ряд. Секция пинится на 300vh:
+
+     progress 0.00–0.75 — ось прочерчивается, точки загораются
+                            по своему часу, текстура греется
+                            от ночи (hue-rotate холодный) к дню
+     progress 0.75–1.00 — крупный спайк 03:40, итоговые цифры
+
+   Реализация без платных DrawSVG/MotionPath-по-объекту:
+   ось — strokeDashoffset (тот же приём, что в блоке 1 для диагоналей),
+   расстановка точек — getPointAtLength() по длине пути.
+   ============================================================ */
+
+(function () {
+  "use strict";
+
+  var section = document.querySelector("[data-shift]");
+  if (!section || typeof window.gsap === "undefined" || !window.ScrollTrigger) return;
+
+  var gsap = window.gsap;
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var pin = section.querySelector("[data-shift-pin]");
+  var texture = section.querySelector("[data-shift-texture]");
+  var axisLine = section.querySelector("[data-shift-line]");
+  var ticksGroup = section.querySelector("[data-shift-ticks]");
+  var dotsGroup = section.querySelector("[data-shift-dots]");
+  var spike = section.querySelector("[data-shift-spike]");
+  var tally = section.querySelector("[data-shift-tally]");
+  var tallyNums = section.querySelectorAll("[data-tally]");
+
+  if (!axisLine) return;
+
+  /* --------------------------------------------------------
+     Данные: события суток.
+     AI отвечает равномерно все 24 часа (лёгкий разброс, чтобы
+     не выглядело как метроном). Менеджер — только 9:00–18:00,
+     ночью его ось физически пустая.
+     -------------------------------------------------------- */
+
+  function hoursToEvents() {
+    var events = [];
+    // AI: примерно раз в 70–90 минут круглые сутки — 18 точек.
+    var aiHour = 0.3;
+    while (aiHour < 24) {
+      events.push({ hour: aiHour, type: "ai" });
+      aiHour += 1.3 + Math.sin(aiHour) * 0.35;
+    }
+    // Менеджер: рабочий день 9:00–18:00, реже — 4 точки.
+    [9.5, 12.2, 14.8, 17.1].forEach(function (h) {
+      events.push({ hour: h, type: "human" });
+    });
+    return events;
+  }
+
+  var events = hoursToEvents();
+
+  /* --------------------------------------------------------
+     Геометрия пути: длина, точки по часам, засечки каждые 3 часа.
+     -------------------------------------------------------- */
+
+  var pathLen = axisLine.getTotalLength();
+
+  function pointAtHour(hour) {
+    var t = clamp01(hour / 24);
+    return axisLine.getPointAtLength(t * pathLen);
+  }
+
+  function clamp01(v) {
+    return Math.min(Math.max(v, 0), 1);
+  }
+
+  // Нормаль к оси в данной точке — чтобы вешать точки "в сторону",
+  // а не вдоль линии.
+  function normalAt(hour) {
+    var t = clamp01(hour / 24);
+    var d = 0.01;
+    var p0 = axisLine.getPointAtLength(clamp01(t - d) * pathLen);
+    var p1 = axisLine.getPointAtLength(clamp01(t + d) * pathLen);
+    var dx = p1.x - p0.x;
+    var dy = p1.y - p0.y;
+    var len = Math.hypot(dx, dy) || 1;
+    return { x: -dy / len, y: dx / len };
+  }
+
+  var svgNS = "http://www.w3.org/2000/svg";
+
+  function el(tag, attrs) {
+    var node = document.createElementNS(svgNS, tag);
+    for (var k in attrs) node.setAttribute(k, attrs[k]);
+    return node;
+  }
+
+  // Часовые засечки — каждые 3 часа, подпись только на 00/06/12/18/24.
+  for (var h = 0; h <= 24; h += 3) {
+    var p = pointAtHour(h);
+    var n = normalAt(h);
+    var tickLen = 6;
+    var tick = el("line", {
+      class: "shift__tick",
+      x1: p.x - n.x * tickLen,
+      y1: p.y - n.y * tickLen,
+      x2: p.x + n.x * tickLen,
+      y2: p.y + n.y * tickLen,
+    });
+    ticksGroup.appendChild(tick);
+
+    var label = el("text", {
+      class: "shift__tick-label",
+      x: p.x + n.x * 16,
+      y: p.y + n.y * 16 + 3,
+      "text-anchor": "middle",
+    });
+    label.textContent = (h < 10 ? "0" : "") + h + ":00";
+    ticksGroup.appendChild(label);
+  }
+
+  // Точки-события: вылет от оси чередуется по знаку и расстоянию —
+  // "заметки на полях", не строгий ряд.
+  var dotEls = events.map(function (ev, i) {
+    var p = pointAtHour(ev.hour);
+    var n = normalAt(ev.hour);
+    // Псевдослучайный, но стабильный вылет — зависит от индекса.
+    var side = i % 2 === 0 ? 1 : -1;
+    var reach = 22 + ((i * 37) % 30);
+    var ox = p.x + n.x * side * reach;
+    var oy = p.y + n.y * side * reach;
+
+    var g = el("g", {
+      class: "shift__dot shift__dot--" + ev.type,
+      "data-hour": ev.hour.toFixed(2),
+    });
+
+    var connector = el("line", {
+      class: "shift__dot-line",
+      x1: p.x,
+      y1: p.y,
+      x2: ox,
+      y2: oy,
+    });
+    var core = el("circle", {
+      class: "shift__dot-core",
+      cx: ox,
+      cy: oy,
+      r: ev.type === "ai" ? 4 : 3.2,
+    });
+
+    g.appendChild(connector);
+    g.appendChild(core);
+    dotsGroup.appendChild(g);
+
+    return { el: g, hour: ev.hour, type: ev.type };
+  });
+
+  /* --------------------------------------------------------
+     Спайк 03:40 — позиция через CSS custom properties.
+     -------------------------------------------------------- */
+
+  var spikeHour = 3 + 40 / 60;
+  var spikePoint = pointAtHour(spikeHour);
+  var spikeNormal = normalAt(spikeHour);
+  var spikeReach = 60;
+  var spikeXPct = ((spikePoint.x + spikeNormal.x * spikeReach) / 1440) * 100;
+  var spikeYPct = ((spikePoint.y + spikeNormal.y * spikeReach) / 1024) * 100;
+  if (spike) {
+    spike.style.setProperty("--spike-x", spikeXPct + "%");
+    spike.style.setProperty("--spike-y", spikeYPct + "%");
+  }
+
+  /* --------------------------------------------------------
+     Стартовые состояния
+     -------------------------------------------------------- */
+
+  gsap.set(axisLine, { strokeDasharray: pathLen, strokeDashoffset: pathLen });
+  gsap.set(dotEls.map(function (d) { return d.el; }), { opacity: 0, scale: 0.4, transformOrigin: "center" });
+  gsap.set(spike, { opacity: 0 });
+  gsap.set(section.querySelector(".shift__spike-dot"), { scale: 0 });
+  gsap.set(tally, { opacity: 0, y: 16 });
+  gsap.set(section.querySelector(".shift__heading"), { opacity: 0, y: 12 });
+  gsap.set(section.querySelector(".shift__tag"), { opacity: 0 });
+
+  if (reduced) {
+    // Статичный, но полный кадр: всё показано, без движения.
+    gsap.set(axisLine, { strokeDashoffset: 0 });
+    gsap.set(dotEls.map(function (d) { return d.el; }), { opacity: 1, scale: 1 });
+    gsap.set(spike, { opacity: 1 });
+    gsap.set(section.querySelector(".shift__spike-dot"), { scale: 1 });
+    gsap.set(tally, { opacity: 1, y: 0 });
+    gsap.set(section.querySelector(".shift__heading"), { opacity: 1, y: 0 });
+    gsap.set(section.querySelector(".shift__tag"), { opacity: 1 });
+    tallyNums.forEach(function (elNum) {
+      elNum.textContent = elNum.dataset.tally;
+    });
+    return;
+  }
+
+  /* --------------------------------------------------------
+     Скролл-таймлайн: пин на 300vh
+     -------------------------------------------------------- */
+
+  var tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: section,
+      start: "top top",
+      end: "+=200%",
+      scrub: 0.6,
+      pin: pin,
+      pinSpacing: true,
+    },
+  });
+
+  tl.to(section.querySelector(".shift__tag"), { opacity: 1, duration: 0.06 }, 0)
+    .to(section.querySelector(".shift__heading"), { opacity: 1, y: 0, duration: 0.1 }, 0.02)
+    // Ось прочерчивается на первых 55% скролла
+    .to(axisLine, { strokeDashoffset: 0, ease: "none", duration: 0.55 }, 0.05);
+
+  // Точки загораются в момент, когда прочерченная ось доходит до их часа —
+  // время в скролле буквально совпадает со временем на шкале.
+  dotEls.forEach(function (d) {
+    var at = 0.05 + (d.hour / 24) * 0.55;
+    tl.to(
+      d.el,
+      { opacity: 1, scale: 1, duration: 0.03, ease: "back.out(2)" },
+      at
+    );
+  });
+
+  // Текстура греется от холодной ночи к тёплому дню и обратно к ночи —
+  // прогресс совпадает с прочерчиванием оси (те же 0.05–0.6). GSAP не
+  // твинит составной filter напрямую, поэтому ведём через прокси-объект.
+  var heat = { v: 0 };
+  tl.to(
+    heat,
+    {
+      v: 1,
+      duration: 0.35,
+      ease: "power1.inOut",
+      onUpdate: function () {
+        // 0 → ночь (190°, холодный синий), 1 → день (20°, тёплый)
+        var deg = gsap.utils.interpolate(190, 20, heat.v);
+        texture.style.filter = "hue-rotate(" + deg + "deg) saturate(1.4) brightness(0.9)";
+      },
+    },
+    0.05
+  ).to(
+    heat,
+    {
+      v: 0,
+      duration: 0.25,
+      ease: "power1.inOut",
+      onUpdate: function () {
+        var deg = gsap.utils.interpolate(190, 20, heat.v);
+        texture.style.filter = "hue-rotate(" + deg + "deg) saturate(1.4) brightness(0.9)";
+      },
+    },
+    0.4
+  );
+
+  // Спайк 03:40 — крупный акцент, подъезжает лёгким motionPath-штрихом
+  tl.to(spike, { opacity: 1, duration: 0.08 }, 0.62)
+    .to(
+      section.querySelector(".shift__spike-dot"),
+      { scale: 1, duration: 0.1, ease: "back.out(2.6)" },
+      0.64
+    );
+
+  // Итоговые цифры — приходят в конце, контраст масштабов делает работу
+  tl.to(tally, { opacity: 1, y: 0, duration: 0.1 }, 0.78);
+
+  tallyNums.forEach(function (elNum, i) {
+    var target = parseInt(elNum.dataset.tally, 10);
+    var obj = { v: 0 };
+    tl.to(
+      obj,
+      {
+        v: target,
+        duration: 0.14,
+        ease: "power2.out",
+        onUpdate: function () {
+          elNum.textContent = String(Math.round(obj.v));
+        },
+      },
+      0.8 + i * 0.04
+    );
+  });
+})();
