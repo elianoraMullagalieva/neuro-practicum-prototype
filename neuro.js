@@ -85,8 +85,14 @@
 
   gsap.set(root, { autoAlpha: 1 });
 
-  gsap.set(portraitWrap, { yPercent: 6, opacity: 0 });
-  gsap.set(portrait, { scale: 1.14, filter: "grayscale(0.8) contrast(1.2) brightness(0.82)" });
+  // Портрет не «проявляется» затуханием — он раскрывается построчно
+  // сверху вниз (--reveal — CSS-переменная, двигает линейную маску
+  // в CSS: см. .neuro__portrait-wrap). opacity:1 с самого начала —
+  // видимость держит маска, а не прозрачность.
+  gsap.set(portraitWrap, { opacity: 1, "--reveal": "0%" });
+  var revealEdge = root.querySelector(".neuro__reveal-edge");
+  gsap.set(revealEdge, { opacity: 0 });
+  gsap.set(portrait, { scale: 1.08, filter: "grayscale(0.8) contrast(1.2) brightness(0.82)" });
   gsap.set(boots, { opacity: 0, y: 8 });
   gsap.set(claimRows, { yPercent: 115 });
   gsap.set(logItems, { opacity: 0, x: 14 });
@@ -160,23 +166,28 @@
     )
     .to(scan, { opacity: 0, duration: 0.4 }, "boot+=1.35");
 
-  /* ---- 2. INGEST: портрет проявляется под красным светом ---- */
+  /* ---- 2. INGEST: портрет раскрывается построчно сверху вниз ---- */
 
+  // Не fade — построчная развёртка (как сканер печатает кадр).
+  // Кромка-линия видна всё время раскрытия и гаснет по завершении;
+  // красный свет и цвет приходят следом, когда фигура уже раскрыта.
   tl.addLabel("ingest", "boot+=0.75")
+    .to(revealEdge, { opacity: 1, duration: 0.15 }, "ingest")
     .to(
       portraitWrap,
-      { opacity: 1, yPercent: 0, duration: 1.5, ease: "power2.out" },
+      { "--reveal": "118%", duration: 1.5, ease: "power2.inOut" },
       "ingest"
     )
+    .to(revealEdge, { opacity: 0, duration: 0.2 }, "ingest+=1.4")
     .to(
       portrait,
       {
         scale: 1,
         filter: "grayscale(0) contrast(1.06) brightness(1) saturate(1.04)",
-        duration: 1.8,
+        duration: 1.6,
         ease: "power2.out",
       },
-      "ingest"
+      "ingest+=0.25"
     );
 
   /* ---- 3. OUTPUT: литеры выезжают по диагонали ---- */
@@ -781,12 +792,16 @@
      Спайк 03:40 — позиция через CSS custom properties.
      -------------------------------------------------------- */
 
+  // side=-1 и увеличенный reach уводят спайк вверх-влево от оси,
+  // а не вниз к левому нижнему углу — иначе он садится ровно
+  // на итоговый блок [data-shift-tally], который стоит в том же углу.
   var spikeHour = 3 + 40 / 60;
   var spikePoint = pointAtHour(spikeHour);
   var spikeNormal = normalAt(spikeHour);
-  var spikeReach = 60;
-  var spikeXPct = ((spikePoint.x + spikeNormal.x * spikeReach) / 1440) * 100;
-  var spikeYPct = ((spikePoint.y + spikeNormal.y * spikeReach) / 1024) * 100;
+  var spikeReach = 170;
+  var spikeSide = -1;
+  var spikeXPct = ((spikePoint.x + spikeNormal.x * spikeReach * spikeSide) / 1440) * 100;
+  var spikeYPct = ((spikePoint.y + spikeNormal.y * spikeReach * spikeSide) / 1024) * 100;
   if (spike) {
     spike.style.setProperty("--spike-x", spikeXPct + "%");
     spike.style.setProperty("--spike-y", spikeYPct + "%");
@@ -820,6 +835,21 @@
   }
 
   /* --------------------------------------------------------
+     Шапка секции: тег и заголовок — это обложка блока, а не
+     событие внутри прокрутки времени. Показываем её обычным
+     enter-триггером сразу, как только секция доехала до топа —
+     не через scrub, у которого при progress=0 до первого события
+     скролла состояние остаётся тем, что задал gsap.set() (opacity:0).
+     -------------------------------------------------------- */
+
+  gsap.timeline({
+    scrollTrigger: { trigger: section, start: "top 85%", once: true },
+    defaults: { ease: "power2.out" },
+  })
+    .to(section.querySelector(".shift__tag"), { opacity: 1, duration: 0.4 })
+    .to(section.querySelector(".shift__heading"), { opacity: 1, y: 0, duration: 0.5 }, 0.08);
+
+  /* --------------------------------------------------------
      Скролл-таймлайн: пин на 300vh
      -------------------------------------------------------- */
 
@@ -834,10 +864,8 @@
     },
   });
 
-  tl.to(section.querySelector(".shift__tag"), { opacity: 1, duration: 0.06 }, 0)
-    .to(section.querySelector(".shift__heading"), { opacity: 1, y: 0, duration: 0.1 }, 0.02)
-    // Ось прочерчивается на первых 55% скролла
-    .to(axisLine, { strokeDashoffset: 0, ease: "none", duration: 0.55 }, 0.05);
+  // Ось прочерчивается на первых 55% скролла
+  tl.to(axisLine, { strokeDashoffset: 0, ease: "none", duration: 0.55 }, 0.05);
 
   // Точки загораются в момент, когда прочерченная ось доходит до их часа —
   // время в скролле буквально совпадает со временем на шкале.

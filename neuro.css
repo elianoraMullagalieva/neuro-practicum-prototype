@@ -93,21 +93,30 @@ body {
   width: calc(1110 * var(--u));
   transform: translateX(-50%);
   overflow: hidden;
-  /* Портрет растворяется в фоне по краям — в макете нет видимой рамки кадра */
-  /* Растворяем только боковые края: сверху голова должна доходить
-     до кромки кадра, как в макете. */
+  /* Дефолт — ПОЛНОСТЬЮ раскрыт: если JS не запустится (нет GSAP,
+     prefers-reduced-motion, скрипт упал) — портрет виден целиком,
+     а не застревает на нулевой шторке. JS сам занижает --reveal
+     до 0% перед стартом сцены и твинит обратно вверх. */
+  --reveal: 120%;
+  /* Портрет растворяется в фоне по краям (радиальная маска) и одновременно
+     проявляется построчно сверху вниз (линейная штора по --reveal) —
+     оба слоя маски работают вместе через intersect. */
   -webkit-mask-image: radial-gradient(
-    116% 108% at 50% 34%,
-    #000 62%,
-    rgba(0, 0, 0, 0.74) 80%,
-    transparent 99%
-  );
+      116% 108% at 50% 34%,
+      #000 62%,
+      rgba(0, 0, 0, 0.74) 80%,
+      transparent 99%
+    ),
+    linear-gradient(180deg, #000 0%, #000 var(--reveal), transparent calc(var(--reveal) + 10%));
+  -webkit-mask-composite: source-in;
   mask-image: radial-gradient(
-    116% 108% at 50% 34%,
-    #000 62%,
-    rgba(0, 0, 0, 0.74) 80%,
-    transparent 99%
-  );
+      116% 108% at 50% 34%,
+      #000 62%,
+      rgba(0, 0, 0, 0.74) 80%,
+      transparent 99%
+    ),
+    linear-gradient(180deg, #000 0%, #000 var(--reveal), transparent calc(var(--reveal) + 10%));
+  mask-composite: intersect;
 }
 
 .neuro__portrait {
@@ -118,6 +127,28 @@ body {
   display: block;
   filter: contrast(1.06) saturate(1.04);
   will-change: transform, filter;
+}
+
+/* Тонкая светящаяся кромка на границе построчного раскрытия портрета —
+   видимый «фронт» сборки изображения, а не магическое проявление. */
+.neuro__reveal-edge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--reveal);
+  height: calc(2 * var(--u));
+  transform: translateY(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 74, 74, 0.9) 20%,
+    #ffffff 50%,
+    rgba(255, 74, 74, 0.9) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 calc(14 * var(--u)) calc(2 * var(--u)) rgba(255, 59, 72, 0.55);
+  pointer-events: none;
+  will-change: opacity;
 }
 
 /* Красная сканирующая полоса — объясняет красный свет на лице */

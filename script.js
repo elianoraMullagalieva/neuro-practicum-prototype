@@ -395,9 +395,10 @@ if (persistentChrome && persistentAudience) {
     // иначе на первом экране флаг не выставляется и блок «всплывает» над hero.
     persistentAudience.classList.toggle('is-below', audienceRect.top >= window.innerHeight);
     const audienceActive = audienceRect.top <= viewportMarker && audienceRect.bottom > viewportMarker;
-    // На блоке «Для кого» (audience) шапка закреплена всегда — она нужна для
-    // композиции и не должна прятаться при скролле вниз.
-    const shouldShow = !introIsActive && !inNoChrome && (audienceActive || !chromeHiddenByScroll);
+    // Раньше на блоке «Для кого» шапка была закреплена всегда (audienceActive ||),
+    // и при скролле вниз она ехала вместе с контентом, налезая на заголовок.
+    // Теперь ведёт себя как везде: прячется при скролле вниз, возвращается вверх.
+    const shouldShow = !introIsActive && !inNoChrome && !chromeHiddenByScroll;
     persistentChrome.classList.toggle('is-visible', shouldShow);
     if (introIsActive) {
       persistentChrome.classList.remove('is-dark');
