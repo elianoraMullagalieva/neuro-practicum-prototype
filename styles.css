@@ -1621,3 +1621,9 @@ a.pricing-button { text-decoration:none; }
 .difference-copy p,
 .programme-lesson-desc,
 .questions-panel > div p { font-size:var(--fs-body); }
+
+/* Кейс Александры в блоке «Чувствуешь разницу» — видео вместо картинки. */
+.difference-card figure .difference-video {
+  display:block; width:100%; height:100%;
+  object-fit:cover; background:#141414;
+}
