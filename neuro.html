@@ -138,9 +138,9 @@
         </p>
 
         <h2 class="core__title" id="core-title" data-core-el>
-          <span class="core__title-row"><span>AUTOMATE SALES</span></span>
-          <span class="core__title-row"><span>WITHOUT THE</span></span>
-          <span class="core__title-row"><span class="is-red">HUMAN FACTOR</span></span>
+          <span class="core__title-row"><span class="core__title-hero">AUTOMATE</span> <span class="core__title-plain">SALES</span></span>
+          <span class="core__title-row"><span class="core__title-plain">WITHOUT THE</span></span>
+          <span class="core__title-row"><span class="core__title-plain is-red">HUMAN FACTOR</span></span>
         </h2>
 
         <p class="core__lead" data-core-el>
@@ -156,56 +156,110 @@
       </div>
     </section>
 
-    <!-- ====== Блок 3: «Ночная смена» — диагональная шкала суток ====== -->
-    <section class="shift" data-shift aria-label="Круглосуточная работа AI против 8-часового менеджера">
-      <div class="shift__pin" data-shift-pin>
-        <div class="shift__texture" data-shift-texture aria-hidden="true"></div>
+    <!-- ====== Блок 3: тарифы + вопросы-ответы ====== -->
+    <section class="deploy" data-deploy aria-labelledby="deploy-title">
+      <div class="deploy__head">
+        <p class="deploy__tag" data-scramble>NEURAL SYSTEM / 03</p>
+        <h2 class="deploy__title" id="deploy-title">
+          <span>ВЫБЕРИ,</span>
+          <span class="is-red">КАК ВНЕДРИТЬ</span>
+        </h2>
+        <p class="deploy__lead">
+          Три способа запустить AI-продавца — от самостоятельной настройки до полного сопровождения запуска.
+        </p>
+      </div>
 
-        <p class="shift__tag" data-scramble>NEURAL SYSTEM / 03</p>
+      <div class="deploy__plans" data-deploy-plans>
+        <article class="plan" data-plan>
+          <p class="plan__index">01</p>
+          <h3 class="plan__name">Самостоятельный</h3>
+          <p class="plan__price"><span class="plan__price-old">24 900 ₽</span><span class="plan__price-new">14 900 ₽</span><span class="plan__price-unit">/мес</span></p>
+          <ul class="plan__list">
+            <li>Готовый сценарий диалога под вашу нишу</li>
+            <li>Подключение к одному каналу — сайт или Telegram</li>
+            <li>Библиотека промптов и шаблонов квалификации</li>
+          </ul>
+          <p class="plan__renew">Продление — 2 400 ₽/мес</p>
+          <a class="plan__cta" href="#">Настроить самому</a>
+        </article>
 
-        <h2 class="shift__heading">
-          <span>ЛИДЫ НЕ СМОТРЯТ</span>
-          <span class="is-red">НА ЧАСЫ</span>
+        <article class="plan plan--featured" data-plan>
+          <p class="plan__badge is-red">Рекомендуем</p>
+          <p class="plan__index">02</p>
+          <h3 class="plan__name">С интеграцией</h3>
+          <p class="plan__price"><span class="plan__price-old">38 000 ₽</span><span class="plan__price-new">21 500 ₽</span><span class="plan__price-unit">/мес</span></p>
+          <ul class="plan__list">
+            <li>Бот во всех каналах: сайт, WhatsApp, Telegram, Avito</li>
+            <li>Передача квалифицированных лидов прямо в вашу CRM</li>
+            <li>Закрытый чат поддержки и еженедельные разборы диалогов</li>
+            <li>Донастройка сценария под сезонность и акции</li>
+          </ul>
+          <p class="plan__renew">Продление — 2 400 ₽/мес</p>
+          <a class="plan__cta" href="#">Выбрать интеграцию</a>
+        </article>
+
+        <article class="plan" data-plan>
+          <p class="plan__index">03</p>
+          <h3 class="plan__name">Под ключ</h3>
+          <p class="plan__price"><span class="plan__price-old">98 000 ₽</span><span class="plan__price-new">69 000 ₽</span><span class="plan__price-unit">единоразово</span></p>
+          <ul class="plan__list">
+            <li>Всё из тарифа «С интеграцией», доступ на год</li>
+            <li>Персональное сопровождение запуска — 2 месяца</li>
+            <li>Разбор реальных диалогов и ручная донастройка воронки</li>
+            <li>Бесплатные обновления сценария в течение года</li>
+          </ul>
+          <p class="plan__renew">Без доплат за продление в первый год</p>
+          <a class="plan__cta" href="#">Запустить под ключ</a>
+        </article>
+      </div>
+
+      <div class="faq">
+        <p class="faq__tag" data-scramble>NEURAL SYSTEM / 04</p>
+        <h2 class="faq__title">
+          <span class="is-red">ВОПРОСЫ,</span>
+          <span>КОТОРЫЕ ЗАДАЮТ ДО СТАРТА</span>
         </h2>
 
-        <!-- Диагональная ось суток: 00:00 внизу слева → 24:00 вверху справа.
-             Не колонки — одна прочерчиваемая линия, точки висят на разном
-             вылете от неё, как заметки на полях. -->
-        <svg class="shift__axis" viewBox="0 0 1440 1024" preserveAspectRatio="none" aria-hidden="true">
-          <line class="shift__axis-line" data-shift-line x1="90" y1="944" x2="1350" y2="80" />
-          <!-- Часовые засечки — заполняются JS по длине пути -->
-          <g data-shift-ticks></g>
-          <!-- Точки-события — заполняются JS -->
-          <g data-shift-dots></g>
-        </svg>
-
-        <!-- Крупное событие: заявка в 03:40 -->
-        <div class="shift__spike" data-shift-spike>
-          <span class="shift__spike-dot"></span>
-          <p class="shift__spike-time">03:40</p>
-          <p class="shift__spike-note">Заявка на 340 000 ₽<br /><span class="is-red">ответ через 12 секунд</span></p>
-        </div>
-
-        <!-- Итог: контраст масштабов 1:8 -->
-        <div class="shift__tally" data-shift-tally>
-          <div class="shift__tally-item">
-            <span class="shift__tally-num is-red" data-tally="18">0</span>
-            <span class="shift__tally-label">лидов принял AI</span>
-          </div>
-          <div class="shift__tally-item">
-            <span class="shift__tally-num" data-tally="4">0</span>
-            <span class="shift__tally-label">лида успел менеджер</span>
-          </div>
+        <div class="faq__list" data-faq>
+          <details class="faq__item" data-faq-item>
+            <summary class="faq__q"><span class="faq__q-index">01</span><span class="faq__q-text">Бот заменит менеджера полностью?</span><span class="faq__plus" aria-hidden="true"></span></summary>
+            <p class="faq__a">Нет — он снимает рутину: квалифицирует лида, отвечает на типовые вопросы и назначает встречу. Сложные и крупные сделки менеджер по-прежнему ведёт сам, но уже с готовым контекстом.</p>
+          </details>
+          <details class="faq__item" data-faq-item>
+            <summary class="faq__q"><span class="faq__q-index">02</span><span class="faq__q-text">Сколько диалогов бот вытянет в месяц?</span><span class="faq__plus" aria-hidden="true"></span></summary>
+            <p class="faq__a">Ограничения по количеству нет — бот держит любое число параллельных переписок одновременно, в отличие от живого менеджера с одним окном чата за раз.</p>
+          </details>
+          <details class="faq__item" data-faq-item>
+            <summary class="faq__q"><span class="faq__q-index">03</span><span class="faq__q-text">Как оплатить?</span><span class="faq__plus" aria-hidden="true"></span></summary>
+            <p class="faq__a">Российской или зарубежной картой, а также по счёту для юрлица. Для нестандартных случаев — через отдел заботы, он подберёт способ.</p>
+          </details>
+          <details class="faq__item" data-faq-item>
+            <summary class="faq__q"><span class="faq__q-index">04</span><span class="faq__q-text">Есть рассрочка?</span><span class="faq__plus" aria-hidden="true"></span></summary>
+            <p class="faq__a">Да, на 3, 4 или 6 месяцев с комиссией 3%, 4% и 6% соответственно — оформляется на этапе оплаты.</p>
+          </details>
+          <details class="faq__item" data-faq-item>
+            <summary class="faq__q"><span class="faq__q-index">05</span><span class="faq__q-text">Что если не успею настроить за месяц?</span><span class="faq__plus" aria-hidden="true"></span></summary>
+            <p class="faq__a">На тарифе «Под ключ» доступ действует год. На остальных тарифах продлить можно в любой момент за отдельную плату, указанную в карточке тарифа.</p>
+          </details>
+          <details class="faq__item" data-faq-item>
+            <summary class="faq__q"><span class="faq__q-index">06</span><span class="faq__q-text">В чём разница в поддержке между тарифами?</span><span class="faq__plus" aria-hidden="true"></span></summary>
+            <p class="faq__a">На «Самостоятельном» — только документация и шаблоны. На «С интеграцией» — закрытый чат и еженедельные разборы. На «Под ключ» — персональное сопровождение и приоритетные правки сценария.</p>
+          </details>
+          <details class="faq__item" data-faq-item>
+            <summary class="faq__q"><span class="faq__q-index">07</span><span class="faq__q-text">Подойдёт для моей ниши?</span><span class="faq__plus" aria-hidden="true"></span></summary>
+            <p class="faq__a">Сценарий адаптируется под конкретный продукт и воронку — от розницы до B2B с длинным циклом сделки. На старте разбираем вашу специфику отдельно.</p>
+          </details>
         </div>
       </div>
     </section>
+
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/MotionPathPlugin.min.js"></script>
-    <script src="text-sphere.js"></script>
-    <script src="scramble-text.js"></script>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <script src="assets/vendor/ScrollTrigger.min.js"></script>
+    <script src="assets/vendor/MotionPathPlugin.min.js"></script>
+    <script src="assets/neuro/text-sphere.js"></script>
+    <script src="assets/neuro/scramble-text.js"></script>
     <script src="neuro.js"></script>
   </body>
 </html>

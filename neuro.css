@@ -779,7 +779,6 @@ body {
   top: calc(50 * var(--u));
   max-width: calc(560 * var(--u));
   margin: 0;
-  font-family: "Necosmic", "Chakra Petch", system-ui, sans-serif;
   font-weight: 300;
   font-size: calc(72 * var(--u));
   line-height: 1.06;
@@ -796,6 +795,27 @@ body {
 .core__title-row > span {
   display: block;
   will-change: transform;
+}
+
+/* Строка «AUTOMATE SALES» держит оба слова на одной линии —
+   первое слово декоративным шрифтом, второе базовым. */
+.core__title-row > span:has(.core__title-hero) {
+  display: flex;
+  align-items: baseline;
+  gap: 0.28em;
+  flex-wrap: wrap;
+}
+
+/* Только заглавное слово блока получает фирменный декоративный шрифт —
+   он несёт латиницу и в кириллице недоступен (см. .neuro__word). Всё
+   остальное — базовый гротеск, второй функциональный шрифт системы. */
+.core__title-hero {
+  font-family: "Necosmic", "Chakra Petch", system-ui, sans-serif;
+}
+
+.core__title-plain {
+  font-family: "Chakra Petch", system-ui, sans-serif;
+  font-weight: 400;
 }
 
 .core__title .is-red {
@@ -859,251 +879,394 @@ body {
 }
 
 /* ============================================================
-   БЛОК 3 — «НОЧНАЯ СМЕНА»
-   Диагональная ось суток вместо колонок. Секция пинится на
-   300vh: по progress ось прочерчивается, точки загораются,
-   текстура фона греется от ночи к дню через hue-rotate.
+   БЛОК 3 — ТАРИФЫ + ВОПРОСЫ-ОТВЕТЫ
+   Продолжение тёмной стороны системы (тот же фон, что у .core).
+   Карточки тарифов не в ровную линию — средняя приподнята и шире,
+   как рекомендованный путь среди трёх. FAQ — аккордеон с той же
+   техно-нумерацией, что несёт остальная сцена.
    ============================================================ */
 
-.shift {
+.deploy {
   position: relative;
   width: 100%;
-  height: 300vh; /* пространство для скролл-пина */
-  background: #07070a;
-}
-
-.shift__pin {
-  position: relative;
-  width: 100%;
-  height: 100svh;
-  overflow: hidden;
+  padding: calc(100 * var(--u)) calc(50 * var(--u)) calc(120 * var(--u));
+  background: radial-gradient(120% 70% at 50% 0%, #14100f 0%, #0a0809 55%, #060505 100%);
+  color: #e8e5e4;
   isolation: isolate;
-  background: #07070a;
-  color: #eeece9;
 }
 
-/* Текстура-температура: едва заметный шум, который греется
-   hue-rotate'ом по ходу суток — не градиент поверх кадра. */
-.shift__texture {
-  position: absolute;
-  inset: -20%;
-  z-index: 0;
-  opacity: 0.5;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
-  filter: hue-rotate(190deg) saturate(1.4) brightness(0.9);
-  will-change: filter;
+.deploy__head {
+  max-width: calc(760 * var(--u));
+  margin: 0 auto calc(90 * var(--u));
+  text-align: center;
 }
 
-.shift__tag {
-  position: absolute;
-  z-index: 3;
-  left: calc(50 * var(--u));
-  top: calc(50 * var(--u));
-  margin: 0;
+.deploy__tag {
+  margin: 0 0 calc(18 * var(--u));
   font-family: "B612 Mono", ui-monospace, monospace;
   font-size: calc(14 * var(--u));
   letter-spacing: 0.01em;
   color: #c11020;
 }
 
-.shift__heading {
-  position: absolute;
-  z-index: 3;
-  right: calc(50 * var(--u));
-  top: calc(50 * var(--u));
+.deploy__title {
+  margin: 0 0 calc(24 * var(--u));
+  font-family: "Necosmic", "Chakra Petch", system-ui, sans-serif;
+  font-weight: 300;
+  font-size: calc(56 * var(--u));
+  line-height: 1.08;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.deploy__title span {
+  display: inline;
+}
+
+.deploy__title .is-red {
+  color: #c11020;
+}
+
+.deploy__lead {
   margin: 0;
-  text-align: right;
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(16 * var(--u));
+  line-height: 1.6;
+  color: #a39e9a;
+}
+
+/* ---- Карточки тарифов ---- */
+
+.deploy__plans {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: start;
+  gap: calc(28 * var(--u));
+  max-width: calc(1340 * var(--u));
+  margin: 0 auto;
+}
+
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: calc(18 * var(--u));
+  padding: calc(40 * var(--u)) calc(32 * var(--u));
+  border: 1px solid rgba(232, 229, 225, 0.14);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Средний тариф — рекомендованный путь: приподнят и на светлой
+   плашке, выбивается из ряда весом, а не рамкой-обводкой у всех. */
+.plan--featured {
+  position: relative;
+  margin-top: calc(-24 * var(--u));
+  padding-top: calc(56 * var(--u));
+  padding-bottom: calc(56 * var(--u));
+  background: #eeece9;
+  color: #0a0809;
+  border-color: transparent;
+}
+
+.plan__badge {
+  position: absolute;
+  top: calc(20 * var(--u));
+  right: calc(32 * var(--u));
+  margin: 0;
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(12 * var(--u));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.plan__index {
+  margin: 0;
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(13 * var(--u));
+  color: #c11020;
+}
+
+.plan--featured .plan__index {
+  color: #85000c;
+}
+
+.plan__name {
+  margin: 0;
+  font-family: "Chakra Petch", system-ui, sans-serif;
+  font-weight: 400;
+  font-size: calc(28 * var(--u));
+  text-transform: uppercase;
+}
+
+.plan__price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: calc(8 * var(--u));
+  margin: 0;
+  font-family: "Necosmic", "Chakra Petch", system-ui, sans-serif;
+}
+
+.plan__price-old {
+  font-size: calc(18 * var(--u));
+  font-weight: 300;
+  color: #7a756f;
+  text-decoration: line-through;
+}
+
+.plan--featured .plan__price-old {
+  color: #a39e9a;
+}
+
+.plan__price-new {
+  font-size: calc(44 * var(--u));
+  font-weight: 300;
+  color: #e8e5e4;
+}
+
+.plan--featured .plan__price-new {
+  color: #0a0809;
+}
+
+.plan__price-unit {
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(13 * var(--u));
+  color: #a39e9a;
+}
+
+.plan--featured .plan__price-unit {
+  color: #5a5551;
+}
+
+.plan__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: calc(12 * var(--u));
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(14 * var(--u));
+  line-height: 1.5;
+}
+
+.plan__list li {
+  padding-left: calc(18 * var(--u));
+  position: relative;
+}
+
+.plan__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: calc(8 * var(--u));
+  height: 1px;
+  background: #c11020;
+}
+
+.plan--featured .plan__list li::before {
+  background: #85000c;
+}
+
+.plan__renew {
+  margin: 0;
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(12 * var(--u));
+  color: #7a756f;
+}
+
+.plan--featured .plan__renew {
+  color: #5a5551;
+}
+
+.plan__cta {
+  margin-top: auto;
+  padding: calc(16 * var(--u)) calc(20 * var(--u));
+  border: 1px solid rgba(232, 229, 225, 0.3);
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(14 * var(--u));
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-decoration: none;
+  color: #e8e5e4;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.plan__cta:hover,
+.plan__cta:focus-visible {
+  background: #c11020;
+  border-color: #c11020;
+  color: #fff;
+}
+
+.plan--featured .plan__cta {
+  border-color: #0a0809;
+  color: #0a0809;
+}
+
+.plan--featured .plan__cta:hover,
+.plan--featured .plan__cta:focus-visible {
+  background: #0a0809;
+  color: #eeece9;
+}
+
+/* ---- FAQ ---- */
+
+.faq {
+  max-width: calc(900 * var(--u));
+  margin: calc(140 * var(--u)) auto 0;
+}
+
+.faq__tag {
+  margin: 0 0 calc(18 * var(--u));
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(14 * var(--u));
+  color: #c11020;
+}
+
+.faq__title {
+  margin: 0 0 calc(56 * var(--u));
   font-family: "Necosmic", "Chakra Petch", system-ui, sans-serif;
   font-weight: 300;
   font-size: calc(38 * var(--u));
-  line-height: 1.08;
+  line-height: 1.12;
   text-transform: uppercase;
 }
 
-.shift__heading span {
+.faq__title .is-red {
+  color: #c11020;
+}
+
+.faq__title span {
   display: block;
 }
 
-.shift__axis {
+.faq__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.faq__item {
+  border-top: 1px solid rgba(232, 229, 225, 0.14);
+}
+
+.faq__item:last-child {
+  border-bottom: 1px solid rgba(232, 229, 225, 0.14);
+}
+
+.faq__q {
+  display: flex;
+  align-items: center;
+  gap: calc(24 * var(--u));
+  padding: calc(26 * var(--u)) 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq__q::-webkit-details-marker {
+  display: none;
+}
+
+.faq__q-index {
+  font-family: "B612 Mono", ui-monospace, monospace;
+  font-size: calc(13 * var(--u));
+  color: #c11020;
+  flex: none;
+}
+
+.faq__q-text {
+  flex: 1;
+  font-family: "Chakra Petch", system-ui, sans-serif;
+  font-weight: 400;
+  font-size: calc(19 * var(--u));
+}
+
+/* Плюс-иконка на чистом CSS: два штриха, поворачиваются в крест
+   при открытии — тот же приём, что и в референсе. */
+.faq__plus {
+  position: relative;
+  flex: none;
+  width: calc(18 * var(--u));
+  height: calc(18 * var(--u));
+}
+
+.faq__plus::before,
+.faq__plus::after {
+  content: "";
   position: absolute;
-  inset: 0;
-  z-index: 1;
+  top: 50%;
+  left: 50%;
+  background: #e8e5e4;
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s ease;
+}
+
+.faq__plus::before {
   width: 100%;
+  height: 1px;
+}
+
+.faq__plus::after {
+  width: 1px;
   height: 100%;
-  pointer-events: none;
 }
 
-.shift__axis-line {
-  fill: none;
-  stroke: #4a4640;
-  stroke-width: 1.4;
-  vector-effect: non-scaling-stroke;
-}
-
-/* Часовые засечки на оси */
-.shift__tick {
-  stroke: #3a3733;
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-
-.shift__tick-label {
-  font-family: "B612 Mono", ui-monospace, monospace;
-  font-size: 11px;
-  fill: #55514c;
-}
-
-/* Точки-события: AI зелёные по всей оси, менеджер — серый,
-   только в середине суток (9:00–18:00). */
-.shift__dot {
+.faq__item[open] .faq__plus::after {
+  transform: translate(-50%, -50%) rotate(90deg);
   opacity: 0;
-  transform-origin: center;
 }
 
-.shift__dot-core {
-  fill: #2fae66;
-}
-
-.shift__dot--human .shift__dot-core {
-  fill: #6b6862;
-}
-
-.shift__dot-line {
-  stroke: currentColor;
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-  opacity: 0.5;
-}
-
-.shift__dot--ai {
-  color: #2fae66;
-}
-
-.shift__dot--human {
-  color: #6b6862;
-}
-
-.shift__dot-label {
-  font-family: "B612 Mono", ui-monospace, monospace;
-  font-size: 10px;
-  fill: #8a877f;
-}
-
-/* Крупное событие 03:40 — позиционируется JS-ом по расчётной
-   точке на пути (getPointAtLength), поэтому left/top через CSS-переменные. */
-.shift__spike {
-  position: absolute;
-  z-index: 4;
-  left: var(--spike-x, 20%);
-  top: var(--spike-y, 60%);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: calc(6 * var(--u));
-  opacity: 0;
-  pointer-events: none;
-}
-
-.shift__spike-dot {
-  width: calc(11 * var(--u));
-  height: calc(11 * var(--u));
-  border-radius: 50%;
-  background: #ff3b48;
-  box-shadow: 0 0 0 calc(5 * var(--u)) rgba(255, 59, 72, 0.18);
-  transform: scale(0);
-}
-
-.shift__spike-time {
+.faq__a {
   margin: 0;
+  padding: 0 0 calc(28 * var(--u)) calc(53 * var(--u));
+  max-width: calc(680 * var(--u));
   font-family: "B612 Mono", ui-monospace, monospace;
-  font-size: calc(13 * var(--u));
-  color: #ff3b48;
+  font-size: calc(15 * var(--u));
+  line-height: 1.6;
+  color: #a39e9a;
 }
 
-.shift__spike-note {
-  margin: 0;
-  max-width: calc(240 * var(--u));
-  font-family: "B612 Mono", ui-monospace, monospace;
-  font-size: calc(13 * var(--u));
-  line-height: 1.5;
-  color: #d8d5d0;
-}
-
-/* Итог: контраст масштабов минимум 1:8 против часовых подписей (11px) */
-.shift__tally {
-  position: absolute;
-  z-index: 3;
-  left: calc(50 * var(--u));
-  bottom: calc(60 * var(--u));
-  display: flex;
-  gap: calc(90 * var(--u));
-  opacity: 0;
-}
-
-.shift__tally-item {
-  display: flex;
-  flex-direction: column;
-  gap: calc(6 * var(--u));
-}
-
-.shift__tally-num {
-  font-family: "Necosmic", "Chakra Petch", system-ui, sans-serif;
-  font-weight: 300;
-  font-size: calc(140 * var(--u));
-  line-height: 0.9;
-  color: #eeece9;
-  font-variant-numeric: tabular-nums;
-}
-
-.shift__tally-label {
-  font-family: "B612 Mono", ui-monospace, monospace;
-  font-size: calc(13 * var(--u));
-  color: #8a877f;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-@media (max-width: 720px) {
-  .shift {
-    height: 240vh;
+@media (max-width: 900px) {
+  .deploy {
+    padding: calc(80 * var(--u)) calc(24 * var(--u)) calc(100 * var(--u));
   }
 
-  .shift__heading {
-    left: calc(24 * var(--u));
-    right: calc(24 * var(--u));
-    top: calc(90 * var(--u));
-    text-align: left;
-    font-size: calc(30 * var(--u));
+  .deploy__plans {
+    grid-template-columns: 1fr;
+    max-width: calc(560 * var(--u));
   }
 
-  .shift__tag {
-    left: calc(24 * var(--u));
-    top: calc(28 * var(--u));
+  .plan--featured {
+    margin-top: 0;
+    padding-top: calc(40 * var(--u));
+    padding-bottom: calc(40 * var(--u));
+    order: -1;
   }
 
-  .shift__spike-note {
-    max-width: calc(200 * var(--u));
-  }
-
-  .shift__tally {
-    left: calc(24 * var(--u));
-    bottom: calc(40 * var(--u));
-    gap: calc(40 * var(--u));
-  }
-
-  .shift__tally-num {
-    font-size: calc(90 * var(--u));
+  .faq {
+    margin-top: calc(90 * var(--u));
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .shift__dot,
-  .shift__spike,
-  .shift__tally {
-    opacity: 1 !important;
+@media (max-width: 640px) {
+  .deploy__title {
+    font-size: clamp(30px, 8vw, 44px);
   }
-  .shift__spike-dot {
-    transform: scale(1) !important;
+
+  .plan__price-new {
+    font-size: calc(36 * var(--u));
+  }
+
+  .faq__q {
+    gap: calc(14 * var(--u));
+  }
+
+  .faq__q-text {
+    font-size: calc(16 * var(--u));
+  }
+
+  .faq__a {
+    padding-left: calc(30 * var(--u));
   }
 }
