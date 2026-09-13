@@ -788,7 +788,12 @@ em { color:var(--lime); font-style:normal; }
 .participant-gallery-controls { position:absolute; z-index:7; left:50%; transform:translateX(-50%); bottom:-120px; display:flex; gap:14px; pointer-events:auto; }
 /* Фирменные стрелки: круг с тонкой обводкой, SVG-стрелка, дорогой hover. */
 .participant-gallery-controls button { display:grid; width:54px; height:54px; place-items:center; border:1px solid rgba(255,255,255,.24); border-radius:50%; background:rgba(255,255,255,.04); color:#fff; backdrop-filter:blur(8px); cursor:pointer; transition:background .3s cubic-bezier(.22,1,.36,1), border-color .3s ease, transform .35s cubic-bezier(.22,1,.36,1); }
-.participant-gallery-controls button svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; transition:transform .35s cubic-bezier(.22,1,.36,1); }
+/* Фирменная стрелка вместо шевронов: заливная, не контурная.
+   Левая — зеркальное отражение правой. */
+.participant-gallery-controls button svg { width:16px; height:16px; fill:currentColor; stroke:none; transition:transform .3s cubic-bezier(.22,1,.36,1); }
+.participant-gallery-controls [data-gallery-prev] svg { transform:scaleX(-1); }
+.participant-gallery-controls [data-gallery-prev]:hover svg { transform:scaleX(-1) translate(2px,-2px); }
+.participant-gallery-controls [data-gallery-next]:hover svg { transform:translate(2px,-2px); }
 .participant-gallery-controls button:hover { background:#fff; border-color:#fff; color:#080808; }
 .participant-gallery-controls button:hover[data-gallery-prev] svg { transform:translateX(-3px); }
 .participant-gallery-controls button:hover[data-gallery-next] svg { transform:translateX(3px); }
@@ -1772,4 +1777,19 @@ p, li,
    обозначает край; замер показывает, что высоты давно идентичны (395px). */
 .difference-card figure {
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+}
+
+/* Левое видео визуально выше правого: у него светлый фон с полями,
+   верхний край читается выше, нижний ниже. Опускаем ролик на 3px
+   внутри рамки и столько же подрезаем снизу — края встают вровень.
+   Двигаем само видео, а не figure: у неё высота от aspect-ratio,
+   и max-height на ней не работает. */
+.difference-card:first-child figure video {
+  position:relative;
+  top:3px;
+  height:calc(100% - 3px);
+}
+@media (max-width:900px) {
+  .difference-card:first-child figure video { top:0; height:100%; }
+}
 }
