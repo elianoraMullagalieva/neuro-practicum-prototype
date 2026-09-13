@@ -130,7 +130,11 @@
     paused: true,
   });
 
-  /* ---- 1. BOOT: сканирующая линия и техно-лог ---- */
+  /* ---- 1. BOOT + INGEST: скан и раскрытие фото идут ПАРАЛЛЕЛЬНО
+     с текстом, не после него. Скан горизонтальный (как и был),
+     раскрытие фото — вертикальная штора; оба стартуют в один момент
+     и вместе с появлением техно-подписей — вся сцена просыпается
+     разом, а не по очереди. ---- */
 
   // Техно-подписи включаются сразу, с первого кадра: сцена не должна
   // начинаться с пустого серого экрана. Мелкие лейблы одновременно
@@ -142,12 +146,12 @@
       {
         opacity: 1,
         y: 0,
-        duration: 0.5,
-        stagger: { each: 0.07, from: "start" },
+        duration: 0.45,
+        stagger: { each: 0.05, from: "start" },
         onStart: function () {
           if (!hasScramble) return;
           scrambleEls.forEach(function (el, i) {
-            window.scrambleText(el, null, { duration: 0.7, delay: i * 0.05, scrambleStep: 0.03 });
+            window.scrambleText(el, null, { duration: 0.6, delay: i * 0.04, scrambleStep: 0.03 });
           });
         },
       },
@@ -155,52 +159,48 @@
     )
     .to(
       diagonals,
-      { strokeDashoffset: 0, duration: 1.2, ease: "power2.inOut", stagger: 0.1 },
-      "boot+=0.1"
+      { strokeDashoffset: 0, duration: 1, ease: "power2.inOut", stagger: 0.08 },
+      "boot"
     )
+    // Скан идёт один раз горизонтально, синхронно со стартом раскрытия
+    // фото под ним — визуально это одно движение "проявки", а не два.
     .fromTo(
       scan,
       { xPercent: -60, opacity: 0 },
-      { xPercent: 420, opacity: 1, duration: 1.4, ease: "power2.inOut" },
-      "boot+=0.25"
+      { xPercent: 420, opacity: 1, duration: 1.1, ease: "power2.inOut" },
+      "boot"
     )
-    .to(scan, { opacity: 0, duration: 0.4 }, "boot+=1.35");
-
-  /* ---- 2. INGEST: портрет раскрывается построчно сверху вниз ---- */
-
-  // Не fade — построчная развёртка (как сканер печатает кадр).
-  // Кромка-линия видна всё время раскрытия и гаснет по завершении;
-  // красный свет и цвет приходят следом, когда фигура уже раскрыта.
-  tl.addLabel("ingest", "boot+=0.75")
-    .to(revealEdge, { opacity: 1, duration: 0.15 }, "ingest")
+    .to(scan, { opacity: 0, duration: 0.3 }, "boot+=0.95")
+    .to(revealEdge, { opacity: 1, duration: 0.12 }, "boot")
     .to(
       portraitWrap,
-      { "--reveal": "118%", duration: 1.5, ease: "power2.inOut" },
-      "ingest"
+      { "--reveal": "118%", duration: 1.05, ease: "power2.inOut" },
+      "boot"
     )
-    .to(revealEdge, { opacity: 0, duration: 0.2 }, "ingest+=1.4")
+    .to(revealEdge, { opacity: 0, duration: 0.15 }, "boot+=0.95")
     .to(
       portrait,
       {
         scale: 1,
         filter: "grayscale(0) contrast(1.06) brightness(1) saturate(1.04)",
-        duration: 1.6,
+        duration: 1.1,
         ease: "power2.out",
       },
-      "ingest+=0.25"
+      "boot+=0.15"
     );
 
-  /* ---- 3. OUTPUT: литеры выезжают по диагонали ---- */
+  /* ---- 2. OUTPUT: литеры выезжают по диагонали ---- */
 
   // Красные литеры приходят волной, белые (N, D) — с задержкой
-  // и защёлкиванием: это акцент композиции.
+  // и защёлкиванием: это акцент композиции. Стартует сразу же,
+  // как только фото раскрылось — без паузы между этапами.
   var redChars = [];
   var whiteChars = [];
   chars.forEach(function (ch) {
     (ch.classList.contains("is-white") ? whiteChars : redChars).push(ch);
   });
 
-  tl.addLabel("output", "ingest+=0.55")
+  tl.addLabel("output", "boot+=0.85")
     .to(
       redChars,
       {
@@ -208,9 +208,9 @@
         x: 0,
         y: 0,
         scale: 1,
-        duration: 1.15,
+        duration: 0.9,
         ease: "expo.out",
-        stagger: { each: 0.075, from: "start" },
+        stagger: { each: 0.055, from: "start" },
       },
       "output"
     )
@@ -221,15 +221,17 @@
         x: 0,
         y: 0,
         scale: 1,
-        duration: 0.9,
+        duration: 0.7,
         ease: "back.out(1.6)",
       },
-      "output+=0.42"
+      "output+=0.32"
     );
 
-  /* ---- 4. LIVE: выноски, манифест, лог, счётчики ---- */
+  /* ---- 3. LIVE: выноски у лица, манифест, лог, счётчики ---- */
 
-  tl.addLabel("live", "output+=0.6")
+  // Провода-выноски у лица приходят почти сразу за раскрытым портретом,
+  // не через долгую паузу — они читаются как отклик на уже видимое лицо.
+  tl.addLabel("live", "output+=0.4")
     .to(
       claimRows,
       { yPercent: 0, duration: 0.85, ease: "power3.out", stagger: 0.09 },

@@ -4,9 +4,10 @@
    поэтому пропорции макета держатся на любом экране без media-каши.
    ============================================================ */
 
-/* Фирменный шрифт заголовков из макета: assets/neuro/fonts/Necosmic.otf
-   (NecosmicPersonalUse). Если файла нет, браузер молча уходит
-   на Chakra Petch (см. font-family у .neuro__word и .core__title). */
+/* Фирменный шрифт заголовков из макета: Necosmic.otf (NecosmicPersonalUse,
+   Personal Use лицензия — водяной знак в глифах намеренно оставлен).
+   Если файла нет, браузер молча уходит на Chakra Petch
+   (см. font-family у .neuro__word и .core__title). */
 @font-face {
   font-family: "Necosmic";
   src: url("assets/neuro/fonts/Necosmic.otf") format("opentype");
@@ -100,14 +101,17 @@ body {
   --reveal: 120%;
   /* Портрет растворяется в фоне по краям (радиальная маска) и одновременно
      проявляется построчно сверху вниз (линейная штора по --reveal) —
-     оба слоя маски работают вместе через intersect. */
+     оба слоя маски работают вместе через intersect.
+     Важно: растушёвка сидит НИЖЕ границы раскрытия, не выше неё —
+     при --reveal:0% результат честный ноль, без просвечивающей
+     макушки; линия .neuro__reveal-edge сама даёт мягкую кромку. */
   -webkit-mask-image: radial-gradient(
       116% 108% at 50% 34%,
       #000 62%,
       rgba(0, 0, 0, 0.74) 80%,
       transparent 99%
     ),
-    linear-gradient(180deg, #000 0%, #000 var(--reveal), transparent calc(var(--reveal) + 10%));
+    linear-gradient(180deg, #000 0%, #000 var(--reveal), transparent var(--reveal));
   -webkit-mask-composite: source-in;
   mask-image: radial-gradient(
       116% 108% at 50% 34%,
@@ -115,7 +119,7 @@ body {
       rgba(0, 0, 0, 0.74) 80%,
       transparent 99%
     ),
-    linear-gradient(180deg, #000 0%, #000 var(--reveal), transparent calc(var(--reveal) + 10%));
+    linear-gradient(180deg, #000 0%, #000 var(--reveal), transparent var(--reveal));
   mask-composite: intersect;
 }
 
