@@ -1678,7 +1678,7 @@ p, li,
 
 .reviews-head { display:grid; gap:14px; justify-items:center; margin-bottom:clamp(32px,4vh,56px); text-align:center; }
 .reviews-head h2 { margin:0; font-size:var(--fs-h1); font-weight:500; line-height:.9; letter-spacing:-.04em; }
-.reviews-head h2 span { color:#8a8a88; }
+/* Заголовок отзывов — целиком тёмный, без светлой половины. */
 .reviews-note { margin:0; max-width:46ch; color:#60605e; font-size:var(--fs-body); line-height:1.5; }
 
 /* auto-fit растягивал единственную карточку на всю ширину — строка
@@ -1697,7 +1697,13 @@ p, li,
 .review-avatar { width:54px; height:54px; flex:none; border-radius:50%; object-fit:cover; background:#e8e8e5; }
 .review-who { display:grid; gap:3px; min-width:0; }
 .review-who b { font-size:clamp(15px,1.15vw,17px); font-weight:600; letter-spacing:-.01em; }
-.review-stars { color:#d4a017; font-size:14px; letter-spacing:.08em; line-height:1; }
+/* Звёзды — SVG вместо символа ★: широкие лучи и светлый песочный
+   оттенок вместо насыщенно-жёлтого. */
+.review-stars { display:inline-flex; gap:2px; align-items:center; line-height:1; }
+.review-stars svg { width:13px; height:13px; display:block; fill:#e3cf94; }
+/* Половина звезды: заливка по половине ширины плюс тонкий контур
+   у пустой части — оценка читается как 4,5 без лишних элементов. */
+.review-stars .star-half { color:#e3cf94; fill:none; }
 
 .review-body { display:grid; gap:11px; }
 .review-body p { margin:0; color:#3d3d3b; font-size:clamp(14px,1.05vw,15px); line-height:1.4; letter-spacing:0; }
