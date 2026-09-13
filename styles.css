@@ -791,9 +791,12 @@ em { color:var(--lime); font-style:normal; }
 /* Фирменная стрелка вместо шевронов: заливная, не контурная.
    Левая — зеркальное отражение правой. */
 .participant-gallery-controls button svg { width:16px; height:16px; fill:currentColor; stroke:none; transition:transform .3s cubic-bezier(.22,1,.36,1); }
-.participant-gallery-controls [data-gallery-prev] svg { transform:scaleX(-1); }
-.participant-gallery-controls [data-gallery-prev]:hover svg { transform:scaleX(-1) translate(2px,-2px); }
-.participant-gallery-controls [data-gallery-next]:hover svg { transform:translate(2px,-2px); }
+/* Фирменная стрелка смотрит вверх-вправо под 45°. Для листания
+   доворачиваем её ближе к горизонтали: вправо и влево. */
+.participant-gallery-controls [data-gallery-next] svg { transform:rotate(35deg); }
+.participant-gallery-controls [data-gallery-prev] svg { transform:scaleX(-1) rotate(35deg); }
+.participant-gallery-controls [data-gallery-next]:hover svg { transform:rotate(35deg) translate(2px,-2px); }
+.participant-gallery-controls [data-gallery-prev]:hover svg { transform:scaleX(-1) rotate(35deg) translate(2px,-2px); }
 .participant-gallery-controls button:hover { background:#fff; border-color:#fff; color:#080808; }
 .participant-gallery-controls button:hover[data-gallery-prev] svg { transform:translateX(-3px); }
 .participant-gallery-controls button:hover[data-gallery-next] svg { transform:translateX(3px); }
@@ -1830,3 +1833,74 @@ p, li,
 /* Содержимое обоих видео в блоке «Чувствуешь разницу» на 2% крупнее —
    плотнее заполняет рамку, поля по краям не читаются как пустота. */
 .difference-card figure .difference-video { transform:scale(1.02); }
+
+/* ============================================================
+   МОБИЛКА: ЗАПРЕТ ГОРИЗОНТАЛЬНОГО УХОДА
+   ------------------------------------------------------------
+   Лента работ (.marquee-rail) шире экрана по своей природе —
+   она бесконечно едет. Но без явного запрета страница уезжала
+   вбок, и справа открывался пустой чёрный экран.
+   ============================================================ */
+@media (max-width:900px) {
+  html, body { max-width:100%; overflow-x:clip; }
+  .intro-stage, .showcase-marquee { overflow-x:clip; }
+}
+
+/* Логотип в шапке разъезжался на три строки: контейнер сжимался
+   до 50px и ломал слова. Даём строкам не переноситься. */
+@media (max-width:900px) {
+  .brand > span,
+  .persistent-brand span,
+  .motion-brand span { white-space:nowrap; }
+  .brand > span br,
+  .persistent-brand span br { display:inline; }
+}
+
+/* На мобилке «Для кого» — обычный блок в потоке, без шторы-растворения.
+   Тёмный градиент поверх него оставался включённым и накрывал карточки
+   чёрной пеленой при скролле. Гасим, как и на десктопе. */
+@media (max-width:900px) {
+  .audience-content::after { display:none; }
+  .audience-content.container { opacity:1 !important; filter:none !important; transform:none !important; }
+}
+
+/* Подпись под логотипом выравнивается по левому краю знака,
+   а не по центру — иначе строки «плавают» относительно него. */
+.brand, .persistent-brand, .motion-brand { justify-items:start; text-align:left; }
+.brand > span, .persistent-brand span, .motion-brand span { text-align:left; }
+
+/* ============================================================
+   ОТЗЫВЫ НА МОБИЛКЕ: ГОРИЗОНТАЛЬНАЯ ЛЕНТА
+   Карточки шли в столбик — блок растягивался на четыре экрана.
+   Теперь листаются вбок, следующая выглядывает краем, под
+   заголовком подсказка с пальчиком.
+   ============================================================ */
+.reviews-swipe { display:none; }
+
+@media (max-width:900px) {
+  .reviews-swipe {
+    display:flex; align-items:center; gap:9px;
+    margin:14px 0 0; color:#6c6c6c; font-size:12px;
+  }
+  .reviews-swipe-icon {
+    display:grid; width:25px; height:25px; flex:none; place-items:center;
+    border-radius:50%; background:#fff; box-shadow:0 7px 17px rgba(0,0,0,.09);
+  }
+  .reviews-swipe-icon img { display:block; width:9px; height:11px; }
+
+  .reviews-grid {
+    display:flex; gap:12px;
+    /* Выходим за поля секции, чтобы лента шла от края до края. */
+    margin-inline:-16px; padding:2px 16px 14px;
+    max-width:none;
+    overflow-x:auto; scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .reviews-grid::-webkit-scrollbar { display:none; }
+
+  .review-card {
+    flex:0 0 86%;            /* следующая карточка выглядывает краем */
+    scroll-snap-align:center;
+  }
+}

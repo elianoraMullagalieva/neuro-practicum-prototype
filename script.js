@@ -1045,6 +1045,25 @@ if (participantGallery && (caseImages.length || workTunnelImages.length)) {
     if (event.key === 'ArrowLeft') { event.preventDefault(); setActive(activeIndex - 1); }
     if (event.key === 'ArrowRight') { event.preventDefault(); setActive(activeIndex + 1); }
   });
+
+  // Свайп пальцем: на телефоне карусель листалась только кнопками,
+  // хотя жест вправо-влево здесь ожидаемее всего.
+  let swipeX = null, swipeY = null;
+  participantGallery.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'mouse') return;
+    swipeX = event.clientX; swipeY = event.clientY;
+  }, { passive: true });
+  participantGallery.addEventListener('pointerup', (event) => {
+    if (swipeX === null) return;
+    const dx = event.clientX - swipeX;
+    const dy = event.clientY - swipeY;
+    swipeX = swipeY = null;
+    // Горизонтальный жест длиннее 45px и заметно длиннее вертикального,
+    // иначе перехватим обычную прокрутку страницы.
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+      setActive(activeIndex + (dx < 0 ? 1 : -1));
+    }
+  }, { passive: true });
   // Автопроигрывание: играет ТОЛЬКО активная карточка. Шесть видео разом
   // сажают процессор и трафик, особенно на телефоне.
   if (useVideo) {

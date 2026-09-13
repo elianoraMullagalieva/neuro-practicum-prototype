@@ -8,7 +8,12 @@
     <link rel="icon" href="data:," />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Шрифты грузятся НЕ блокируя отрисовку: раньше браузер ждал их
+         1.2 с и всё это время держал пустой экран. Теперь текст появляется
+         сразу системным шрифтом и мгновенно подменяется на Manrope. -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&display=swap" /></noscript>
     <script>
       /* Страховка: если JS упал или anime.js не загрузился, маскировка
          первого экрана всё равно снимется и контент будет виден. */
@@ -52,9 +57,9 @@
           <p class="mobile-duration"><span>Длительность:</span><strong>20+ уроков</strong></p>
           <div class="mobile-works-proof">
             <div class="mobile-proof-avatars" aria-hidden="true">
-              <img src="assets/hero/figma-work-01-overlay.jpg" alt="" />
-              <img src="assets/hero/figma-work-03.jpg" alt="" />
-              <img src="assets/hero/figma-work-02.jpg" alt="" />
+              <img src="assets/hero/av/figma-work-01-overlay.jpg" alt="" />
+              <img src="assets/hero/av/figma-work-03.jpg" alt="" />
+              <img src="assets/hero/av/figma-work-02.jpg" alt="" />
             </div>
             <p><strong>5 анимированных работ</strong><span>в портфолио</span></p>
           </div>
@@ -70,11 +75,11 @@
           <aside class="hero-proof" aria-label="Результаты участников">
             <p><strong>5 анимированных работ</strong><span>в портфолио</span></p>
             <div class="proof-avatars" aria-hidden="true">
-              <img src="assets/hero/figma-work-01-overlay.jpg" alt="" />
-              <img src="assets/hero/figma-work-03.jpg" alt="" />
-              <img src="assets/hero/figma-work-02.jpg" alt="" />
-              <img src="assets/hero/figma-work-01.jpg" alt="" />
-              <img src="assets/hero/figma-work-01-overlay.jpg" alt="" />
+              <img src="assets/hero/av/figma-work-01-overlay.jpg" alt="" />
+              <img src="assets/hero/av/figma-work-03.jpg" alt="" />
+              <img src="assets/hero/av/figma-work-02.jpg" alt="" />
+              <img src="assets/hero/av/figma-work-01.jpg" alt="" />
+              <img src="assets/hero/av/figma-work-01-overlay.jpg" alt="" />
             </div>
           </aside>
 
@@ -377,6 +382,7 @@
           <header class="reviews-head">
             <h2 id="reviews-title">Отзывы участников</h2>
             <p class="reviews-note">Что говорят те, кто уже прошёл<br />практикум и собрал портфолио.</p>
+            <p class="reviews-swipe" aria-hidden="true"><span class="reviews-swipe-icon"><img src="assets/icons/finger.svg" alt="" /></span><span>Листай вправо</span></p>
           </header>
 
           <div class="reviews-grid">
