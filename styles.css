@@ -771,7 +771,7 @@ em { color:var(--lime); font-style:normal; }
 .work-tunnel-fallback img:nth-child(6) { bottom:9%; left:43%; width:min(15vw,210px); transform:rotateX(-54deg); }
 
 /* Контент поверх туннеля: слово-заголовок + слайдер. Центрирован, с воздухом. */
-.works-content { position:absolute; inset:0; z-index:3; display:grid; grid-template-rows:22vh 1fr; align-content:stretch; justify-items:center; width:min(var(--shell), calc(100vw - 64px)); margin:0 auto; padding:0; box-sizing:border-box; text-align:center; pointer-events:none; }
+.works-content { position:absolute; inset:0; z-index:3; display:grid; grid-template-rows:17vh 1fr; align-content:stretch; justify-items:center; width:min(var(--shell), calc(100vw - 64px)); margin:0 auto; padding:0; box-sizing:border-box; text-align:center; pointer-events:none; }
 .works-head { align-self:start; padding-top:5vh; }
 .works-head { display:grid; justify-items:center; gap:14px; }
 .works-kicker { margin:0; color:rgba(255,255,255,.5); font-size:12px; letter-spacing:.04em; text-transform:uppercase; opacity:0; will-change:opacity,transform; }
@@ -1627,3 +1627,42 @@ a.pricing-button { text-decoration:none; }
   display:block; width:100%; height:100%;
   object-fit:cover; background:#141414;
 }
+
+/* ============================================================
+   ТИПОГРАФИКА: БЕЗ ВИСЯЧИХ СЛОВ И ПРЕДЛОГОВ
+   ------------------------------------------------------------
+   Два правила браузера, ноль веса и ноль скриптов:
+
+   balance — выравнивает строки заголовка по длине, чтобы не
+             получалось «длинная строка + одно слово снизу».
+             Работает для блоков до ~6 строк, то есть ровно
+             для заголовков.
+
+   pretty  — следит, чтобы в последней строке абзаца не
+             оставалось одинокого слова.
+
+   Неразрывные пробелы после предлогов расставлены в разметке —
+   они не дают «в», «на», «и» повиснуть в конце строки.
+   ============================================================ */
+h1, h2, h3, h4,
+.hero-kicker,
+.works-title,
+.difference-title,
+.difference-copy h3,
+.audience-card-copy h3,
+.programme-name,
+.programme-lesson-title,
+.questions-item h3,
+.pricing-card h3,
+.motion-result,
+.motion-system-title,
+.site-footer__lead h2 { text-wrap:balance; }
+
+p, li,
+.difference-copy p,
+.audience-card-copy p,
+.programme-lesson-desc,
+.pricing-lead,
+.pricing-note,
+.questions-panel > div p,
+.source-note { text-wrap:pretty; }

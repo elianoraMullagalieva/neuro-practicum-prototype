@@ -1131,7 +1131,9 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
       // перенесён на фазу чёрного экрана, когда туннель уже погас.
       const small = Math.min(0.154 + crawl * 0.07, smallCap);
       // Фаза 2: на чёрном экране потолок снимается — слово дорастает до 1.
-      const scale = small + (1 - small) * bloom;
+      // Финальный масштаб 0.9 вместо 1 — заголовок на 10% меньше,
+      // рост получается плавнее, и работы можно поднять выше.
+      const scale = small + (0.9 - small) * bloom;
       worksTitle.style.transform = `translate(-50%, calc(-50% + ${y.toFixed(1)}px)) scale(${scale.toFixed(3)})`;
       worksTitle.style.opacity = Math.max(0.72, 0.72 + bloom * 0.28).toFixed(3);
     }
