@@ -972,8 +972,11 @@ if (participantGallery && (caseImages.length || workTunnelImages.length)) {
         : image?.naturalWidth && image?.naturalHeight
           ? image.naturalWidth / image.naturalHeight
         : 16 / 9;
-      const width = Math.min(bounds.width, bounds.height * ratio);
-      const height = width / ratio;
+      // Высота у всех кейсов ОДНА — так ряд читается ровно, без ступенек.
+      // Ширина подстраивается под пропорции работы; слишком широкие
+      // (панорамные скриншоты) упираются в границу зоны.
+      const height = bounds.height;
+      const width = Math.min(bounds.width, height * ratio);
       card.style.width = `${width}px`;
       card.style.height = `${height}px`;
       card.style.marginLeft = `${-width / 2}px`;
@@ -1229,13 +1232,29 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
   const root = document.querySelector('[data-lightbox-root]');
   if (!root) return;
   const image = root.querySelector('[data-lightbox-image]');
+  const video = root.querySelector('[data-lightbox-video]');
   const closeButton = root.querySelector('[data-lightbox-close]');
   let lastFocused = null;
 
+  // Открывает и картинку, и видео — по расширению файла. Чтобы заменить
+  // превью на видео, достаточно поменять data-lightbox на путь к .mp4:
+  // само превью (img внутри кнопки) остаётся картинкой-обложкой.
   const open = (src, alt) => {
     lastFocused = document.activeElement;
-    image.src = src;
-    image.alt = alt || '';
+    const isVideo = /\.(mp4|webm|mov)(\?|$)/i.test(src);
+    if (isVideo && video) {
+      video.src = src;
+      video.hidden = false;
+      image.hidden = true;
+      image.src = '';
+      const play = video.play();
+      if (play && play.catch) play.catch(() => {});
+    } else {
+      image.src = src;
+      image.alt = alt || '';
+      image.hidden = false;
+      if (video) { video.pause(); video.hidden = true; video.src = ''; }
+    }
     root.hidden = false;
     document.body.style.overflow = 'hidden';
     closeButton?.focus();
@@ -1243,6 +1262,7 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
   const close = () => {
     root.hidden = true;
     image.src = '';
+    if (video) { video.pause(); video.src = ''; video.hidden = true; }
     document.body.style.overflow = '';
     lastFocused?.focus();
   };

@@ -1756,3 +1756,7 @@ p, li,
   .review-quote { font-size:clamp(18px,4.8vw,21px); }
   .review-avatar--letter { font-size:19px; }
 }
+
+/* Лайтбокс умеет показывать и видео — превью при этом остаётся картинкой. */
+.lightbox-video { max-width:100%; max-height:100%; border-radius:6px; box-shadow:0 30px 90px rgba(0,0,0,.6); background:#000; }
+.lightbox-video[hidden], .lightbox-image[hidden] { display:none !important; }
