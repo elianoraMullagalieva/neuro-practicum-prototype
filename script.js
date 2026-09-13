@@ -645,20 +645,25 @@ if (statCounters.length && !window.matchMedia('(prefers-reduced-motion: reduce)'
 const workTunnel = document.querySelector('[data-work-tunnel]');
 const workTunnelImages = Array.isArray(window.TUNNEL_GALLERY_IMAGES) ? window.TUNNEL_GALLERY_IMAGES : [];
 
-// Fallback-картинки туннеля грузим ТОЛЬКО если WebGL недоступен.
+// Fallback-картинки туннеля показываем ТОЛЬКО если WebGL не завёлся.
 // Раньше они грузились всегда (eager) параллельно с WebGL-текстурами —
 // те же файлы качались по 2-3 раза, +4 МБ трафика впустую.
-if (workTunnel && workTunnelImages.length && !window.THREE) {
+function showTunnelFallback() {
+  if (!workTunnel || !workTunnelImages.length) return;
   const fallback = workTunnel.querySelector('.work-tunnel-fallback');
+  if (!fallback || fallback.children.length) return;
   workTunnelImages.slice(0, 6).forEach((src) => {
     const image = new Image();
     image.src = src;
     image.alt = '';
     image.loading = 'lazy';
-    fallback?.append(image);
+    fallback.append(image);
   });
 }
 
+// Инициализация туннеля вынесена в функцию: three.js (654 КБ) грузится
+// не на старте, а когда человек подходит к сцене. Вызывается из загрузчика ниже.
+function initWorkTunnel() {
 if (workTunnel && workTunnelImages.length && window.THREE) {
   const canvas = workTunnel.querySelector('.work-tunnel-canvas');
   const section = workTunnel.closest('.works-scene');
@@ -906,6 +911,8 @@ if (workTunnel && workTunnelImages.length && window.THREE) {
     }, { once:true });
   });
 }
+
+} // конец initWorkTunnel
 
 const participantGallery = document.querySelector('[data-participant-gallery]');
 const caseImages = Array.isArray(window.CASE_GALLERY_IMAGES) ? window.CASE_GALLERY_IMAGES : [];
@@ -1326,4 +1333,36 @@ document.querySelectorAll('[data-review-more]').forEach((button) => {
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) videos.forEach((v) => v.pause());
   });
+})();
+
+
+// ===== ОТЛОЖЕННАЯ ЗАГРУЗКА ТУННЕЛЯ =====
+// three.js весит 654 КБ, а туннель виден только в середине страницы.
+// Грузим библиотеку заранее — когда до сцены остаётся примерно два
+// экрана, чтобы к моменту подхода всё уже было готово.
+(() => {
+  const scene = document.querySelector('[data-works-scene]');
+  if (!scene || !workTunnel || !workTunnelImages.length) return;
+
+  let started = false;
+  const start = () => {
+    if (started) return;
+    started = true;
+    const script = document.createElement('script');
+    script.src = 'assets/vendor/three.min.js';
+    script.onload = () => {
+      try { initWorkTunnel(); } catch (_) { showTunnelFallback(); }
+    };
+    script.onerror = showTunnelFallback;
+    document.head.append(script);
+  };
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { start(); io.disconnect(); }
+    }, { rootMargin: '200% 0px' });
+    io.observe(scene);
+  } else {
+    start();
+  }
 })();
