@@ -1,4 +1,4 @@
-:root { --shell:1440px; --up:1; --ink:#070707; --paper:#f4f2eb; --lime:#c6f33a; --line:rgba(255,255,255,.3); --muted:#b9b9b4; --dark:#111; --font-display:"Anton", Impact, sans-serif; --font-body:"Manrope", sans-serif; }
+:root { --shell:1440px; --up:1; --ink:#070707; --lime:#c6f33a; --line:rgba(255,255,255,.3); --muted:#b9b9b4; --dark:#111; --font-display:"Anton", Impact, sans-serif; --font-body:"Manrope", sans-serif; }
 * { box-sizing:border-box; }
 html { scroll-behavior:smooth; background:var(--ink); overflow-x:hidden; }
 body { margin:0; background:var(--ink); color:#fff; font-family:var(--font-body); }
@@ -75,7 +75,7 @@ em { color:var(--lime); font-style:normal; }
 .hero-proof p { display:flex; flex-direction:column; gap:1px; margin:0; font-size:12px; line-height:1.1; letter-spacing:-.03em; white-space:nowrap; }
 .hero-proof p span { color:#6c6c6c; }
 .proof-avatars { display:flex; padding-left:9px; }
-.proof-avatars img { width:42px; height:42px; margin-left:-9px; border:2px solid #fff; border-radius:50%; object-fit:cover; object-position:center; background:#e9e5f3; }
+.proof-avatars img { width:42px; height:42px; margin-left:-9px; border:2px solid #fff; border-radius:50%; object-fit:cover; object-position:center; background:#e8e8e5; }
 .proof-avatars img:first-child { object-position:56% center; }
 .hero-hint { position:absolute; bottom:26px; left:calc((100% - min(var(--shell), calc(100vw - 64px))) / 2); display:flex; align-items:center; gap:10px; color:#6c6c6c; font-size:11px; }
 .hero-hint-icon { display:grid; width:25px; height:25px; place-items:center; border-radius:50%; background:#fff; box-shadow:0 7px 17px rgba(0,0,0,.09); }
@@ -87,7 +87,7 @@ em { color:var(--lime); font-style:normal; }
 .showcase-marquee { overflow:hidden; margin-inline:18px; padding:0 0 clamp(32px,4vw,56px); background:#fff; }
 .marquee-rail { display:flex; width:max-content; will-change:transform; animation:marquee-left 34s linear infinite; }
 .marquee-group { display:flex; flex:none; gap:20px; padding-right:20px; }
-.work-card { flex:none; width:clamp(310px,31vw,500px); height:clamp(180px,18.2vw,290px); margin:0; overflow:hidden; background:#e9e8e5; }
+.work-card { flex:none; width:clamp(310px,31vw,500px); height:clamp(180px,18.2vw,290px); margin:0; overflow:hidden; background:#e8e8e5; }
 .work-card > img, .work-card > video { display:block; width:100%; height:100%; object-fit:cover; }
 .work-card-vivid > img { object-position:center 44%; }
 .work-card-lavilla > img { object-position:center center; }
@@ -1672,7 +1672,7 @@ p, li,
    Карточка: аватар, имя, звёзды, текст, превью работ.
    Работы открываются в лайтбоксе по клику.
    ============================================================ */
-/* Тот же серый, что у тарифов (#e8e8e5) — «бумажный» #f4f2eb отдавал желтизной. */
+/* Тот же серый, что у блока тарифов. */
 .reviews-section { position:relative; z-index:2; background:#e8e8e5; color:#080808; }
 .reviews-content { padding:clamp(72px,8vh,120px) 0 clamp(72px,8vh,120px); }
 
@@ -1691,7 +1691,7 @@ p, li,
 
 .review-card { display:grid; gap:18px; padding:clamp(22px,2vw,30px); border:1px solid #e2dfd6; border-radius:20px; background:#fff; }
 .review-top { display:flex; align-items:center; gap:14px; }
-.review-avatar { width:54px; height:54px; flex:none; border-radius:50%; object-fit:cover; background:#e9e5f3; }
+.review-avatar { width:54px; height:54px; flex:none; border-radius:50%; object-fit:cover; background:#e8e8e5; }
 .review-who { display:grid; gap:3px; min-width:0; }
 .review-who b { font-size:17px; font-weight:600; letter-spacing:-.01em; }
 .review-stars { color:#d4a017; font-size:14px; letter-spacing:.08em; line-height:1; }
@@ -1700,7 +1700,7 @@ p, li,
 .review-body p { margin:0; color:#3d3d3b; font-size:15px; line-height:1.55; letter-spacing:0; }
 
 .review-works { display:flex; flex-wrap:wrap; gap:10px; }
-.review-work { display:block; flex:none; width:104px; height:78px; padding:0; overflow:hidden; border:0; border-radius:10px; background:#eceae3; cursor:zoom-in; transition:transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s ease; }
+.review-work { display:block; flex:none; width:104px; height:78px; padding:0; overflow:hidden; border:0; border-radius:10px; background:#e8e8e5; cursor:zoom-in; transition:transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s ease; }
 /* height:100% на картинке не работает, когда пропорции заданы
    через aspect-ratio у кнопки — растягиваем через inset. */
 .review-work { position:relative; }
