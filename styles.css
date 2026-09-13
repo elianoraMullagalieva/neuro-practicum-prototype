@@ -1666,3 +1666,66 @@ p, li,
 .pricing-note,
 .questions-panel > div p,
 .source-note { text-wrap:pretty; }
+
+/* ============================================================
+   ОТЗЫВЫ ПЕРВОГО ПОТОКА
+   Карточка: аватар, имя, звёзды, текст, превью работ.
+   Работы открываются в лайтбоксе по клику.
+   ============================================================ */
+.reviews-section { position:relative; z-index:2; background:#f4f2eb; color:#080808; }
+.reviews-content { padding:clamp(72px,8vh,120px) 0 clamp(72px,8vh,120px); }
+
+.reviews-head { display:grid; gap:14px; margin-bottom:clamp(32px,4vh,56px); }
+.reviews-head h2 { margin:0; font-size:var(--fs-h1); font-weight:500; line-height:.9; letter-spacing:-.04em; }
+.reviews-head h2 span { color:#8a8a88; }
+.reviews-note { margin:0; max-width:46ch; color:#60605e; font-size:var(--fs-body); line-height:1.5; }
+
+/* auto-fit растягивал единственную карточку на всю ширину — строка
+   выходила в 1400px, читать неудобно. Колонки фиксированной ширины
+   с выравниванием влево: карточки набираются рядами по мере появления. */
+.reviews-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,420px)); gap:clamp(16px,2vw,28px); align-items:start; justify-content:start; }
+
+.review-card { display:grid; gap:18px; padding:clamp(22px,2vw,30px); border:1px solid #e2dfd6; border-radius:20px; background:#fff; }
+.review-top { display:flex; align-items:center; gap:14px; }
+.review-avatar { width:54px; height:54px; flex:none; border-radius:50%; object-fit:cover; background:#e9e5f3; }
+.review-who { display:grid; gap:3px; min-width:0; }
+.review-who b { font-size:17px; font-weight:600; letter-spacing:-.01em; }
+.review-stars { color:#d4a017; font-size:14px; letter-spacing:.08em; line-height:1; }
+
+.review-body { display:grid; gap:11px; }
+.review-body p { margin:0; color:#3d3d3b; font-size:15px; line-height:1.55; letter-spacing:0; }
+
+.review-works { display:flex; flex-wrap:wrap; gap:10px; }
+.review-work { display:block; flex:none; width:104px; height:78px; padding:0; overflow:hidden; border:0; border-radius:10px; background:#eceae3; cursor:zoom-in; transition:transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s ease; }
+/* height:100% на картинке не работает, когда пропорции заданы
+   через aspect-ratio у кнопки — растягиваем через inset. */
+.review-work { position:relative; }
+.review-work img { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:cover; }
+.review-work:hover { transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,.14); }
+.review-work:focus-visible { outline:2px solid #080808; outline-offset:3px; }
+
+/* Лайтбокс. display:grid перебивает атрибут hidden, поэтому скрытый
+   слой продолжал перехватывать клики по превью — гасим явно. */
+.lightbox[hidden] { display:none !important; }
+.lightbox { position:fixed; z-index:200; inset:0; display:grid; place-items:center; padding:clamp(20px,4vw,56px); background:rgba(6,6,6,.92); cursor:zoom-out; }
+.lightbox-image { max-width:100%; max-height:100%; border-radius:6px; box-shadow:0 30px 90px rgba(0,0,0,.6); }
+.lightbox-close { position:absolute; top:clamp(14px,2vw,26px); right:clamp(14px,2vw,26px); width:44px; height:44px; display:grid; place-items:center; border:0; border-radius:50%; background:rgba(255,255,255,.12); color:#fff; font-size:28px; line-height:1; cursor:pointer; transition:background .2s ease; }
+.lightbox-close:hover { background:rgba(255,255,255,.22); }
+
+@media (max-width:900px) {
+  .reviews-grid { grid-template-columns:1fr; }
+  .review-card { padding:20px; border-radius:16px; }
+  .review-avatar { width:46px; height:46px; }
+  .review-who b { font-size:16px; }
+  .review-body p { font-size:14px; }
+  .review-work { width:92px; height:69px; }
+}
+
+/* Длинный отзыв сворачивается: видно начало, остальное по кнопке.
+   Так карточки в ряду остаются одной высоты и блок не растягивается. */
+.review-body { position:relative; max-height:190px; overflow:hidden; transition:max-height .45s cubic-bezier(.22,1,.36,1); }
+.review-body::after { content:""; position:absolute; right:0; bottom:0; left:0; height:56px; background:linear-gradient(rgba(255,255,255,0), #fff); pointer-events:none; transition:opacity .3s ease; }
+.review-card.is-open .review-body { max-height:none; }
+.review-card.is-open .review-body::after { opacity:0; }
+.review-more { justify-self:start; padding:0; border:0; background:transparent; color:#080808; font-size:14px; font-weight:500; letter-spacing:-.01em; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+.review-more:hover { color:#8c1d1a; }

@@ -1215,3 +1215,62 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
   };
   scrollSubscribers.push(maybeSnapIn);
 }
+
+// ===== ЛАЙТБОКС ДЛЯ РАБОТ В ОТЗЫВАХ =====
+// Клик по превью открывает работу в полном размере.
+// Закрывается кликом по фону, крестиком или Escape.
+(() => {
+  const root = document.querySelector('[data-lightbox-root]');
+  if (!root) return;
+  const image = root.querySelector('[data-lightbox-image]');
+  const closeButton = root.querySelector('[data-lightbox-close]');
+  let lastFocused = null;
+
+  const open = (src, alt) => {
+    lastFocused = document.activeElement;
+    image.src = src;
+    image.alt = alt || '';
+    root.hidden = false;
+    document.body.style.overflow = 'hidden';
+    closeButton?.focus();
+  };
+  const close = () => {
+    root.hidden = true;
+    image.src = '';
+    document.body.style.overflow = '';
+    lastFocused?.focus();
+  };
+
+  // Открытие — отдельным обработчиком на документе.
+  document.addEventListener('click', (event) => {
+    const trigger = event.target.closest?.('[data-lightbox]');
+    if (!trigger) return;
+    event.preventDefault();
+    const img = trigger.querySelector('img');
+    open(trigger.getAttribute('data-lightbox'), img?.alt);
+  });
+
+  // Закрытие — обработчик на самом слое, иначе то же событие открытия
+  // всплывает до документа и тут же закрывает окно.
+  root.addEventListener('click', (event) => {
+    if (event.target === root || event.target === closeButton) close();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !root.hidden) close();
+  });
+})();
+
+// ===== СВОРАЧИВАНИЕ ДЛИННЫХ ОТЗЫВОВ =====
+document.querySelectorAll('[data-review-more]').forEach((button) => {
+  const card = button.closest('.review-card');
+  const body = card?.querySelector('[data-review-body]');
+  if (!card || !body) return;
+  // Короткий отзыв сворачивать незачем — прячем кнопку.
+  if (body.scrollHeight <= body.clientHeight + 8) { button.hidden = true; return; }
+  button.addEventListener('click', () => {
+    const open = card.classList.toggle('is-open');
+    button.textContent = open ? 'Свернуть' : 'Читать полностью';
+    button.setAttribute('aria-expanded', String(open));
+  });
+});

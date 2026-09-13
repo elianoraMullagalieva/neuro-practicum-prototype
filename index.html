@@ -371,6 +371,43 @@
         </div>
       </section>
 
+
+      <section class="reviews-section" id="reviews" data-chrome="light" aria-labelledby="reviews-title">
+        <div class="reviews-content container">
+          <header class="reviews-head">
+            <h2 id="reviews-title">Отзывы<span> первого потока</span></h2>
+            <p class="reviews-note">Что говорят те, кто уже прошёл практикум и собрал портфолио.</p>
+          </header>
+
+          <div class="reviews-grid">
+            <article class="review-card">
+              <div class="review-top">
+                <img class="review-avatar" src="assets/reviews/anna.jpg" alt="Анна Оверчук" loading="lazy" decoding="async" />
+                <div class="review-who">
+                  <b>Анна Оверчук</b>
+                  <span class="review-stars" aria-label="Оценка 5 из 5">★★★★★</span>
+                </div>
+              </div>
+              <div class="review-body" data-review-body>
+                <p>Эля, спасибо тебе большое за возможность участвовать в нейрокемпе. За время Кемпа я сделала 2 классных проекта, которые не стыдно положить в портфолио и показать клиентам. И эти 2 проекта получились очень разными, продуманными, стильными и концептуальными.</p>
+                <p>И даже! Почти собрала свой сайт-портфолио. Что откладывала лет 5. Самое главное, что я поняла, нейронки — это не страшно))</p>
+                <p>Все лекции понятны + текстовые шпаргалки и подборки ресурсов. Мне вообще всегда текст проще воспринимать, поэтому за это отдельный жирный плюс. Круто, что видео от первого лица и в моменте. Видно, что все иногда тупят, тормозят, не могут правильно сформулировать, и что даже при большом опыте ИИ не выдаёт классный результат с одного промта за 5 минут (как это сейчас выгодно преподносят).</p>
+                <p>Обратная связь была полная, понятная и лично от тебя даже на минимальном тарифе. Это было выше ожиданий))</p>
+                <p>У меня намного быстрее пошла работа с изображениями и фото. Не нужно искать часами или просить фотосессию в определённом стиле. Более того, если раньше я даже не откликалась на задачи, где нужны нейронки, то сейчас я без проблем и без внутреннего конфликта пишу всем, что сделаю. Ведь даже если что-то не будет получаться, в чате всегда найдётся, кто подскажет и поможет.</p>
+              </div>
+              <button type="button" class="review-more" data-review-more aria-expanded="false">Читать полностью</button>
+              <div class="review-works">
+                <button type="button" class="review-work" data-lightbox="assets/tunnel/work-01.jpg" aria-label="Открыть работу Анны">
+                  <img src="assets/tunnel/work-01.jpg" alt="Работа Анны Оверчук" loading="lazy" decoding="async" />
+                </button>
+                <button type="button" class="review-work" data-lightbox="assets/tunnel/work-06.jpg" aria-label="Открыть работу Анны">
+                  <img src="assets/tunnel/work-06.jpg" alt="Работа Анны Оверчук" loading="lazy" decoding="async" />
+                </button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
       <section class="questions-section" id="questions" aria-labelledby="questions-title">
         <div class="questions-head container">
           <h2 id="questions-title">Отвечаю<br /><span>на ваши вопросы</span></h2>
@@ -497,6 +534,10 @@
     <script src="assets/vendor/three.min.js"></script>
     <script src="assets/tunnel/gallery-manifest.js"></script>
     <script src="assets/cases/cases-manifest.js"></script>
+    <div class="lightbox" data-lightbox-root hidden>
+      <button type="button" class="lightbox-close" data-lightbox-close aria-label="Закрыть">&times;</button>
+      <img class="lightbox-image" data-lightbox-image src="" alt="" />
+    </div>
     <script src="script.js"></script>
   </body>
 </html>
