@@ -1696,11 +1696,11 @@ p, li,
 .review-top { display:flex; align-items:center; gap:14px; }
 .review-avatar { width:54px; height:54px; flex:none; border-radius:50%; object-fit:cover; background:#e8e8e5; }
 .review-who { display:grid; gap:3px; min-width:0; }
-.review-who b { font-size:17px; font-weight:600; letter-spacing:-.01em; }
+.review-who b { font-size:clamp(15px,1.15vw,17px); font-weight:600; letter-spacing:-.01em; }
 .review-stars { color:#d4a017; font-size:14px; letter-spacing:.08em; line-height:1; }
 
 .review-body { display:grid; gap:11px; }
-.review-body p { margin:0; color:#3d3d3b; font-size:15px; line-height:1.55; letter-spacing:0; }
+.review-body p { margin:0; color:#3d3d3b; font-size:clamp(14px,1.05vw,15px); line-height:1.4; letter-spacing:0; }
 
 .review-works { display:flex; flex-wrap:wrap; gap:10px; }
 .review-work { display:block; flex:none; width:104px; height:78px; padding:0; overflow:hidden; border:0; border-radius:10px; background:#e8e8e5; cursor:zoom-in; transition:transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s ease; }
@@ -1723,8 +1723,8 @@ p, li,
   .reviews-grid { grid-template-columns:1fr; }
   .review-card { padding:20px; border-radius:16px; }
   .review-avatar { width:46px; height:46px; }
-  .review-who b { font-size:16px; }
-  .review-body p { font-size:14px; }
+  .review-who b { font-size:15px; }
+  .review-body p { font-size:14px; line-height:1.4; }
   .review-work { width:92px; height:69px; }
 }
 
@@ -1738,12 +1738,13 @@ p, li,
 .review-more:hover { color:#8c1d1a; }
 
 /* Ключевая фраза отзыва — вынесена крупно, стиль как у .difference-copy h3. */
+/* Те же размеры, что на карточках «Для кого» (.audience-card-copy). */
 .review-quote {
   margin:0;
-  font-size:clamp(19px,1.5vw,23px);
+  font-size:clamp(21px,1.6vw,24px);
   font-weight:600;
-  line-height:1.15;
-  letter-spacing:-.015em;
+  line-height:1.1;
+  letter-spacing:-.01em;
   text-wrap:balance;
 }
 /* Аватарка-буква для тех, кто не прислал фото. */
@@ -1752,6 +1753,6 @@ p, li,
   color:#6c6c6c; font-size:22px; font-weight:500; line-height:1;
 }
 @media (max-width:900px) {
-  .review-quote { font-size:clamp(17px,4.4vw,20px); }
+  .review-quote { font-size:clamp(18px,4.8vw,21px); }
   .review-avatar--letter { font-size:19px; }
 }
