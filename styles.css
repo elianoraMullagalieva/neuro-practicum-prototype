@@ -1686,8 +1686,11 @@ p, li,
    с выравниванием влево: карточки набираются рядами по мере появления. */
 /* auto-fill создаёт пустые колонки и прижимает единственную карточку
    влево. Флекс с переносом центрирует любое их количество. */
-.reviews-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:clamp(16px,2vw,28px); align-items:flex-start; }
-.review-card { flex:1 1 340px; max-width:420px; }
+/* Сетка с центрированным содержимым: ряды заполняются слева направо,
+   а весь блок карточек стоит по центру секции. При нечётном числе
+   последняя карточка не повисает одна посреди ряда. */
+.reviews-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:clamp(16px,2vw,28px); align-items:start; max-width:1320px; margin-inline:auto; }
+.review-card { max-width:none; }
 
 .review-card { display:grid; gap:18px; padding:clamp(22px,2vw,30px); border:1px solid #e2dfd6; border-radius:20px; background:#fff; }
 .review-top { display:flex; align-items:center; gap:14px; }
