@@ -1733,3 +1733,22 @@ p, li,
 .review-card.is-open .review-body::after { opacity:0; }
 .review-more { justify-self:start; padding:0; border:0; background:transparent; color:#080808; font-size:14px; font-weight:500; letter-spacing:-.01em; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
 .review-more:hover { color:#8c1d1a; }
+
+/* Ключевая фраза отзыва — вынесена крупно, стиль как у .difference-copy h3. */
+.review-quote {
+  margin:0;
+  font-size:clamp(19px,1.5vw,23px);
+  font-weight:600;
+  line-height:1.15;
+  letter-spacing:-.015em;
+  text-wrap:balance;
+}
+/* Аватарка-буква для тех, кто не прислал фото. */
+.review-avatar--letter {
+  display:grid; place-items:center;
+  color:#6c6c6c; font-size:22px; font-weight:500; line-height:1;
+}
+@media (max-width:900px) {
+  .review-quote { font-size:clamp(17px,4.4vw,20px); }
+  .review-avatar--letter { font-size:19px; }
+}
