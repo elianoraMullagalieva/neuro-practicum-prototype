@@ -623,9 +623,12 @@ em { color:var(--lime); font-style:normal; }
 .audience-stage { position:absolute; z-index:1; inset:0 0 auto; height:100svh; }
 .audience-stage.is-pinned { position:fixed; z-index:9; top:0; right:0; bottom:auto; left:0; width:100%; }
 .audience-stage.is-ended { position:absolute; top:auto; right:0; bottom:0; left:0; width:100%; }
-.persistent-chrome { position:fixed; z-index:40; top:0; left:0; display:grid; width:100%; box-sizing:border-box; grid-template-columns:84px 1fr auto; align-items:start; transform:translateY(-120%); padding-top:33px; padding-left:49px; padding-right:40px; color:#080808; opacity:0; pointer-events:none; transition:color .28s ease, opacity .3s ease, transform .45s cubic-bezier(.22,1,.36,1); }
+.persistent-chrome { position:fixed; z-index:40; top:0; left:0; display:grid; width:100%; box-sizing:border-box; grid-template-columns:max-content 1fr auto; column-gap:22px; align-items:start; transform:translateY(-120%); padding-top:33px; padding-left:49px; padding-right:40px; color:#080808; opacity:0; pointer-events:none; transition:color .28s ease, opacity .3s ease, transform .45s cubic-bezier(.22,1,.36,1); }
 .persistent-chrome.is-visible { opacity:1; transform:translateY(0); pointer-events:auto; }
-.persistent-brand { display:grid; justify-items:center; gap:6px; width:57px; color:#6c6c6c; font-size:14px; line-height:.89; }
+/* Ширина была жёстко 57px, а подпись «практикум / AI-креаторов» шире —
+   она вылезала на «20+ уроков» и буквы читались друг сквозь друга.
+   Отдаём блоку столько, сколько занимает текст. */
+.persistent-brand { display:grid; justify-items:start; gap:6px; width:max-content; color:#6c6c6c; font-size:14px; line-height:.89; }
 .persistent-brand img { display:block; width:53px; height:auto; }
 .persistent-duration { display:grid; gap:6px; margin:2px 0 0; line-height:1; }
 .persistent-duration span { color:rgba(8,8,8,.5); font-size:12px; }
@@ -1904,3 +1907,36 @@ p, li,
     scroll-snap-align:center;
   }
 }
+
+/* ============================================================
+   ПЛАВАЮЩАЯ ШАПКА: ЧИТАЕМОСТЬ НА СВЕТЛЫХ БЛОКАХ
+   Шапка прозрачная, и на «Для кого» и заголовке «Работы
+   участников» её текст ложился прямо на контент. Подложка
+   в цвет секции решает это, не закрывая композицию.
+   ============================================================ */
+.persistent-chrome::before {
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(rgba(255,255,255,.92), rgba(255,255,255,0));
+  opacity:0; pointer-events:none;
+  transition:opacity .3s ease;
+  z-index:-1;
+}
+.persistent-chrome:not(.is-dark)::before { opacity:1; }
+.persistent-chrome.is-dark::before {
+  background:linear-gradient(rgba(8,8,8,.88), rgba(8,8,8,0));
+  opacity:1;
+}
+
+/* Метки в карточках «Для кого» были 5.5px — серые пятна вместо текста. */
+@media (max-width:900px) {
+  .audience-card-tags { font-size:9px; }
+  .audience-card-tags span { padding:4px 8px; }
+}
+
+/* Стрелки карусели: 35° читались как диагональ. Доворачиваем
+   почти до горизонтали — жест «влево/вправо» должен быть однозначным. */
+.participant-gallery-controls [data-gallery-next] svg { transform:rotate(45deg); }
+.participant-gallery-controls [data-gallery-prev] svg { transform:scaleX(-1) rotate(45deg); }
+.participant-gallery-controls [data-gallery-next]:hover svg { transform:rotate(45deg) translate(2px,-2px); }
+.participant-gallery-controls [data-gallery-prev]:hover svg { transform:scaleX(-1) rotate(45deg) translate(2px,-2px); }
