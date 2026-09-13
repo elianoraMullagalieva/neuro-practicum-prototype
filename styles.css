@@ -1695,6 +1695,9 @@ p, li,
    а весь блок карточек стоит по центру секции. При нечётном числе
    последняя карточка не повисает одна посреди ряда. */
 .reviews-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:clamp(16px,2vw,28px); align-items:start; max-width:1320px; margin-inline:auto; }
+/* При чётном числе отзывов раскладываем 2x2 — иначе последняя карточка
+   висит одна во втором ряду. */
+.reviews-grid:has(.review-card:nth-child(4):last-child) { grid-template-columns:repeat(2,minmax(320px,1fr)); max-width:900px; }
 .review-card { max-width:none; }
 
 .review-card { display:grid; gap:18px; padding:clamp(22px,2vw,30px); border:1px solid #e2dfd6; border-radius:20px; background:#fff; }
