@@ -512,9 +512,9 @@ em { color:var(--lime); font-style:normal; }
 [data-transition="black"] .motion-stage::before { opacity:0; }
 [data-transition="fade"] .motion-stage { background:transparent; }
 .motion-chrome { position:absolute; z-index:5; inset:0; pointer-events:none; font-size:12px; }
-.motion-brand { position:absolute; top:34px; left:49px; display:grid; justify-items:center; gap:6px; color:#8b8b8b; line-height:.9; }
+.motion-brand { position:absolute; top:34px; left:49px; display:grid; justify-items:start; gap:6px; color:#8b8b8b; line-height:.9; }
 .motion-brand img { width:53px; height:auto; filter:invert(1); }
-.motion-brand span { font-size:14px; }
+.motion-brand span { font-size:14px; text-align:center; white-space:nowrap; }
 .motion-duration { position:absolute; top:35px; left:137px; display:grid; gap:7px; }
 .motion-duration span { color:rgba(255,255,255,.5); line-height:1; }
 .motion-duration b { font-size:20px; font-weight:500; line-height:.9; letter-spacing:-.06em; }
