@@ -1232,6 +1232,10 @@ if (worksScene && workTunnel && !window.matchMedia('(prefers-reduced-motion: red
   }, true);
 
   const maybeSnapIn = () => {
+    // На телефоне доводчик отбрасывает прокрутку назад: палец тянет вниз,
+    // а скрипт возвращает к началу сцены — читается как дрожание.
+    // Инерционная прокрутка iOS и авто-доводка не уживаются.
+    if (window.innerWidth <= 900) { lastY = window.scrollY; return; }
     if (snapping || Date.now() < anchorJumpUntil) { lastY = window.scrollY; return; }
     const rect = worksScene.getBoundingClientRect();
     const goingDown = window.scrollY > lastY;
