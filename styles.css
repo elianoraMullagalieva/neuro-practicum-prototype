@@ -150,7 +150,7 @@ em { color:var(--lime); font-style:normal; }
 
   .intro-stage .brand { position:absolute; left:49px; top:34px; gap:6px; }
   .intro-stage .brand img { width:53px; }
-  .intro-stage .brand > span { font-size:14px; line-height:.89; }
+  .intro-stage .brand > span { font-size:12px; line-height:1.08; }
 
   .header-duration {
     position:absolute;
