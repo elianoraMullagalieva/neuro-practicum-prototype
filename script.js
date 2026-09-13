@@ -532,7 +532,10 @@ if (audienceSection && window.anime && !window.matchMedia('(prefers-reduced-moti
     // Дорогое каскадное появление карточек: поднимаются из мягкого блюра,
     // фото проявляется из расфокуса, тексты вплывают следом. Без «пикселей».
     audienceCards.forEach((card, index) => {
-      const start = 900 + index * 220;
+      // Раньше карточки стартовали на 900 мс — заголовок уже стоял,
+      // а сетка ещё пустовала почти секунду. Теперь они подхватывают
+      // заголовок на 260 мс, шаг между ними тоже короче.
+      const start = 260 + index * 150;
       timeline
         .add({ targets:audienceCardInners[index], opacity:[0, 1], filter:['blur(16px)', 'blur(0px)'], scale:[1.05, 1], translateY:[28, 0], duration:900, easing:'cubicBezier(.16, 1, .3, 1)' }, start)
         .add({ targets:audienceCardImages[index], filter:['blur(24px) saturate(.7)', 'blur(0px) saturate(1)'], scale:[1.08, 1], duration:1100, easing:'cubicBezier(.16, 1, .3, 1)' }, start)

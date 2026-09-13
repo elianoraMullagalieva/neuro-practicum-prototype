@@ -1672,10 +1672,11 @@ p, li,
    Карточка: аватар, имя, звёзды, текст, превью работ.
    Работы открываются в лайтбоксе по клику.
    ============================================================ */
-.reviews-section { position:relative; z-index:2; background:#f4f2eb; color:#080808; }
+/* Тот же серый, что у тарифов (#e8e8e5) — «бумажный» #f4f2eb отдавал желтизной. */
+.reviews-section { position:relative; z-index:2; background:#e8e8e5; color:#080808; }
 .reviews-content { padding:clamp(72px,8vh,120px) 0 clamp(72px,8vh,120px); }
 
-.reviews-head { display:grid; gap:14px; margin-bottom:clamp(32px,4vh,56px); }
+.reviews-head { display:grid; gap:14px; justify-items:center; margin-bottom:clamp(32px,4vh,56px); text-align:center; }
 .reviews-head h2 { margin:0; font-size:var(--fs-h1); font-weight:500; line-height:.9; letter-spacing:-.04em; }
 .reviews-head h2 span { color:#8a8a88; }
 .reviews-note { margin:0; max-width:46ch; color:#60605e; font-size:var(--fs-body); line-height:1.5; }
@@ -1683,7 +1684,10 @@ p, li,
 /* auto-fit растягивал единственную карточку на всю ширину — строка
    выходила в 1400px, читать неудобно. Колонки фиксированной ширины
    с выравниванием влево: карточки набираются рядами по мере появления. */
-.reviews-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,420px)); gap:clamp(16px,2vw,28px); align-items:start; justify-content:start; }
+/* auto-fill создаёт пустые колонки и прижимает единственную карточку
+   влево. Флекс с переносом центрирует любое их количество. */
+.reviews-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:clamp(16px,2vw,28px); align-items:flex-start; }
+.review-card { flex:1 1 340px; max-width:420px; }
 
 .review-card { display:grid; gap:18px; padding:clamp(22px,2vw,30px); border:1px solid #e2dfd6; border-radius:20px; background:#fff; }
 .review-top { display:flex; align-items:center; gap:14px; }
