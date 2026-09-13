@@ -9,3 +9,4 @@ _*.mjs
 .DS_Store
 package-lock.json
 _opt-backup/
+_unused/

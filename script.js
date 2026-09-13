@@ -1300,3 +1300,30 @@ document.querySelectorAll('[data-review-more]').forEach((button) => {
     button.setAttribute('aria-expanded', String(open));
   });
 });
+
+
+// ===== ПАУЗА ВИДЕО ВНЕ ЭКРАНА =====
+// На телефоне 6 роликов ленты декодировались одновременно, включая те,
+// что уже уехали за экран. Каждый занимает свой декодер — отсюда лаги.
+// Играет только то, что реально видно.
+(() => {
+  const videos = [...document.querySelectorAll('.work-video, .difference-video')];
+  if (!videos.length || !('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      const v = entry.target;
+      if (entry.isIntersecting) {
+        const play = v.play();
+        if (play && play.catch) play.catch(() => {});
+      } else {
+        v.pause();
+      }
+    });
+  }, { rootMargin: '100px', threshold: 0 });
+  videos.forEach((v) => io.observe(v));
+
+  // Вкладка неактивна — гасим всё, чтобы не греть телефон в фоне.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) videos.forEach((v) => v.pause());
+  });
+})();
