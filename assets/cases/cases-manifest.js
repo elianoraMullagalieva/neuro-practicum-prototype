@@ -1,8 +1,9 @@
-// Видео-кейсы для слайдера после туннеля. Александра — первой.
-// Каждая запись: имя файла в assets/video (без расширения).
-// Рядом лежат name.mp4 (900px), name@2x.mp4 (1800px) и name.jpg (постер).
+// Кейсы для слайдера после туннеля.
+// Строка — видео из assets/video (рядом лежат name.mp4, name@2x.mp4, name.jpg).
+// Объект { image } — статичная картинка.
 window.CASE_GALLERY_VIDEOS = Object.freeze([
   "alexandra",
+  { image: "assets/cases/anna-portfolio.jpg", alt: "Сайт-портфолио Анны Оверчук" },
   "portfolio",
   "cleanshot-b",
   "varya",

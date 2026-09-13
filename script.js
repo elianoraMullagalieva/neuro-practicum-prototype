@@ -929,7 +929,10 @@ if (participantGallery && (caseImages.length || workTunnelImages.length)) {
     card.type = 'button';
     card.className = 'participant-gallery-card';
     card.setAttribute('aria-label', `Показать работу ${index + 1}`);
-    if (useVideo) {
+    if (useVideo && typeof src === 'object' && src.image) {
+      // Статичный кейс: в манифесте вместо имени видео лежит { image }.
+      card.innerHTML = `<img src="${src.image}" alt="${src.alt || `Работа участника ${index + 1}`}" loading="lazy" decoding="async" draggable="false" />`;
+    } else if (useVideo) {
       // Тяжёлую версию (@2x) отдаём только широким экранам; на мобилке —
       // лёгкая, иначе трафик и декодирование убивают прокрутку.
       card.innerHTML = `<video class="participant-gallery-video" muted loop playsinline `
