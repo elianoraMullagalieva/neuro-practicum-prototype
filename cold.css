@@ -1,0 +1,23 @@
+/* ============================================================
+   ХОЛОДНАЯ СТРАНИЦА — отличия от основной
+   Подключается ПОСЛЕ styles.css и только дополняет её.
+   ============================================================ */
+
+/* Тёмный акцент на выделенном тарифе. В основном файле он привязан
+   к data-tariff="colleagues"; здесь выделяем по классу, чтобы можно
+   было подсветить любой тариф. */
+.pricing-card.pricing-card--focus {
+  z-index:1;
+  border-color:#0c0c0c; background:#0c0c0c; color:#fff;
+  box-shadow:0 20px 50px rgba(0,0,0,.28);
+}
+.pricing-card--focus .pricing-card-top { color:rgba(255,255,255,.6); }
+.pricing-card--focus .pricing-card-top span { border-color:rgba(255,255,255,.32); }
+.pricing-card--focus .pricing-lead { color:rgba(255,255,255,.62); }
+.pricing-card--focus .pricing-per  { color:rgba(255,255,255,.5); }
+.pricing-card--focus .pricing-renew {
+  color:rgba(255,255,255,.5); border-top-color:rgba(255,255,255,.16);
+}
+.pricing-card--focus li::before { background:#fff; }
+.pricing-card--focus .pricing-button { background:#fff; color:#0c0c0c; }
+.pricing-card--focus .pricing-button:hover { background:#e8e8e5; color:#0c0c0c; }
