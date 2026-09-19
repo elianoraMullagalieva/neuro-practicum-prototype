@@ -1,24 +1,61 @@
-# Короткие адреса без .html: /cold вместо /cold.html
+# ============================================================
+#  camp.derzayvdesign.com
+# ============================================================
+
 RewriteEngine On
 
-# Если запрошенного файла нет, но есть такой же с .html — отдаём его
+# ── 1. HTTP → HTTPS, постоянная переадресация (301) ──────────
+# На Бегете запрос приходит через прокси, поэтому проверяем
+# оба признака: обычный HTTPS и заголовок от прокси.
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# ── 2. www → без www ─────────────────────────────────────────
+# Один канонический адрес вместо двух.
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# ── 3. Короткие адреса без .html ─────────────────────────────
+# /cold вместо /cold.html, /oferta вместо /oferta.html
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.html -f
 RewriteRule ^(.+)$ $1.html [L]
 
-# Кэш для статики — картинки и видео не меняются
+# ── 4. Кэш статики ───────────────────────────────────────────
+# Картинки и видео не меняются — держим их в браузере месяц.
+# Стили и скрипты правим часто, поэтому только час.
 <IfModule mod_expires.c>
   ExpiresActive On
-  ExpiresByType image/jpeg "access plus 30 days"
-  ExpiresByType image/png  "access plus 30 days"
-  ExpiresByType image/svg+xml "access plus 30 days"
-  ExpiresByType video/mp4  "access plus 30 days"
-  ExpiresByType text/css   "access plus 1 hours"
+  ExpiresByType image/jpeg      "access plus 30 days"
+  ExpiresByType image/png       "access plus 30 days"
+  ExpiresByType image/svg+xml   "access plus 30 days"
+  ExpiresByType image/webp      "access plus 30 days"
+  ExpiresByType video/mp4       "access plus 30 days"
+  ExpiresByType font/woff2      "access plus 30 days"
+  ExpiresByType text/css        "access plus 1 hours"
   ExpiresByType application/javascript "access plus 1 hours"
 </IfModule>
 
-# Сжатие текстовых файлов
+# ── 5. Сжатие ────────────────────────────────────────────────
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
+  AddOutputFilterByType DEFLATE text/html text/css text/plain
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
 </IfModule>
+
+# ── 6. Безопасность ──────────────────────────────────────────
+<IfModule mod_headers.c>
+  # Браузер запоминает на год: этот сайт только по HTTPS
+  Header always set Strict-Transport-Security "max-age=31536000"
+  # Запрет встраивания сайта в чужой iframe
+  Header always set X-Frame-Options "SAMEORIGIN"
+  # Браузер не гадает тип файла, а берёт заявленный
+  Header always set X-Content-Type-Options "nosniff"
+  # Не передаём полный адрес при переходе на чужие сайты
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ── 7. Страница не найдена ───────────────────────────────────
+ErrorDocument 404 /index.html
