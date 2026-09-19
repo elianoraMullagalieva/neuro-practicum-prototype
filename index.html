@@ -23,6 +23,7 @@
       }, 1200);
     </script>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="cold.css" />
   </head>
   <body>
     <div class="cursor-dot" aria-hidden="true"></div>
@@ -68,7 +69,7 @@
         <section class="hero container" aria-labelledby="hero-title">
           <div class="hero-copy reveal">
             <p class="hero-kicker">Нейро Практикум</p>
-            <h1 id="hero-title">Собери 5 сайтов<br />с Claude Code уровня<br /><span>Awwwards всего <b><br class="mobile-only" />за 49 900 ₽</b></span></h1>
+            <h1 id="hero-title">Собери 5 сайтов<br />с Claude Code уровня<br /><span>Awwwards всего <b><br class="mobile-only" />за 49 000 ₽</b></span></h1>
             <a class="hero-cta action-pair" href="#pricing"><span class="hero-cta-label action-pair__label">Хочу на практикум</span><span class="hero-cta-icon action-pair__icon" aria-hidden="true"><img class="action-pair__icon-image" src="assets/icons/arrow.svg" alt="" /></span></a>
           </div>
 
@@ -331,47 +332,50 @@
           <p class="pricing-note">Три формата одной практики — с тем объёмом поддержки, который тебе сейчас нужен.</p>
         </div>
         <div class="pricing-grid container">
-          <article class="pricing-card" data-tariff="self">
-            <div class="pricing-card-top"><span>01</span><p>Самостоятельный</p></div>
-            <p class="pricing-price"><s class="pricing-old">16 800 ₽</s>8 900 ₽<span class="pricing-per">/ мес</span></p>
-            <p class="pricing-lead">Для тех, кто готов делать проекты в своём темпе.</p>
+          <article class="pricing-card pricing-card--focus" data-tariff="start">
+            <div class="pricing-card-top"><span>01</span><p>Старт</p></div>
+            <p class="pricing-price">4 900 ₽<span class="pricing-per">/ единоразово</span></p>
+            <p class="pricing-lead">Для тех, кто хочет попробовать и собрать первые проекты сам.</p>
             <ul>
-              <li>9 уроков — доступ сразу</li>
-              <li>3 проекта + методички</li>
-              <li>Промпты и шаблоны</li>
+              <li>20 уроков — доступ сразу</li>
+              <li>Доступ 1 месяц</li>
+              <li>Шпаргалки, промпты, шаблоны</li>
+              <li>5 проектов в портфолио</li>
             </ul>
             <p class="pricing-renew">Продление доступа к лекциям<br />и закрытому клубу — <span style="white-space:nowrap">1 300 ₽ / мес</span></p>
-            <a class="pricing-button" href="https://payform.ru/37ct2e6/" target="_blank" rel="noopener noreferrer" data-choice="Самостоятельный">Начать самостоятельно <span class="btn-arrow" aria-hidden="true"><svg class="brand-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M18.9629 0C19.5354 0.000248588 19.9998 0.465312 20 1.03906V2.54004L18.7461 3.7959C18.7173 3.81763 18.6898 3.84138 18.6641 3.86719L15.8711 6.66602H19.998V20H14.998V7.54102L2.56641 20L0 17.4277L11.9893 5.41211C12.6421 4.75734 12.1795 3.63797 11.2559 3.6377H0.0859375V0H18.9629Z" fill="currentColor"/></svg></span></a>
+            <a class="pricing-button" href="https://payform.ru/37ct2e6/" target="_blank" rel="noopener noreferrer" data-choice="Старт">Начать с основы <span class="btn-arrow" aria-hidden="true"><svg class="brand-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M18.9629 0C19.5354 0.000248588 19.9998 0.465312 20 1.03906V2.54004L18.7461 3.7959C18.7173 3.81763 18.6898 3.84138 18.6641 3.86719L15.8711 6.66602H19.998V20H14.998V7.54102L2.56641 20L0 17.4277L11.9893 5.41211C12.6421 4.75734 12.1795 3.63797 11.2559 3.6377H0.0859375V0H18.9629Z" fill="currentColor"/></svg></span></a>
           </article>
-          <article class="pricing-card" data-tariff="colleagues">
-            <div class="pricing-card-top"><span>02</span><p>С коллегами</p></div>
-            <p class="pricing-price"><s class="pricing-old">18 000 ₽</s>9 500 ₽<span class="pricing-per">/ мес</span></p>
-            <p class="pricing-lead">Для тех, кто хочет реализовать сильные проекты в живом окружении.</p>
+          <article class="pricing-card" data-tariff="practice-plus">
+            <div class="pricing-card-top"><span>02</span><p>Практика+</p></div>
+            <p class="pricing-price">24 900 ₽<span class="pricing-per">/ единоразово</span></p>
+            <p class="pricing-lead">Для тех, кому нужны разборы и рабочие файлы.</p>
             <ul>
-              <li>15 уроков — доступ сразу</li>
-              <li>5 проектов + методички</li>
+              <li>Всё из тарифа «Старт»</li>
+              <li>Доступ 6 месяцев</li>
               <li>300 000 AI-кредитов</li>
-              <li>Закрытый чат с готовыми компонентами, анимациями, шаблонами и дизайнерскими блоками</li>
-              <li>Закрытый чат с поддержкой и живыми эфирами</li>
+              <li>Банк компонентов и готовых сайтов</li>
+              <li>Закрытое комьюнити и живые эфиры</li>
+              <li>6 разборов работ от команды Эли</li>
+              <li>Рабочие файлы и шаблоны для клиентов</li>
+              <li>Итоговый разбор портфолио от Эли</li>
             </ul>
             <p class="pricing-renew">Продление доступа к лекциям<br />и закрытому клубу — <span style="white-space:nowrap">1 300 ₽ / мес</span></p>
-            <a class="pricing-button" href="https://payform.ru/5jct2cD/" target="_blank" rel="noopener noreferrer" data-choice="С коллегами">Выбрать формат <span class="btn-arrow" aria-hidden="true"><svg class="brand-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M18.9629 0C19.5354 0.000248588 19.9998 0.465312 20 1.03906V2.54004L18.7461 3.7959C18.7173 3.81763 18.6898 3.84138 18.6641 3.86719L15.8711 6.66602H19.998V20H14.998V7.54102L2.56641 20L0 17.4277L11.9893 5.41211C12.6421 4.75734 12.1795 3.63797 11.2559 3.6377H0.0859375V0H18.9629Z" fill="currentColor"/></svg></span></a>
+            <a class="pricing-button" href="https://payform.ru/5jct2cD/" target="_blank" rel="noopener noreferrer" data-choice="Практика+">Выбрать формат <span class="btn-arrow" aria-hidden="true"><svg class="brand-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M18.9629 0C19.5354 0.000248588 19.9998 0.465312 20 1.03906V2.54004L18.7461 3.7959C18.7173 3.81763 18.6898 3.84138 18.6641 3.86719L15.8711 6.66602H19.998V20H14.998V7.54102L2.56641 20L0 17.4277L11.9893 5.41211C12.6421 4.75734 12.1795 3.63797 11.2559 3.6377H0.0859375V0H18.9629Z" fill="currentColor"/></svg></span></a>
           </article>
-          <article class="pricing-card pricing-card--focus" data-tariff="support">
-            <div class="pricing-card-top"><span>03</span><p>С поддержкой Эли</p></div>
-            <p class="pricing-price"><s class="pricing-old">65 000 ₽</s>49 000 ₽<span class="pricing-per">/ единоразово</span></p>
-            <p class="pricing-lead">Для тех, кто хочет довести портфолио до сильного результата.</p>
+          <article class="pricing-card" data-tariff="support">
+            <div class="pricing-card-top"><span>03</span><p>С Элей</p></div>
+            <p class="pricing-price">49 000 ₽<span class="pricing-per">/ единоразово</span></p>
+            <p class="pricing-lead">Личное сопровождение до результата. Мест ограниченно.</p>
             <ul>
-              <li>Всё из тарифа «С коллегами»</li>
-              <li>Доступ к урокам на год</li>
-              <li>Поддержка Эли — 2 месяца</li>
-              <li>Один разбор лично от Эли</li>
-              <li>Живые разборы работ и эфиры</li>
-              <li>300 000 AI-кредитов на 2 месяца</li>
-              <li>Портфолио и позиционирование</li>
+              <li>Всё из тарифа «Практика+»</li>
+              <li>Доступ 1 год</li>
+              <li>Безлимитные разборы лично от Эли</li>
+              <li>Видеоразборы твоих проектов</li>
+              <li>Бесплатные обновления практикума</li>
+              <li>Всего 20 мест</li>
             </ul>
-            <p class="pricing-renew pricing-renew--included">Бесплатные обновления практикума включены</p>
-            <a class="pricing-button" href="https://payform.ru/5vct2fy/" target="_blank" rel="noopener noreferrer" data-choice="С поддержкой Эли">Хочу с поддержкой <span class="btn-arrow" aria-hidden="true"><svg class="brand-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M18.9629 0C19.5354 0.000248588 19.9998 0.465312 20 1.03906V2.54004L18.7461 3.7959C18.7173 3.81763 18.6898 3.84138 18.6641 3.86719L15.8711 6.66602H19.998V20H14.998V7.54102L2.56641 20L0 17.4277L11.9893 5.41211C12.6421 4.75734 12.1795 3.63797 11.2559 3.6377H0.0859375V0H18.9629Z" fill="currentColor"/></svg></span></a>
+            <p class="pricing-renew"><span class="pricing-renew--included">Бесплатные обновления практикума включены</span></p>
+            <a class="pricing-button" href="https://payform.ru/5vct2fy/" target="_blank" rel="noopener noreferrer" data-choice="С Элей">Хочу с поддержкой <span class="btn-arrow" aria-hidden="true"><svg class="brand-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M18.9629 0C19.5354 0.000248588 19.9998 0.465312 20 1.03906V2.54004L18.7461 3.7959C18.7173 3.81763 18.6898 3.84138 18.6641 3.86719L15.8711 6.66602H19.998V20H14.998V7.54102L2.56641 20L0 17.4277L11.9893 5.41211C12.6421 4.75734 12.1795 3.63797 11.2559 3.6377H0.0859375V0H18.9629Z" fill="currentColor"/></svg></span></a>
           </article>
         </div>
       </section>
