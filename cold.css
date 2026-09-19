@@ -168,3 +168,182 @@
   .cmp-row .no { color:#c4c2bd; }
   .cmp-card.is-focus .cmp-row .no { color:rgba(255,255,255,.3); }
 }
+
+/* ============================================================
+   ОТЗЫВЫ: КАРУСЕЛЬ ВМЕСТО СЕТКИ
+   На десктопе была сетка 2×2 — блок растягивался на два экрана,
+   а сравнивать отзывы приходилось прокруткой страницы. Теперь
+   лента со стрелками: карточки одной высоты, следующая
+   выглядывает краем.
+   ============================================================ */
+.reviews-head { position: relative; }
+
+.reviews-controls {
+  display: flex; gap: 10px;
+  justify-content: flex-end;
+  width: 100%;
+  margin-top: 18px;
+}
+/* Листать нечего — прячем кнопки целиком, а не показываем
+   два серых нерабочих кружка. */
+.reviews-controls[hidden] { display: none; }
+.reviews-controls button {
+  display: grid; width: 46px; height: 46px; place-items: center;
+  border: 1px solid #dededb; border-radius: 50%;
+  background: transparent; color: #080808;
+  cursor: pointer;
+  transition: background .22s ease, border-color .22s ease, color .22s ease;
+}
+.reviews-controls button:hover { background: #080808; border-color: #080808; color: #fff; }
+.reviews-controls button:disabled { opacity: .3; cursor: default; }
+.reviews-controls button:disabled:hover { background: transparent; border-color: #dededb; color: #080808; }
+.reviews-controls svg { width: 14px; height: 14px; fill: currentColor; transition: transform .25s cubic-bezier(.22,1,.36,1); }
+.reviews-controls [data-reviews-next] svg { transform: rotate(45deg); }
+.reviews-controls [data-reviews-prev] svg { transform: scaleX(-1) rotate(45deg); }
+.reviews-controls [data-reviews-next]:hover svg { transform: rotate(45deg) translate(2px,-2px); }
+.reviews-controls [data-reviews-prev]:hover svg { transform: scaleX(-1) rotate(45deg) translate(2px,-2px); }
+.reviews-controls button:focus-visible { outline: 2px solid #080808; outline-offset: 3px; }
+
+@media (min-width: 901px) {
+  .reviews-grid,
+  .reviews-grid:has(.review-card:nth-child(4):last-child) {
+    display: flex; gap: 20px;
+    grid-template-columns: none;
+    max-width: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    /* Поля по краям — чтобы крайние карточки не липли к границам */
+    margin-inline: -4px;
+    padding: 2px 4px 8px;
+  }
+  .reviews-grid:focus-visible { outline: 2px solid #080808; outline-offset: 4px; }
+  .reviews-grid::-webkit-scrollbar { display: none; }
+  .review-card {
+    flex: 0 0 clamp(340px, 30%, 420px);
+    scroll-snap-align: start;
+  }
+}
+
+/* На мобилке стрелок нет: там свайп и подсказка «Листай вправо».
+   Лента для ≤900px приходит из styles.css — здесь ничего не нужно. */
+@media (max-width: 900px) {
+  .reviews-controls { display: none !important; }
+}
+
+/* Аватарка-заглушка: пока нет фото, кружок держит инициал,
+   чтобы шапка карточки не разъезжалась. */
+.review-avatar--empty {
+  display: grid; place-items: center;
+  background: #eceae5; color: #6b6a66;
+  font-size: 18px; font-weight: 600;
+  letter-spacing: .01em;
+}
+
+/* Аватарка-заглушка: пока нет фото, кружок держит инициал,
+   чтобы шапка карточки не разъезжалась. */
+.review-avatar--empty {
+  display: grid; place-items: center;
+  background: #eceae5; color: #6b6a66;
+  font-size: 18px; font-weight: 600;
+  letter-spacing: .01em;
+}
+
+/* ============================================================
+   ТАБЛИЦА СРАВНЕНИЯ — ПОД ВИД КАРТОЧЕК
+   Раньше это была обычная таблица в рамке: столбцы сливались,
+   зелёные галочки выбивались из чёрно-белой палитры сайта,
+   а первый столбец липнул к краю.
+   Теперь столбцы тарифов читаются как продолжение карточек
+   сверху — со скруглением, своим фоном и общей рамкой.
+   ============================================================ */
+
+/* Рамку снимаем с таблицы: её теперь держат сами столбцы. */
+.compare-wrap {
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  padding-top: 4px;
+}
+.compare-table { border-spacing: 10px 0; border-collapse: separate; }
+.compare-table th,
+.compare-table td { border-bottom: 0; }
+
+/* Столбцы тарифов — карточки: свой фон, скругление, рамка. */
+.compare-table thead th:not(:first-child) {
+  background: #fff;
+  border: 1px solid #dededb; border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  border-left: 1px solid #dededb;
+  padding-top: 22px; padding-bottom: 18px;
+  font-size: 15px;
+}
+.compare-table tbody td {
+  background: #fff;
+  border-left: 1px solid #dededb;
+  border-right: 1px solid #dededb;
+}
+.compare-table tbody tr:last-child td {
+  border-bottom: 1px solid #dededb;
+  border-radius: 0 0 18px 18px;
+  padding-bottom: 20px;
+}
+/* Разделители строк — внутри карточки, светлее рамки. */
+.compare-table tbody tr:not(:last-child) td { box-shadow: inset 0 -1px 0 #f0eeea; }
+
+/* Выделенный тариф — тёмный, как карточка сверху. */
+.compare-table thead .is-focus {
+  background: #0c0c0c; color: #fff;
+  border-color: #0c0c0c;
+  border-radius: 18px 18px 0 0;
+}
+.compare-table tbody .is-focus {
+  background: #0c0c0c; color: #fff;
+  border-color: #0c0c0c;
+}
+.compare-table tbody tr:not(:last-child) .is-focus { box-shadow: inset 0 -1px 0 #232323; }
+.compare-table tbody .is-focus b { color: #fff; }
+
+/* Первый столбец — шире и с воздухом, чтобы не липнул к краю. */
+.compare-table th[scope="row"] {
+  width: auto; min-width: clamp(150px, 14rem, 220px);
+  white-space: normal;
+  padding-left: 0; padding-right: clamp(16px, 1.5rem, 28px);
+  color: #55534f;
+}
+
+/* Галочки — в цвете текста, без зелёного. */
+.compare-table .yes { color: #0c0c0c; font-size: 16px; font-weight: 600; }
+.compare-table .is-focus .yes { color: #fff; }
+.compare-table .no { color: #c4c2bd; }
+
+/* Рассрочка — главная строка для решения, читается заметнее. */
+.compare-table .compare-instal th[scope="row"] { color: #0c0c0c; font-weight: 600; }
+.compare-table .compare-instal td {
+  font-size: clamp(15px, 1.05rem, 19px); font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Цена в шапке таблицы — на тёмном фоне остаётся белой. */
+.compare-price .is-focus { color: #fff; }
+.compare-price .is-focus s { color: #8e8e8a; }
+
+@media (max-width: 900px) {
+  .compare-table { border-spacing: 6px 0; }
+  .compare-table thead th:not(:first-child),
+  .compare-table tbody tr:last-child td { border-radius: 14px 14px 0 0; }
+  .compare-table tbody tr:last-child td { border-radius: 0 0 14px 14px; }
+}
+
+/* Шапка выделенного столбца: название тарифа белым по тёмному.
+   Из-за border-spacing шапка и тело разошлись, и белый текст
+   оказывался на белом фоне — название пропадало. */
+.compare-table thead th.is-focus {
+  background: #0c0c0c !important;
+  color: #fff !important;
+  border-color: #0c0c0c !important;
+}
+
+/* Зелёная строка в карточке тарифа — в общую палитру. */
+.pricing-renew--included { color: #55534f; }

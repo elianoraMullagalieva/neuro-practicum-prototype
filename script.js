@@ -1389,3 +1389,35 @@ document.querySelectorAll('[data-review-more]').forEach((button) => {
     start();
   }
 })();
+
+
+// ===== КАРУСЕЛЬ ОТЗЫВОВ: СТРЕЛКИ =====
+// Лента прокручивается на ширину карточки. Стрелка гаснет,
+// когда листать в эту сторону больше нечего.
+(() => {
+  const track = document.querySelector('.reviews-grid');
+  const prev = document.querySelector('[data-reviews-prev]');
+  const next = document.querySelector('[data-reviews-next]');
+  if (!track || !prev || !next) return;
+
+  const step = () => {
+    const card = track.querySelector('.review-card');
+    const gap = parseFloat(getComputedStyle(track).gap) || 20;
+    return card ? card.getBoundingClientRect().width + gap : 360;
+  };
+
+  const controls = prev.parentElement;
+  const sync = () => {
+    const max = track.scrollWidth - track.clientWidth;
+    // Всё поместилось — кнопки не нужны вовсе.
+    controls.hidden = max <= 4;
+    prev.disabled = track.scrollLeft <= 4;
+    next.disabled = track.scrollLeft >= max - 4;
+  };
+
+  prev.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+  next.addEventListener('click', () => track.scrollBy({ left:  step(), behavior: 'smooth' }));
+  track.addEventListener('scroll', sync, { passive: true });
+  window.addEventListener('resize', sync);
+  sync();
+})();
