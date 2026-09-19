@@ -21,3 +21,80 @@
 .pricing-card--focus li::before { background:#fff; }
 .pricing-card--focus .pricing-button { background:#fff; color:#0c0c0c; }
 .pricing-card--focus .pricing-button:hover { background:#e8e8e5; color:#0c0c0c; }
+
+/* ============================================================
+   ТАБЛИЦА СРАВНЕНИЯ ТАРИФОВ
+   Под карточками: что входит в каждый формат построчно.
+   Средний столбец выделен — он же выделен в карточках.
+   ============================================================ */
+.compare { margin-top:clamp(40px,5vh,72px); }
+.compare-note {
+  margin:0 0 16px;
+  color:#8a8a88;
+  font-size:11px; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase;
+}
+.compare-wrap {
+  overflow-x:auto;
+  border:1px solid #dededb; border-radius:18px;
+  background:#fff;
+  -webkit-overflow-scrolling:touch;
+}
+.compare-table {
+  width:100%; border-collapse:collapse;
+  font-size:15px; line-height:1.35;
+}
+.compare-table th,
+.compare-table td {
+  padding:14px 18px;
+  text-align:center;
+  border-bottom:1px solid #eeecE8;
+  vertical-align:middle;
+}
+.compare-table thead th {
+  padding-top:18px; padding-bottom:18px;
+  font-size:14px; font-weight:600;
+  letter-spacing:-.01em;
+  white-space:nowrap;
+}
+/* Первый столбец — названия строк, прижат влево */
+.compare-table th[scope="row"] {
+  text-align:left;
+  font-weight:400;
+  color:#3d3d3b;
+  white-space:normal;
+  min-width:180px;
+}
+.compare-table tbody tr:last-child th,
+.compare-table tbody tr:last-child td { border-bottom:0; }
+
+/* Выделенный столбец — тот же тариф, что подсвечен в карточках */
+.compare-table .is-focus { background:#f6f5f2; }
+.compare-table thead .is-focus { background:#0c0c0c; color:#fff; border-radius:12px 12px 0 0; }
+
+/* Строка со стоимостью — крупнее остальных */
+.compare-price th,
+.compare-price td {
+  padding-top:16px; padding-bottom:16px;
+  font-size:19px; font-weight:600;
+  letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+}
+.compare-price th[scope="row"] { font-size:15px; font-weight:400; }
+
+.compare-table .yes { color:#2f6b4a; font-size:17px; font-weight:600; }
+.compare-table .no  { color:#c4c2bd; }
+.compare-table b { font-weight:600; }
+
+.visually-hidden {
+  position:absolute; width:1px; height:1px;
+  overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;
+}
+
+@media (max-width:900px) {
+  .compare-wrap { border-radius:14px; }
+  .compare-table { font-size:14px; }
+  .compare-table th, .compare-table td { padding:11px 13px; }
+  .compare-table th[scope="row"] { min-width:150px; }
+  .compare-price th, .compare-price td { font-size:17px; }
+}
