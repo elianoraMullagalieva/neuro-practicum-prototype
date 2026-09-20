@@ -417,8 +417,8 @@
 }
 /* Зачёркнутая старая цена — мелкой строкой НАД крупной ценой. */
 .plan-old {
-  color:#a3a3a0; font-size:15px; font-weight:500; line-height:1;
-  text-decoration:line-through; text-decoration-thickness:1px;
+  color:#9a9a97; font-size:18px; font-weight:500; line-height:1;
+  text-decoration:line-through; text-decoration-thickness:1.5px;
 }
 .plan--focus .plan-old { color:rgba(255,255,255,.42); }
 /* Крупная цена и период «/ месяц» — на одной строке. */
@@ -432,8 +432,9 @@
 }
 .plan--focus .plan-now .pricing-per { color:rgba(255,255,255,.5); }
 .plan-lead {
-  max-width:280px; margin:0;
+  max-width:300px; margin:0;
   color:#60605e; font-size:14px; line-height:1.45; letter-spacing:0;
+  text-wrap:pretty;
 }
 
 /* Середина — таблица: строки «подпись — значение». Фиксированная
@@ -452,7 +453,10 @@
 .plan-row b { font-weight:500; text-align:right; }
 
 /* Галочки и прочерки — в цвете текста, без зелёного. */
-.plan-row .yes { color:#0c0c0c; font-size:16px; font-weight:600; }
+.plan-row .yes {
+  display:inline-flex; width:15px; height:15px; color:#0c0c0c;
+}
+.plan-row .yes svg { width:100%; height:100%; }
 .plan-row .no  { color:#c4c2bd; }
 
 /* Сноска над кнопкой (продление / обновления) — как в прежних
