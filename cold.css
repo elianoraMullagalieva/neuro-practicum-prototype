@@ -401,7 +401,7 @@
 /* Шапка карточки: номер/название, цена, лид. Одинаковая
    минимальная высота — чтобы строки-таблицы во всех трёх
    карточках стартовали с одной линии, даже если лид разной длины. */
-.plan-head { min-height:210px; }
+.plan-head { min-height:236px; }
 
 /* Название тарифа чуть крупнее прежнего (было 11px). */
 .plan-head .pricing-card-top { font-size:12px; }
@@ -413,21 +413,24 @@
    но саму цену с «₽» держим вместе через nowrap-обёртку в HTML. */
 .plan-price {
   margin:40px 0 14px;
+  display:flex; flex-direction:column; gap:6px;
+}
+/* Зачёркнутая старая цена — мелкой строкой НАД крупной ценой. */
+.plan-old {
+  color:#a3a3a0; font-size:15px; font-weight:500; line-height:1;
+  text-decoration:line-through; text-decoration-thickness:1px;
+}
+.plan--focus .plan-old { color:rgba(255,255,255,.42); }
+/* Крупная цена и период «/ месяц» — на одной строке. */
+.plan-now {
+  display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
   font-size:clamp(38px,3.3vw,52px); font-weight:600; line-height:1;
   letter-spacing:-.03em; font-variant-numeric:tabular-nums;
 }
-/* Под крупной ценой — одна строка: зачёркнутая старая цена и
-   период на одном уровне (7 000 ₽  ·  / месяц). */
-.plan-sub {
-  display:flex; align-items:baseline; gap:10px;
-  margin-top:10px;
+.plan-now .pricing-per {
+  font-size:15px; font-weight:500; letter-spacing:0; color:#8a8a88;
 }
-.plan-old {
-  color:#a3a3a0; font-size:15px; font-weight:500;
-  text-decoration:line-through; text-decoration-thickness:1px;
-}
-.plan-sub .pricing-per { font-size:15px; font-weight:500; color:#8a8a88; }
-.plan--focus .plan-sub .pricing-per { color:rgba(255,255,255,.5); }
+.plan--focus .plan-now .pricing-per { color:rgba(255,255,255,.5); }
 .plan-lead {
   max-width:280px; margin:0;
   color:#60605e; font-size:14px; line-height:1.45; letter-spacing:0;
