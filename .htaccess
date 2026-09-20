@@ -18,6 +18,13 @@ RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
 
 # ── 3. Короткие адреса без .html ─────────────────────────────
 # /cold вместо /cold.html, /oferta вместо /oferta.html
+# Убираем хвостовой слэш у страниц без .html (cold/ → cold),
+# иначе Apache ищет несуществующую папку и отдаёт 500.
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.+?)/+$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Короткие адреса без .html (cold → cold.html)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.html -f
