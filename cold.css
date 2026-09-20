@@ -197,12 +197,21 @@
 .reviews-controls button:hover { background: #080808; border-color: #080808; color: #fff; }
 .reviews-controls button:disabled { opacity: .3; cursor: default; }
 .reviews-controls button:disabled:hover { background: transparent; border-color: #dededb; color: #080808; }
-.reviews-controls svg { width: 14px; height: 14px; fill: currentColor; transition: transform .25s cubic-bezier(.22,1,.36,1); }
-.reviews-controls [data-reviews-next] svg { transform: rotate(45deg); }
-.reviews-controls [data-reviews-prev] svg { transform: scaleX(-1) rotate(45deg); }
-.reviews-controls [data-reviews-next]:hover svg { transform: rotate(45deg) translate(2px,-2px); }
-.reviews-controls [data-reviews-prev]:hover svg { transform: scaleX(-1) rotate(45deg) translate(2px,-2px); }
+/* Простой шеврон-стрелка: next смотрит вправо, prev — влево. */
+.reviews-controls svg { width: 18px; height: 18px; transition: transform .22s ease; }
+.reviews-controls [data-reviews-prev] svg { transform: scaleX(-1); }
+.reviews-controls [data-reviews-next]:hover svg { transform: translateX(2px); }
+.reviews-controls [data-reviews-prev]:hover svg { transform: scaleX(-1) translateX(2px); }
 .reviews-controls button:focus-visible { outline: 2px solid #080808; outline-offset: 3px; }
+
+
+/* Дыра между подзаголовком отзывов и лентой: у шапки был крупный
+   margin-bottom, а снизу ещё добавились стрелки со своим отступом.
+   На десктопе гасим нижний отступ шапки — расстояние держат стрелки. */
+@media (min-width: 901px) {
+  .reviews-head { margin-bottom: 8px; }
+  .reviews-controls { margin-top: 22px; }
+}
 
 @media (min-width: 901px) {
   .reviews-grid,
@@ -407,16 +416,18 @@
   font-size:clamp(38px,3.3vw,52px); font-weight:600; line-height:1;
   letter-spacing:-.03em; font-variant-numeric:tabular-nums;
 }
+/* Под крупной ценой — одна строка: зачёркнутая старая цена и
+   период на одном уровне (7 000 ₽  ·  / месяц). */
+.plan-sub {
+  display:flex; align-items:baseline; gap:10px;
+  margin-top:10px;
+}
 .plan-old {
-  margin-right:9px;
-  color:#a3a3a0; font-size:.42em; font-weight:500;
+  color:#a3a3a0; font-size:15px; font-weight:500;
   text-decoration:line-through; text-decoration-thickness:1px;
 }
-/* Период — всегда своей строкой под ценой: одинаково на всех
-   карточках, без «плавающего» переноса у длинных цен. */
-.plan-price .pricing-per {
-  display:block; margin:6px 0 0; font-size:14px; font-weight:500;
-}
+.plan-sub .pricing-per { font-size:15px; font-weight:500; color:#8a8a88; }
+.plan--focus .plan-sub .pricing-per { color:rgba(255,255,255,.5); }
 .plan-lead {
   max-width:280px; margin:0;
   color:#60605e; font-size:14px; line-height:1.45; letter-spacing:0;

@@ -674,9 +674,9 @@ em { color:var(--lime); font-style:normal; }
 .audience-card-copy { position:absolute; right:clamp(22px,1.9vw,28px); left:clamp(22px,1.9vw,28px); display:grid; gap:9px; }
 .audience-card-copy h3 { margin:0; font-size:clamp(21px,1.6vw,24px); font-weight:600; line-height:1.1; letter-spacing:-.01em; text-wrap:balance; }
 .audience-card-copy p { margin:0; font-size:clamp(14px,1.05vw,15px); line-height:1.4; letter-spacing:0; text-wrap:balance; }
-.audience-card--designers .audience-card-copy, .audience-card--business .audience-card-copy { bottom:56px; }
-.audience-card--freelancers .audience-card-copy { top:78px; }
-.audience-card--newcomers .audience-card-copy { top:160px; }
+/* Текст карточек всегда у низа — так он не наезжает на лицо
+   на высоких карточках больших экранов (4K). */
+.audience-card-copy { bottom:clamp(28px,3vh,56px); top:auto; }
 
 @media (min-width:901px) {
   .audience-content { display:flex; flex-direction:column; justify-content:center; row-gap:clamp(30px,4.6vh,54px); }
@@ -944,7 +944,7 @@ em { color:var(--lime); font-style:normal; }
 .pricing-kicker { grid-column:1 / -1; margin:0; color:#777; font-size:11px; letter-spacing:.03em; text-transform:uppercase; }
 .pricing-head h2 { margin:0; font-size:clamp(48px,5.7vw,80px); font-weight:500; line-height:.88; letter-spacing:-.04em; }
 .pricing-head h2 span { color:#747474; font-weight:400; }
-.pricing-note { max-width:270px; margin:0 0 3px; color:#636363; font-size:14px; line-height:1.42; letter-spacing:0; }
+.pricing-note { max-width:none; margin:0 0 3px; color:#636363; font-size:14px; line-height:1.42; letter-spacing:0; }
 .pricing-grid { position:relative; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); align-items:stretch; gap:8px; }
 .pricing-card { position:relative; display:flex; flex-direction:column; min-height:530px; padding:26px 24px 23px; overflow:hidden; border:1px solid #dededb; border-radius:21px; background:#fff; color:#0a0a0a; }
 .pricing-card::before { content:none; }
@@ -1241,7 +1241,7 @@ a.pricing-button { text-decoration:none; }
   .difference-copy p      { max-width:calc(520px * var(--up)); font-size:calc(16px * var(--up)); }
   .programme-lesson-title { max-width:46ch; font-size:calc(17px * var(--up)); }
   .programme-lesson-desc  { max-width:46ch; font-size:calc(15px * var(--up)); }
-  .pricing-note           { max-width:calc(270px * var(--up)); font-size:calc(14px * var(--up)); }
+  .pricing-note           { max-width:none; font-size:calc(14px * var(--up)); }
   .pricing-lead           { max-width:calc(260px * var(--up)); font-size:calc(13px * var(--up)); min-height:calc(57px * var(--up)); }
   .audience-author p,
   .questions-author p     { max-width:calc(260px * var(--up)); }
