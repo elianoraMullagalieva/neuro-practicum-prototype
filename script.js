@@ -1421,3 +1421,104 @@ document.querySelectorAll('[data-review-more]').forEach((button) => {
   window.addEventListener('resize', sync);
   sync();
 })();
+
+// ===== МОДАЛКА ЗАХВАТА ЛИДА ПЕРЕД ОПЛАТОЙ =====
+// Клик по «Выбрать» не уводит сразу на оплату: сначала окно с
+// телеграмом и согласиями. Заявка летит в бота, потом — редирект
+// на payform выбранного тарифа. Ловим контакт даже тех, кто уйдёт
+// думать и не оплатит сразу.
+(() => {
+  const modal = document.querySelector('[data-lead-modal]');
+  if (!modal) return;
+  const form = modal.querySelector('[data-lead-form]');
+  const input = form.querySelector('input[name="tg"]');
+  const submit = modal.querySelector('[data-lead-submit]');
+  const status = modal.querySelector('[data-lead-status]');
+  const tariffLabel = modal.querySelector('[data-lead-tariff]');
+  const consents = form.querySelectorAll('input[type="checkbox"]');
+
+  const TG_BOT_TOKEN = '8608450294:AAFuBjZMCcAhucGmbIj50N7JnieK5CRlV9M';
+  const TG_CHAT_ID = '474424104';
+
+  let payUrl = '';
+  let tariffName = '';
+  let lastActive = null;
+
+  const open = (btn) => {
+    payUrl = btn.getAttribute('href') || '';
+    tariffName = btn.getAttribute('data-choice') || 'Тариф';
+    tariffLabel.textContent = 'Тариф «' + tariffName + '»';
+    status.textContent = ''; status.className = 'lead-modal-status';
+    form.reset(); syncBtn();
+    lastActive = btn;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => input.focus(), 60);
+  };
+  const close = () => {
+    modal.hidden = true;
+    document.body.style.overflow = '';
+    if (lastActive) lastActive.focus();
+  };
+
+  // Перехватываем клик по кнопкам оплаты в тарифах.
+  document.querySelectorAll('.pricing-button[href*="payform.ru"]').forEach((btn) => {
+    btn.addEventListener('click', (e) => { e.preventDefault(); open(btn); });
+  });
+
+  // Кнопка активна только когда все согласия отмечены.
+  const syncBtn = () => {
+    const allChecked = Array.from(consents).every((c) => c.checked);
+    const hasTg = input.value.trim().length > 1;
+    submit.disabled = !(allChecked && hasTg);
+  };
+  consents.forEach((c) => c.addEventListener('change', syncBtn));
+  input.addEventListener('input', syncBtn);
+
+  // Клик по ссылке внутри label не должен ставить/снимать галочку.
+  modal.querySelectorAll('.lead-modal-consent a').forEach((a) => {
+    a.addEventListener('click', (e) => e.stopPropagation());
+  });
+
+  // Закрытие: оверлей, крестик, Escape.
+  modal.querySelectorAll('[data-lead-close]').forEach((el) => el.addEventListener('click', close));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) close(); });
+
+  const goPay = () => {
+    if (payUrl) window.location.href = payUrl;
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (submit.disabled) return;
+    let tg = input.value.trim();
+    if (tg && !tg.startsWith('@') && !tg.startsWith('http') && !tg.startsWith('t.me')) tg = '@' + tg;
+
+    submit.disabled = true;
+    status.className = 'lead-modal-status';
+    status.textContent = 'Отправляю…';
+
+    const text = [
+      '🔥 *Новая заявка с сайта*',
+      '',
+      '💼 *Тариф:* ' + tariffName,
+      '📱 *Telegram:* ' + tg,
+      '🕐 ' + new Date().toLocaleString('ru-RU'),
+    ].join('\n');
+
+    let sent = false;
+    try {
+      const res = await fetch('https://api.telegram.org/bot' + TG_BOT_TOKEN + '/sendMessage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: TG_CHAT_ID, text, parse_mode: 'Markdown' }),
+      });
+      sent = res.ok;
+    } catch (_) { sent = false; }
+
+    // Даже если отправка сорвалась — не держим человека, ведём на оплату.
+    status.className = 'lead-modal-status is-ok';
+    status.textContent = 'Готово! Открываю оплату…';
+    setTimeout(goPay, 600);
+  });
+})();

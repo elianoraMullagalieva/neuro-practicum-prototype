@@ -662,6 +662,33 @@
       <img class="lightbox-image" data-lightbox-image src="" alt="" />
       <video class="lightbox-video" data-lightbox-video controls autoplay loop playsinline hidden></video>
     </div>
+  
+    <!-- ── МОДАЛКА ЗАХВАТА ЛИДА ПЕРЕД ОПЛАТОЙ ── -->
+    <div class="lead-modal" data-lead-modal hidden>
+      <div class="lead-modal-overlay" data-lead-close></div>
+      <div class="lead-modal-box" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title">
+        <button type="button" class="lead-modal-x" data-lead-close aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+        <p class="lead-modal-kicker" data-lead-tariff>Тариф</p>
+        <h3 id="lead-modal-title" class="lead-modal-title">Оставь телеграм<br />для связи</h3>
+        <p class="lead-modal-lead">Напишу тебе лично, помогу с выбором и оплатой. После отправки откроется страница оплаты.</p>
+        <form class="lead-modal-form" data-lead-form novalidate>
+          <label class="lead-modal-field">
+            <span>Твой Telegram</span>
+            <input type="text" name="tg" placeholder="@username" autocomplete="off" inputmode="text" required />
+          </label>
+          <div class="lead-modal-consent">
+            <label><input type="checkbox" name="c1" required /><span>Соглашаюсь с&nbsp;<a href="https://derzayvdesign.com/politicaprivacy" target="_blank" rel="noopener">Политикой конфиденциальности</a></span></label>
+            <label><input type="checkbox" name="c2" required /><span>Соглашаюсь <a href="https://derzayvdesign.com/soglasierassilka" target="_blank" rel="noopener">получать информационные и&nbsp;рекламные сообщения</a> (рассылки в&nbsp;Telegram, email и&nbsp;других каналах)</span></label>
+            <label><input type="checkbox" name="c3" required /><span>Я&nbsp;согласен(а) на&nbsp;<a href="https://derzayvdesign.com/soglasienaobraborku" target="_blank" rel="noopener">обработку моих персональных данных</a>. С&nbsp;Политикой обработки персональных данных ознакомлен(а)</span></label>
+          </div>
+          <button type="submit" class="lead-modal-submit" data-lead-submit disabled>Перейти к оплате</button>
+          <p class="lead-modal-status" data-lead-status></p>
+        </form>
+      </div>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>
