@@ -393,7 +393,11 @@ if (persistentChrome && persistentAudience) {
     // audience (z-index:9, margin-top:-100svh) не должна перекрывать hero, когда
     // мы выше неё (её тело ниже вьюпорта). Ставим ДО early-return по introIsActive,
     // иначе на первом экране флаг не выставляется и блок «всплывает» над hero.
-    persistentAudience.classList.toggle('is-below', audienceRect.top >= window.innerHeight);
+    // Safari по-разному считает svh-высоту секции и window.innerHeight,
+    // из-за чего блок «Для кого» всплывал над hero на первом экране.
+    // Допуск в 2px и «>=» с запасом держат секцию скрытой, пока её
+    // верх реально не вошёл во вьюпорт.
+    persistentAudience.classList.toggle('is-below', audienceRect.top >= window.innerHeight - 2);
     const audienceActive = audienceRect.top <= viewportMarker && audienceRect.bottom > viewportMarker;
     // Раньше на блоке «Для кого» шапка была закреплена всегда (audienceActive ||),
     // и при скролле вниз она ехала вместе с контентом, налезая на заголовок.
@@ -1437,9 +1441,6 @@ document.querySelectorAll('[data-review-more]').forEach((button) => {
   const tariffLabel = modal.querySelector('[data-lead-tariff]');
   const consents = form.querySelectorAll('input[type="checkbox"]');
 
-  const TG_BOT_TOKEN = '8608450294:AAFuBjZMCcAhucGmbIj50N7JnieK5CRlV9M';
-  const TG_CHAT_ID = '474424104';
-
   let payUrl = '';
   let tariffName = '';
   let lastActive = null;
@@ -1498,20 +1499,14 @@ document.querySelectorAll('[data-review-more]').forEach((button) => {
     status.className = 'lead-modal-status';
     status.textContent = 'Отправляю…';
 
-    const text = [
-      '🔥 *Новая заявка с сайта*',
-      '',
-      '💼 *Тариф:* ' + tariffName,
-      '📱 *Telegram:* ' + tg,
-      '🕐 ' + new Date().toLocaleString('ru-RU'),
-    ].join('\n');
-
+    // Заявка уходит на СВОЙ обработчик lead.php — токен бота там,
+    // на сервере, в браузере его не видно.
     let sent = false;
     try {
-      const res = await fetch('https://api.telegram.org/bot' + TG_BOT_TOKEN + '/sendMessage', {
+      const res = await fetch('lead.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: TG_CHAT_ID, text, parse_mode: 'Markdown' }),
+        body: JSON.stringify({ tg: tg, tariff: tariffName }),
       });
       sent = res.ok;
     } catch (_) { sent = false; }
