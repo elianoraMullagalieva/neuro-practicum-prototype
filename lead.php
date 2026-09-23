@@ -31,6 +31,11 @@ if ($tg === '') {
   exit;
 }
 
+// Пишем заявку в лог-файл на сервере — страховка: даже если Telegram
+// не ответит, контакт не потеряется. Файл leads.log в этой же папке.
+$line = date('Y-m-d H:i:s') . "\t" . $tariff . "\t" . $tg . "\t" . ($_SERVER['REMOTE_ADDR'] ?? '') . "\n";
+@file_put_contents(__DIR__ . '/leads.log', $line, FILE_APPEND | LOCK_EX);
+
 $text = "🔥 Новая заявка с сайта\n\n"
       . "💼 Тариф: {$tariff}\n"
       . "📱 Telegram: {$tg}\n"

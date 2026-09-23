@@ -66,3 +66,8 @@ RewriteRule ^(.+)$ $1.html [L]
 
 # ── 7. Страница не найдена ───────────────────────────────────
 ErrorDocument 404 /index.html
+
+# Лог заявок — закрыт от доступа снаружи (в нём телеграмы клиентов).
+<Files "leads.log">
+  Require all denied
+</Files>
