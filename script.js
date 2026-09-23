@@ -1496,24 +1496,35 @@ document.querySelectorAll('[data-review-more]').forEach((button) => {
     if (tg && !tg.startsWith('@') && !tg.startsWith('http') && !tg.startsWith('t.me')) tg = '@' + tg;
 
     submit.disabled = true;
-    status.className = 'lead-modal-status';
-    status.textContent = 'Отправляю…';
-
-    // Заявка уходит на СВОЙ обработчик lead.php — токен бота там,
-    // на сервере, в браузере его не видно.
-    let sent = false;
-    try {
-      const res = await fetch('lead.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tg: tg, tariff: tariffName }),
-      });
-      sent = res.ok;
-    } catch (_) { sent = false; }
-
-    // Даже если отправка сорвалась — не держим человека, ведём на оплату.
     status.className = 'lead-modal-status is-ok';
-    status.textContent = 'Готово! Открываю оплату…';
-    setTimeout(goPay, 600);
+    status.textContent = 'Открываю оплату…';
+
+    const payload = JSON.stringify({ tg: tg, tariff: tariffName });
+
+    // sendBeacon гарантированно доставляет заявку, даже если страница
+    // тут же уходит на payform — браузер дошлёт её сам. Это надёжнее
+    // фонового fetch, который на медленном интернете мог не успеть.
+    let beaconOk = false;
+    try {
+      if (navigator.sendBeacon) {
+        beaconOk = navigator.sendBeacon('lead.php', new Blob([payload], { type: 'application/json' }));
+      }
+    } catch (_) { beaconOk = false; }
+
+    // Если beacon недоступен — ждём обычный fetch и только потом ведём
+    // на оплату, чтобы заявка точно ушла.
+    if (beaconOk) {
+      setTimeout(goPay, 120);
+    } else {
+      try {
+        await fetch('lead.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true,
+        });
+      } catch (_) {}
+      goPay();
+    }
   });
 })();
